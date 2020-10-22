@@ -11,11 +11,11 @@
 #define JSON_CONTROLLER		"jason_controller.json"
 
 /// <summary>
-/// Start deze eerst!
-/// 
 /// SocketServer/controller kan nu (nog) alleen
-/// een keer een socket verbinding aan gaan
-/// een keer receiven en daarna een keer een geldige json terugsturen (zie source files in solution explorer)
+/// 
+/// een keer een socket verbinding aan gaan,
+/// 
+/// While loop: receiven en daarna een geldige json terugsturen
 /// </summary>
 void main()
 {
