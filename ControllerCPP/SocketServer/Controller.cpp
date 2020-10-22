@@ -111,17 +111,18 @@ void main()
 		f.open(JSON_CONTROLLER);
 
 		if (f) {
-			std::cout << "file exists";
+			std::cout << "file exists" << std::endl;;
 		}
 		else {
-			std::cout << "file doesn't exist";
+			std::cout << "file doesn't exist" << std::endl;;
 		}
 
 		std::string content((std::istreambuf_iterator<char>(f)),
 			(std::istreambuf_iterator<char>()));
 
 		send(clientSocket, content.c_str(), content.size(), 0);
-		//std::cout << "test" << str.c_str() << "test"<< std::endl;
+		
+		std::cout << "SEND: " << content << std::endl;
 
 	}
 

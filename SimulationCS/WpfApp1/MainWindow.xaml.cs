@@ -202,7 +202,8 @@ namespace WpfApp1
         public void SetTrafficLightsFromJson()
         {
             // read JSON directly from a file https://www.newtonsoft.com/json/help/html/ReadJson.htm
-            using (StreamReader file = File.OpenText(@"C:\Users\Micky Cheng\Desktop\SoftwareDevelopment\SimulationCS\WpfApp1\resources\incomingJson\jason_controller.json"))// link aanpassen
+            var path = (@"Resources\IncomingJson\jason_controller.json");
+            using (StreamReader file = File.OpenText(path))// link aanpassen
             using (JsonTextReader reader = new JsonTextReader(file))
             {
                 JObject o = (JObject)JToken.ReadFrom(reader);

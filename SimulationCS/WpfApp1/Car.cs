@@ -34,7 +34,7 @@ namespace WpfApp1
             car = new Image()
             {
                 //Source = new BitmapImage(new Uri("/resources/car.png")),
-                Source = new BitmapImage(new Uri("pack://application:,,,/resources/car.png")),
+                Source = new BitmapImage(new Uri("pack://application:,,,/Resources/car.png")),
             };
             Canvas.SetLeft(car, left);
             Canvas.SetTop(car, top);          

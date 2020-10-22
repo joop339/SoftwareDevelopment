@@ -73,7 +73,7 @@ namespace WpfApp1
 
         public static JObject SendReceiveReturn()
         {
-            string toSend = @"C:\Users\Micky Cheng\Desktop\SoftwareDevelopment\SimulationCS\WpfApp1\resources\outgoingJson\jason_simulation.json";
+            string toSend = @"Resources\OutgoingJson\jason_simulation.json";
 
             // Encode the data string into a byte array.
             byte[] msg = File.ReadAllBytes(toSend);
