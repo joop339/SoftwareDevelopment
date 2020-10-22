@@ -1,0 +1,4 @@
+﻿  Controller.cpp
+C:\Users\Micky Cheng\Desktop\SoftwareDevelopment\ControllerCPP\SocketServer\Controller.cpp(21,1): warning C4326: return type of 'main' should be 'int' instead of 'void'
+C:\Users\Micky Cheng\Desktop\SoftwareDevelopment\ControllerCPP\SocketServer\Controller.cpp(123,56): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  SocketServer.vcxproj -> C:\Users\Micky Cheng\Desktop\SoftwareDevelopment\ControllerCPP\x64\Debug\ControllerCPP.exe
