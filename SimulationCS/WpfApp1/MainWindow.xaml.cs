@@ -86,7 +86,7 @@ namespace WpfApp1
             A61 = new TrafficLight(392, 223, "A6-1");
             OW3 = new Node(10, 233);
 
-            A11 = new TrafficLight(792, 80, "A1-1"); //beginpunt A1-1 naar A6-1 of A6-2
+            A11 = new TrafficLight(792, 80, "A1-3"); //beginpunt A1-1 naar A6-1 of A6-2
             NW_2 = new Node(792, 197);
             
             NW_3A = new Node(765, 223); //route A richting A6-1
@@ -157,14 +157,24 @@ namespace WpfApp1
         {
             bool socket = SocketClient.StartClient();
 
-            if (socket)
+            if (SocketClient.Receive == true)
             {
-                SetTrafficLightsFromJson(SocketClient.SendReceiveReturn());
+
             }
-            else
+
+            while (true)
             {
-                SetTrafficLightsFromJson();
-            }
+                if (socket)
+                {
+                    SetTrafficLightsFromJson(SocketClient.Receive());
+                }
+                else
+                {
+                    SetTrafficLightsFromJson();
+                }
+
+                Console.WriteLine("TRAFFIC LIGHT SET");
+            }           
         }
 
         private void CycleTrafficLight(TrafficLight trafficLight)//traffic light color cycle

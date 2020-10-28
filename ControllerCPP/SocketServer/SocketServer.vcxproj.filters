@@ -15,13 +15,26 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Media Include="jason_controller.json">
+    <ClCompile Include="Controller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="phase_one.json">
       <Filter>Source Files</Filter>
     </Media>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Controller.cpp">
+    <None Include="phase_two.json">
       <Filter>Source Files</Filter>
-    </ClCompile>
+    </None>
+    <None Include="phase_three.json">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Controller.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

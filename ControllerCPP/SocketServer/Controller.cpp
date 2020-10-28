@@ -4,11 +4,19 @@
 #include <fstream>
 #include <streambuf>
 #include <iomanip>
+#include "Controller.h"
+#include <vector>
+#include <chrono>
+#include <thread>
 #pragma comment(lib, "ws2_32.lib")
 
-#define PORT				54000
-#define IPADDRESS			"127.0.0.1"
-#define JSON_CONTROLLER		"jason_controller.json"
+#define PORT			54000
+#define IPADDRESS		"127.0.0.1"
+#define PHASE_ONE		"phase_one.json"
+#define PHASE_TWO		"phase_two.json"
+#define PHASE_THREE		"phase_three.json"
+
+const std::vector<std::string> cycle{ PHASE_ONE, PHASE_TWO, PHASE_THREE };
 
 /// <summary>
 /// SocketServer/controller kan nu (nog) alleen
@@ -16,7 +24,6 @@
 /// een keer een socket verbinding aan gaan,
 /// 
 /// While loop: receiven en daarna een geldige json terugsturen
-/// </summary>
 void main()
 {
 	// Initialize winsock
@@ -57,8 +64,8 @@ void main()
 	sockaddr_in client;
 	int clientSize = sizeof(client);
 
-	SOCKET clientSocket = accept(listening, (sockaddr*)&client, &clientSize);
-	if (clientSocket == INVALID_SOCKET) // Handle error
+	SOCKET socket = accept(listening, (sockaddr*)&client, &clientSize);
+	if (socket == INVALID_SOCKET) // Handle error
 	{
 		std::cerr << "Can't create socket! Quitting!" << std::endl;
 	}
@@ -84,51 +91,81 @@ void main()
 	closesocket(listening);
 
 	// While loop: accept and echo message back to client
-	char buf[4096];
-	std::string userInput;
+	//char buf[4096];
+
 	while (true)
 	{
-		ZeroMemory(buf, 4096);
+		//ZeroMemory(buf, 4096);
 
 		//// Wait for client to send data
-		int bytesReceived = recv(clientSocket, buf, 4096, 0);
-		if (bytesReceived == SOCKET_ERROR) // Handle error
-		{
-			std::cerr << "Error in recv(). Quitting!" << std::endl;
-			break;
-		}
+		//int bytesReceived = recv(clientSocket, buf, 4096, 0);
+		//if (bytesReceived == SOCKET_ERROR) // Handle error
+		//{
+		//	std::cerr << "Error in recv(). Quitting!" << std::endl;
+		//	break;
+		//}
 
-		if (bytesReceived == 0) // Handle error
-		{
-			std::cout << "Client disconnected " << std::endl;
-			break;
-		}
+		//if (bytesReceived == 0) // Handle error
+		//{
+		//	std::cout << "Client disconnected " << std::endl;
+		//	break;
+		//}
 
-		std::cout << "CLIENT> " << std::string(buf, 0, bytesReceived) << std::endl;
+		//std::cout << "CLIENT> " << std::string(buf, 0, bytesReceived) << std::endl;
 
+		//std::ifstream f;
+		//f.open(PHASE_ONE);
 
-		std::ifstream f;
-		f.open(JSON_CONTROLLER);
+		//if (f) {
+		//	std::cout << "file exists" << std::endl;;
+		//}
+		//else {
+		//	std::cout << "file doesn't exist" << std::endl;;
+		//}
 
-		if (f) {
-			std::cout << "file exists" << std::endl;;
-		}
-		else {
-			std::cout << "file doesn't exist" << std::endl;;
-		}
+		//std::string content((std::istreambuf_iterator<char>(f)),
+		//	(std::istreambuf_iterator<char>()));
 
-		std::string content((std::istreambuf_iterator<char>(f)),
-			(std::istreambuf_iterator<char>()));
+		////send data over socket
+		//send(clientSocket, content.c_str(), content.size(), 0);
+		//
+		//std::cout << "SEND: " << content << std::endl;
 
-		send(clientSocket, content.c_str(), content.size(), 0);
+		//send(f, clientSocket, content);
 		
-		std::cout << "SEND: " << content << std::endl;
-
+		for (auto phase : cycle) 
+		{
+			std::this_thread::sleep_for(std::chrono::seconds(10));
+			sendJson(socket, phase.c_str());
+		}
+		
 	}
 
 	// Close the socket
-	closesocket(clientSocket);
+	closesocket(socket);
 
 	// Cleanup winsock
 	WSACleanup();
+
+}
+
+void sendJson(const SOCKET& socket, const char file[])
+{
+	std::ifstream f;
+	f.open(file);
+
+	if (f) {
+		std::cout << "file exists" << std::endl;;
+	}
+	else {
+		std::cout << "file doesn't exist" << std::endl;;
+	}
+
+	std::string content((std::istreambuf_iterator<char>(f)),
+		(std::istreambuf_iterator<char>()));
+
+	//send data over socket
+	send(socket, content.c_str(), content.size(), 0);
+
+	std::cout << "SEND: " << content << std::endl;
 }

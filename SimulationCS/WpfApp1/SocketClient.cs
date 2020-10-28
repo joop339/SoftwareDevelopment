@@ -1,9 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
-using System.Net;
 using System.Net.Sockets;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace WpfApp1
@@ -92,6 +90,23 @@ namespace WpfApp1
                 Encoding.ASCII.GetString(bytes, 0, bytesRec));
 
             JObject jObject = JObject.Parse(Encoding.UTF8.GetString(bytes)); // Parse received bytes to Json Object
+
+            return jObject;
+        }
+        public static JObject Receive()
+        {
+            //buffer 
+            byte[] bytes = new byte[4096];
+
+            // Receive the response from the remote device.
+            int bytesRec = client.Receive(bytes);
+
+            //debug
+            Console.WriteLine("Received: {0}",
+                Encoding.ASCII.GetString(bytes, 0, bytesRec));
+
+            // Parse received bytes to Json Object
+            JObject jObject = JObject.Parse(Encoding.UTF8.GetString(bytes)); 
 
             return jObject;
         }

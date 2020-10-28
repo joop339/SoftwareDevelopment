@@ -141,9 +141,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Controller.cpp" />
-    <Media Include="jason_controller.json">
+    <Media Include="phase_one.json">
       <FileType>Document</FileType>
     </Media>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="phase_three.json" />
+    <None Include="phase_two.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Controller.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
