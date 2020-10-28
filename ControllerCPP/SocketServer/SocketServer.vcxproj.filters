@@ -23,14 +23,12 @@
     <Media Include="phase_one.json">
       <Filter>Source Files</Filter>
     </Media>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="phase_two.json">
+    <Media Include="phase_three.json">
       <Filter>Source Files</Filter>
-    </None>
-    <None Include="phase_three.json">
+    </Media>
+    <Media Include="phase_two.json">
       <Filter>Source Files</Filter>
-    </None>
+    </Media>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Controller.h">

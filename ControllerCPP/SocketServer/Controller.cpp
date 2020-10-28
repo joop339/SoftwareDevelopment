@@ -19,11 +19,8 @@
 const std::vector<std::string> cycle{ PHASE_ONE, PHASE_TWO, PHASE_THREE };
 
 /// <summary>
-/// SocketServer/controller kan nu (nog) alleen
-/// 
-/// een keer een socket verbinding aan gaan,
-/// 
-/// While loop: receiven en daarna een geldige json terugsturen
+/// Initializes listening socket, accepts client, inits socket, sends json data
+/// </summary>
 void main()
 {
 	// Initialize winsock
@@ -90,52 +87,19 @@ void main()
 	// Close listening socket
 	closesocket(listening);
 
-	// While loop: accept and echo message back to client
-	//char buf[4096];
+	std::cout << "Enter server delay in milliseconds: (1000 milliseconds = 1 second)" << std::endl;
 
+	int time;
+	std::cin >> time;
+
+	// While loop: send json once a second
+	char buf[4096];
 	while (true)
 	{
-		//ZeroMemory(buf, 4096);
-
-		//// Wait for client to send data
-		//int bytesReceived = recv(clientSocket, buf, 4096, 0);
-		//if (bytesReceived == SOCKET_ERROR) // Handle error
-		//{
-		//	std::cerr << "Error in recv(). Quitting!" << std::endl;
-		//	break;
-		//}
-
-		//if (bytesReceived == 0) // Handle error
-		//{
-		//	std::cout << "Client disconnected " << std::endl;
-		//	break;
-		//}
-
-		//std::cout << "CLIENT> " << std::string(buf, 0, bytesReceived) << std::endl;
-
-		//std::ifstream f;
-		//f.open(PHASE_ONE);
-
-		//if (f) {
-		//	std::cout << "file exists" << std::endl;;
-		//}
-		//else {
-		//	std::cout << "file doesn't exist" << std::endl;;
-		//}
-
-		//std::string content((std::istreambuf_iterator<char>(f)),
-		//	(std::istreambuf_iterator<char>()));
-
-		////send data over socket
-		//send(clientSocket, content.c_str(), content.size(), 0);
-		//
-		//std::cout << "SEND: " << content << std::endl;
-
-		//send(f, clientSocket, content);
 		
 		for (auto phase : cycle) 
 		{
-			std::this_thread::sleep_for(std::chrono::seconds(10));
+			std::this_thread::sleep_for(std::chrono::milliseconds(time));
 			sendJson(socket, phase.c_str());
 		}
 		
@@ -149,23 +113,62 @@ void main()
 
 }
 
+
+int counter = 0;
+
+/// <summary>
+/// Sends json data over socket
+/// with header "602:"
+/// </summary>
+/// <param name="socket">SOCKET</param>
+/// <param name="file">Filename</param>
 void sendJson(const SOCKET& socket, const char file[])
 {
+	std::string header = "602:";
+
 	std::ifstream f;
 	f.open(file);
-
-	if (f) {
-		std::cout << "file exists" << std::endl;;
+	
+	if (!f)
+	{
+		std::cerr << "Can't open file" << std::endl;
 	}
-	else {
-		std::cout << "file doesn't exist" << std::endl;;
-	}
-
+	
 	std::string content((std::istreambuf_iterator<char>(f)),
 		(std::istreambuf_iterator<char>()));
 
-	//send data over socket
-	send(socket, content.c_str(), content.size(), 0);
+	std::string package = header + content;
 
-	std::cout << "SEND: " << content << std::endl;
+	//send data over socket
+	send(socket, package.c_str(), package.size(), 0);
+
+	counter++;
+
+	std::cout << "SENT: " << package << std::endl;
+	std::cout << "SENT_AMOUNT: " << counter << std::endl;
 }
+
+/// <summary>
+/// Receives data over socket and prints to Output
+/// </summary>
+/// <param name="buf">buffer to store data</param>
+/// <param name="socket">SOCKET</param>
+//void receiveJson(char buf[4096], const SOCKET& socket)
+//{
+//	ZeroMemory(buf, 4096);
+//
+//	// Wait for client to send data
+//	int bytesReceived = recv(socket, buf, 4096, 0);
+//	if (bytesReceived == SOCKET_ERROR) // Handle error
+//	{
+//		std::cerr << "Error in recv(). Quitting!" << std::endl;
+//	}
+//
+//	if (bytesReceived == 0) // Handle error
+//	{
+//		std::cout << "Client disconnected " << std::endl;
+//	}
+//
+//	std::cout << "CLIENT> " << std::string(buf, 0, bytesReceived) << std::endl;
+//}
+
