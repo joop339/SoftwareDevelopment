@@ -17,11 +17,15 @@
 #define PHASE_THREE		"phase_three.json"
 
 const std::vector<std::string> cycle{ PHASE_ONE, PHASE_TWO, PHASE_THREE };
+char hdr = 'n';
+bool connected = false;
+
+void sendJson(const SOCKET& socket, const char file[], const char hdr);
 
 /// <summary>
 /// Initializes listening socket, accepts client, inits socket, sends json data
 /// </summary>
-void main()
+int main()
 {
 	// Initialize winsock
 	WSADATA wsData;
@@ -31,7 +35,7 @@ void main()
 	if (wsOk != 0) // Handle error
 	{
 		std::cerr << "Can't Initialize winsock! Quitting" << std::endl;
-		return;
+		return -1;
 	}
 
 
@@ -84,25 +88,29 @@ void main()
 			ntohs(client.sin_port) << std::endl;
 	}
 
+	connected = true;
+
 	// Close listening socket
 	closesocket(listening);
+
+	std::cout << "Send with headers?: (y/n)" << std::endl;
+
+	std::cin >> hdr;
 
 	std::cout << "Enter server delay in milliseconds: (1000 milliseconds = 1 second)" << std::endl;
 
 	int time;
 	std::cin >> time;
 
-	// While loop: send json once a second
-	char buf[4096];
-	while (true)
+	// While loop: send json once in a while
+	
+	while (connected)
 	{
-		
-		for (auto phase : cycle) 
-		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(time));
-			sendJson(socket, phase.c_str());
-		}
-		
+			for (auto phase : cycle)
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(time));
+				sendJson(socket, phase.c_str(), hdr);
+			}		
 	}
 
 	// Close the socket
@@ -111,6 +119,7 @@ void main()
 	// Cleanup winsock
 	WSACleanup();
 
+	return 0;
 }
 
 
@@ -122,7 +131,7 @@ int counter = 0;
 /// </summary>
 /// <param name="socket">SOCKET</param>
 /// <param name="file">Filename</param>
-void sendJson(const SOCKET& socket, const char file[])
+void sendJson(const SOCKET& socket, const char file[], const char hdr)
 {
 	std::string header = "602:";
 
@@ -137,15 +146,36 @@ void sendJson(const SOCKET& socket, const char file[])
 	std::string content((std::istreambuf_iterator<char>(f)),
 		(std::istreambuf_iterator<char>()));
 
-	std::string package = header + content;
+	std::string package = "";
 
-	//send data over socket
-	send(socket, package.c_str(), package.size(), 0);
+	if (hdr == 'y')
+	{
+		package = header + content;
+	}
+	else if (hdr == 'n')
+	{
+		package = content;
+	}
 
-	counter++;
+	if (connected)
+	{
+		//send data over socket
+		int bytesSend = send(socket, package.c_str(), package.size(), 0);
+		if (bytesSend == SOCKET_ERROR)
+		{
+			std::cerr << "Client disconnected! Quitting!" << std::endl;
+			connected = false;
+		}
+		else
+		{
+			counter++;
 
-	std::cout << "SENT: " << package << std::endl;
-	std::cout << "SENT_AMOUNT: " << counter << std::endl;
+			std::cout << "SENT: " << package << std::endl;
+			std::cout << "SENT_AMOUNT: " << counter << std::endl;
+		}
+
+	}
+	
 }
 
 /// <summary>

@@ -30,9 +30,4 @@
       <Filter>Source Files</Filter>
     </Media>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Controller.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
 </Project>
