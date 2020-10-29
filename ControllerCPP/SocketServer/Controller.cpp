@@ -8,6 +8,7 @@
 #include <vector>
 #include <chrono>
 #include <thread>
+#include <cstdio>
 #pragma comment(lib, "ws2_32.lib")
 
 #define PORT			54000
@@ -118,6 +119,9 @@ int main()
 
 	// Cleanup winsock
 	WSACleanup();
+
+	std::getchar();
+	std::getchar();
 
 	return 0;
 }
