@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Windows.Documents;
 
@@ -28,6 +29,7 @@ namespace WpfApp1
         /// </summary>
         private static Socket client;
 
+        private static char seperator = ':';
         /// <summary>
         /// Queue of bytes for incoming data
         /// </summary>
@@ -85,42 +87,64 @@ namespace WpfApp1
             }
             return true;
         }
-        
+
         /// <summary>
-        /// Receives data and parse to jObject then add to list
+        /// Receives data and HandleData()
         /// </summary>
-        public static void Receive()
+        /// <returns>
+        /// Boolean true or false based on successful connection
+        /// </returns>
+        public static bool Receive()
         {
             // Init new buffer 
             byte[] buffer = new byte[1_000_000];
 
-            // Receive and put in buffer
-            int bytesRec = client.Receive(buffer);
-
-            // Put buffer in static queue 
-            for (int i = 0; i < bytesRec; i++)
+            try
             {
-                queue.Enqueue(buffer[i]);
+                // Receive and put in buffer
+                int bytesRec = client.Receive(buffer);
+
+                // Put buffer in static queue 
+                for (int i = 0; i < bytesRec; i++)
+                {
+                    queue.Enqueue(buffer[i]);
+                }
+            }
+            catch (SocketException se) // Handle error
+            {
+                Console.WriteLine("SocketException : {0}", se.ToString());
+                return false;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Unexpected exception : {0}", e.ToString());
+                return false;
             }
 
-            // Find header
-            string header = GetHeader(buffer, bytesRec);
+            return true;
+        }
 
-            //debug
-            Debug(buffer, bytesRec, header);
-            //           
+        /// <summary>
+        /// Parse queue to list of JObjects
+        /// </summary>
+        public static void HandleData()
+        {
+            // Dequeue header
+            string header = DequeueHeader(queue, seperator);
+
+            int length = 0;
+
+            if (int.TryParse(header, out length))
+            {
+                Console.WriteLine("header " + header + " was found! Parsing to int " + length);
+            }
+            else
+            {
+                Console.WriteLine("Can't parse header into int");
+            }
 
             List<byte> bytesList = new List<byte>();// all bytes for one phase/json
 
-            int headerOffset = header.Length + 1;
-            int length = Convert.ToInt32(header);
-
-            //get rid of header
-            for (int i = 0; i < headerOffset; i++)
-            {
-                queue.Dequeue();
-            }
-               
             //put data into bytesList
             for (int i = 0; i < length; i++)
             {
@@ -128,40 +152,45 @@ namespace WpfApp1
             }
 
             //convert bytesList to byteArray
-            byte[] jsonBytes = bytesList.ToArray();
-
-            //Console.WriteLine(Encoding.UTF8.GetString(jsonBytes, 0, jsonBytes.Length));
-
-            // Parse received bytes to Json Object
-            JObject jObject = JObject.Parse(Encoding.UTF8.GetString(jsonBytes, 0, jsonBytes.Length));
-
-            jObjects.Add(jObject);
-        }
-
-        private static void Debug(byte[] buffer, int bytesRec, string header)
-        {
-            Console.WriteLine("Received Data: {0}",
-                            Encoding.ASCII.GetString(buffer, 0, bytesRec));
-            Console.WriteLine("bytesRec: " + bytesRec);
-            Console.WriteLine("Received Header: " + header);
-        }
-
-        private static string GetHeader(byte[] buffer, int bytesRec)
-        {
-            string received = Encoding.UTF8.GetString(buffer, 0, bytesRec);
-            string header = "";
-
-            foreach (char c in received)
+            if (bytesList.Count > 0)
             {
-                if (c != ':')
+                byte[] jsonBytes = bytesList.ToArray();
+
+                //Console.WriteLine(Encoding.UTF8.GetString(jsonBytes, 0, jsonBytes.Length));
+
+                // Parse received bytes to Json Object
+                JObject jObject = JObject.Parse(Encoding.UTF8.GetString(jsonBytes, 0, jsonBytes.Length));
+
+                jObjects.Add(jObject);
+            }           
+            
+        }
+
+        /// <summary>
+        /// Dequeues elements from queue until seperator
+        /// </summary>
+        /// <param name="queue">Queue with received data</param>
+        /// <param name="seperator">Read until seperator is reached</param>
+        /// <returns>String containing header</returns>
+        private static string DequeueHeader(Queue<byte> queue, char seperator)
+        {
+            string sprtr = seperator.ToString();
+            byte[] colon = Encoding.UTF8.GetBytes(sprtr);
+
+            List<byte> hdr = new List<byte>();
+            if (queue.Count > 0)
+            {
+                while (queue.Peek() != colon[0])
                 {
-                    header += c;
+                    hdr.Add(queue.Dequeue());
                 }
-                else
-                {
-                    break;
-                }
+
+                queue.Dequeue(); // remove seperator
             }
+                    
+            byte[] headerBytes = hdr.ToArray();
+
+            string header = Encoding.UTF8.GetString(headerBytes);
 
             return header;
         }

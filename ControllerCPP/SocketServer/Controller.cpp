@@ -131,14 +131,13 @@ int counter = 0;
 
 /// <summary>
 /// Sends json data over socket
-/// with header "602:"
+/// with header or wihtout header
 /// </summary>
 /// <param name="socket">SOCKET</param>
 /// <param name="file">Filename</param>
+/// <param name="hdr">with header: 'y' without header: 'no'</param>
 void sendJson(const SOCKET& socket, const char file[], const char hdr)
 {
-	std::string header = "602:";
-
 	std::ifstream f;
 	f.open(file);
 	
@@ -151,6 +150,8 @@ void sendJson(const SOCKET& socket, const char file[], const char hdr)
 		(std::istreambuf_iterator<char>()));
 
 	std::string package = "";
+
+	std::string header = std::to_string(content.length()) + ":";
 
 	if (hdr == 'y')
 	{
@@ -167,8 +168,9 @@ void sendJson(const SOCKET& socket, const char file[], const char hdr)
 		int bytesSend = send(socket, package.c_str(), package.size(), 0);
 		if (bytesSend == SOCKET_ERROR)
 		{
-			std::cerr << "Client disconnected! Quitting!" << std::endl;
+			std::cerr << "Client disconnected!" << std::endl;
 			connected = false;
+			main();
 		}
 		else
 		{

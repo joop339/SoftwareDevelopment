@@ -43,6 +43,7 @@ namespace WpfApp1
         private DispatcherTimer simulationTickTimer; // Timer for ticks
         private DispatcherTimer socketReceiveTimer; // Timer for ticks
         private DispatcherTimer trafficLightTimer; // Timer for ticks
+        private DispatcherTimer spawnCarTimer; // Timer for ticks
 
         private bool connected = false;
 
@@ -81,7 +82,9 @@ namespace WpfApp1
 
             InitializeDispatcherTimer(socketReceiveTimer, 1, SocketReceiveTick);
 
-            InitializeDispatcherTimer(trafficLightTimer, 1, TrafficLightTick);
+            InitializeDispatcherTimer(trafficLightTimer, 2, TrafficLightTick);
+
+            InitializeDispatcherTimer(spawnCarTimer, 5, SpawnCarTick);
 
             //Keydown events
             KeyDown += new KeyEventHandler(MainWindow_KeyDown);           
@@ -115,7 +118,7 @@ namespace WpfApp1
        
         private void InitializeObjects() //Initialize alle auto's en trafficlights uit lijst.
         {            
-            cars = new List<Car> { new Car(NW_A.GetNodes()[0].GetLeft(), NW_A.GetNodes()[0].GetTop(), NW_A) };
+            cars = new List<Car> { new Car(NW_A.GetNodes()[0].GetLeft(), NW_A.GetNodes()[0].GetTop() - 100, NW_A) };
             foreach (Car car in cars)
             {
                 canvas.Children.Add(car.ToUIElement());
@@ -151,7 +154,8 @@ namespace WpfApp1
         {
             if (connected)
             {
-                SocketClient.Receive();
+                connected = SocketClient.Receive();
+                SocketClient.HandleData();               
             }     
         }
 
@@ -159,6 +163,11 @@ namespace WpfApp1
         {
             lblTime.Content = DateTime.Now.ToLongTimeString();
             UpdateCars();
+
+            if (!connected)
+            {
+                InitializeSocketClient();
+            }
         }
 
         private void TrafficLightTick(object sender, EventArgs e)
@@ -169,6 +178,11 @@ namespace WpfApp1
             }
         }
 
+        private void SpawnCarTick(object sender, EventArgs e)
+        {
+            cars.Add(new Car(NW_A.GetNodes()[0].GetLeft(), NW_A.GetNodes()[0].GetTop() - 100, NW_A));
+        }
+
         private void UpdateCars()
         {
             if (cars.Count > 0)
@@ -176,6 +190,13 @@ namespace WpfApp1
                 foreach (Car car in cars)
                 {
                     car.Update();
+
+                    if (!canvas.Children.Contains(car.ToUIElement()))
+                    {
+                        canvas.Children.Add(car.ToUIElement());
+                    }
+
+
                 }
 
             }
