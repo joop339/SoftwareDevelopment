@@ -172,10 +172,7 @@ namespace WpfApp1
 
         private void TrafficLightTick(object sender, EventArgs e)
         {
-            foreach (JObject jObject in SocketClient.jObjects)
-            {
-                SetTrafficLightsFromJson(jObject);
-            }
+                SetTrafficLightsFromJson(SocketClient.jObjects.Dequeue());
         }
 
         private void SpawnCarTick(object sender, EventArgs e)

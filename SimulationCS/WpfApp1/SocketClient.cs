@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -38,7 +38,7 @@ namespace WpfApp1
         /// <summary>
         /// List of jObjects each containing data for one phase
         /// </summary>
-        public static List<JObject> jObjects = new List<JObject>();
+        public static Queue<JObject> jObjects = new Queue<JObject>();
 
         /// <summary>
         /// Initializes a socket which tries to connect to Address.IP with Address.Port
@@ -85,6 +85,8 @@ namespace WpfApp1
                 Console.WriteLine(e.ToString());
                 return false;
             }
+
+
             return true;
         }
 
@@ -120,7 +122,7 @@ namespace WpfApp1
                 Console.WriteLine("Unexpected exception : {0}", e.ToString());
                 return false;
             }
-
+            HandleData();
             return true;
         }
 
@@ -161,7 +163,7 @@ namespace WpfApp1
                 // Parse received bytes to Json Object
                 JObject jObject = JObject.Parse(Encoding.UTF8.GetString(jsonBytes, 0, jsonBytes.Length));
 
-                jObjects.Add(jObject);
+                jObjects.Enqueue(jObject);
             }           
             
         }
