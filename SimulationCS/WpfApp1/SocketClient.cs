@@ -122,7 +122,7 @@ namespace WpfApp1
                 Console.WriteLine("Unexpected exception : {0}", e.ToString());
                 return false;
             }
-            HandleData();
+
             return true;
         }
 

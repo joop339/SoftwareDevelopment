@@ -10,23 +10,25 @@ namespace WpfApp1
     public class Node
     {
         public static List<Node> nodeList = new List<Node>();
-        protected int left;
-        protected int top;
-        
-        public Node(int left, int top)
+        protected double left;
+        protected double top;
+        public Node()
         {
-
+            nodeList.Add(this);
+        }
+        public Node(double left, double top)
+        {
             nodeList.Add(this);
             this.left = left;
             this.top = top;
         }
 
-        public int GetLeft()
+        public double GetLeft()
         {
             return left;
         }
 
-        public int GetTop()
+        public double GetTop()
         {
             return top;
         }

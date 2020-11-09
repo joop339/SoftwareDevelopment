@@ -39,7 +39,19 @@ namespace WpfApp1
             trafficLight.MouseDown += TrafficLight_MouseDown;
         }
 
-        private void TrafficLight_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        public TrafficLight(Ellipse ellipse, string id)
+        {
+            left = Canvas.GetLeft(ellipse);
+            top = Canvas.GetTop(ellipse);
+            this.id = id;
+
+            trafficLight = ellipse;
+            Panel.SetZIndex(trafficLight, 666);
+
+            trafficLight.MouseDown += TrafficLight_MouseDown;
+        }
+
+        public void TrafficLight_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (trafficLight.Fill == Brushes.Green)
             {
@@ -47,6 +59,11 @@ namespace WpfApp1
                 color = Color.Red;
             }
             else if (trafficLight.Fill == Brushes.Red)
+            {
+                trafficLight.Fill = Brushes.Green;
+                color = Color.Green;
+            }
+            else
             {
                 trafficLight.Fill = Brushes.Green;
                 color = Color.Green;

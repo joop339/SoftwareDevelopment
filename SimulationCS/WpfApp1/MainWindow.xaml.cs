@@ -80,7 +80,7 @@ namespace WpfApp1
 
             InitializeDispatcherTimer(simulationTickTimer, 1/60, SimulationTick);
 
-            InitializeDispatcherTimer(socketReceiveTimer, 1, SocketReceiveTick);
+            //InitializeDispatcherTimer(socketReceiveTimer, 1, SocketReceiveTick);
 
             InitializeDispatcherTimer(trafficLightTimer, 2, TrafficLightTick);
 
@@ -96,8 +96,9 @@ namespace WpfApp1
             A61 = new TrafficLight(392, 223, "A6-1");
             OW3 = new Node(10, 233);
 
-            A11 = new TrafficLight(792, 80, "A1-1"); //beginpunt A1-1 naar A6-1 of A6-2
-            NW_2 = new Node(792, 197);
+            /*A11 = new TrafficLight(792, 80, "A1-1");*/ //beginpunt A1-1 naar A6-1 of A6-2
+            A11 = new TrafficLight(A1_1, "A1-1");
+            NW_2 = new Node(800, 197);
             
             NW_3A = new Node(765, 223); //route A richting A6-1
             NW_5A = new Node(10, 223); //eindpunt A
@@ -117,19 +118,23 @@ namespace WpfApp1
         }
        
         private void InitializeObjects() //Initialize alle auto's en trafficlights uit lijst.
-        {            
+        {
             cars = new List<Car> { new Car(NW_A.GetNodes()[0].GetLeft(), NW_A.GetNodes()[0].GetTop() - 100, NW_A) };
             foreach (Car car in cars)
             {
                 canvas.Children.Add(car.ToUIElement());
             }
-            
+
             //Draw traffic lights V2
             foreach (Node node in Node.nodeList)
             {
                 if (node is TrafficLight)
                 {
-                    canvas.Children.Add(((TrafficLight)node).ToUIElement());
+                    if (!canvas.Children.Contains(((TrafficLight)node).ToUIElement()))
+                    {
+                        canvas.Children.Add(((TrafficLight)node).ToUIElement());
+                    }
+
                 }
             }
 
@@ -152,6 +157,10 @@ namespace WpfApp1
 
         private void SocketReceiveTick(object sender, EventArgs e)
         {
+            if (!connected)
+            {
+                InitializeSocketClient();
+            }
             if (connected)
             {
                 connected = SocketClient.Receive();
@@ -162,17 +171,16 @@ namespace WpfApp1
         private void SimulationTick(object sender, EventArgs e)
         {
             lblTime.Content = DateTime.Now.ToLongTimeString();
-            UpdateCars();
-
-            if (!connected)
-            {
-                InitializeSocketClient();
-            }
+            UpdateCars();           
         }
 
         private void TrafficLightTick(object sender, EventArgs e)
         {
+            if (SocketClient.jObjects.Count > 0)
+            {
                 SetTrafficLightsFromJson(SocketClient.jObjects.Dequeue());
+            }
+                
         }
 
         private void SpawnCarTick(object sender, EventArgs e)
@@ -279,9 +287,6 @@ namespace WpfApp1
                 }
             }
         }
-
-        
-
 
         //public class TraffiqueLight
         //{

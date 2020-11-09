@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="1200">
+        Title="MainWindow" Height="700" Width="1200" ResizeMode="NoResize">
 
-  <Canvas x:Name="canvas" >
+    <Canvas x:Name="canvas" Height="700" Width="1200">
         <Canvas.Background>
-            <ImageBrush ImageSource="resources/kruispunt.png" Stretch="UniformToFill"/>
+            <ImageBrush ImageSource="resources/kruispunt.png" />
         </Canvas.Background>
         <Label Name="lblTime" FontSize="48" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="64.9,10.5" Height="88" Width="365" Canvas.Left="10" Canvas.Top="45" />
-        <Ellipse Width="6" Height="6" Fill="Pink" Canvas.Left="1062" Canvas.Top="233"></Ellipse>
+        <Ellipse x:Name="A1_1" Width="25" Height="20" Fill="White" Canvas.Left="800" Canvas.Top="105"></Ellipse>
     </Canvas>
 </Window>
