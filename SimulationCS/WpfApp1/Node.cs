@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Shapes;
 
 namespace WpfApp1
 {
@@ -21,6 +23,13 @@ namespace WpfApp1
             nodeList.Add(this);
             this.left = left;
             this.top = top;
+        }
+
+        public Node(Ellipse ellipse)
+        {
+            nodeList.Add(this);
+            left = Canvas.GetLeft(ellipse);
+            top = Canvas.GetTop(ellipse);
         }
 
         public double GetLeft()

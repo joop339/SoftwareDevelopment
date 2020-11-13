@@ -38,7 +38,7 @@ namespace WpfApp1
     /// </summary>
     public partial class MainWindow : Window
     {
-        private List<Car> cars; // List of cars
+        //private List<Car> cars; // List of cars
         private const int fps = 60; // Simulation speed
         private DispatcherTimer simulationTickTimer; // Timer for ticks
         private DispatcherTimer socketReceiveTimer; // Timer for ticks
@@ -47,16 +47,38 @@ namespace WpfApp1
 
         private bool connected = false;
 
-        private Node A23;
-        private Node A61;
         private Node OW3;
 
         private Node A11;
-        private Node NW_2;
-        private Node NW_3A;
-        private Node NW_5A;
-        private Node NW_3B;
+        private Node A12;
+        private Node A13;
+        private Node B12;
+        private Node A21;
+        private Node A22;
+        private Node A23;
+        private Node A24;
+        private Node A31;
+        private Node A32;
+        private Node A33;
+        private Node A34;
+        private Node A41;
+        private Node A42;
+        private Node A43;
+        private Node A44;
+        private Node B41;
+        private Node A51;
+        private Node A52;
+        private Node A53;
+        private Node A54;
+        private Node A61;
         private Node A62;
+        private Node A63;
+        private Node A64;
+
+        private Node A11B;
+        private Node A11BA;
+        private Node A12B;
+        private Node NW_3B;
         private Node NW_5B;
 
         private Route EW;
@@ -84,7 +106,7 @@ namespace WpfApp1
 
             InitializeDispatcherTimer(trafficLightTimer, 2, TrafficLightTick);
 
-            InitializeDispatcherTimer(spawnCarTimer, 5, SpawnCarTick);
+            //InitializeDispatcherTimer(spawnCarTimer, 5, SpawnCarTick);
 
             //Keydown events
             KeyDown += new KeyEventHandler(MainWindow_KeyDown);           
@@ -92,16 +114,46 @@ namespace WpfApp1
 
         private void InitializeNodes()
         {
-            A23 = new TrafficLight(1062, 223, "A2-3");
-            A61 = new TrafficLight(392, 223, "A6-1");
-            OW3 = new Node(10, 233);
+            //A23 = new TrafficLight(1062, 223, "A2-3");
+            //A61 = new TrafficLight(392, 223, "A6-1");
+            //OW3 = new Node(10, 233);
 
             /*A11 = new TrafficLight(792, 80, "A1-1");*/ //beginpunt A1-1 naar A6-1 of A6-2
             A11 = new TrafficLight(A1_1, "A1-1");
-            NW_2 = new Node(800, 197);
-            
-            NW_3A = new Node(765, 223); //route A richting A6-1
-            NW_5A = new Node(10, 223); //eindpunt A
+            A12 = new TrafficLight(A1_2, "A1-2");
+            A13 = new TrafficLight(A1_3, "A1-3");
+            B12 = new TrafficLight(B1_2, "B1-2");
+
+            A21 = new TrafficLight(A2_1, "A2-1");
+            A22 = new TrafficLight(A2_2, "A2-2");
+            A23 = new TrafficLight(A2_3, "A2-3");
+            A24 = new TrafficLight(A2_4, "A2-4");
+
+            A31 = new TrafficLight(A3_1, "A3-1");
+            A32 = new TrafficLight(A3_2, "A3-2");
+            A33 = new TrafficLight(A3_3, "A3-3");
+            A34 = new TrafficLight(A3_4, "A3-4");
+
+            A41 = new TrafficLight(A4_1, "A4-1");
+            A42 = new TrafficLight(A4_2, "A4-2");
+            A43 = new TrafficLight(A4_3, "A4-3");
+            A44 = new TrafficLight(A4_4, "A4-4");
+            B41 = new TrafficLight(B4_1, "B4-1");
+
+            A51 = new TrafficLight(A5_1, "A5-1");
+            A52 = new TrafficLight(A5_2, "A5-2");
+            A53 = new TrafficLight(A5_3, "A5-3");
+            A54 = new TrafficLight(A5_4, "A5-4");
+
+            A61 = new TrafficLight(A6_1, "A6-1");
+            A62 = new TrafficLight(A6_2, "A6-2");
+            A63 = new TrafficLight(A6_3, "A6-3");
+            A64 = new TrafficLight(A6_4, "A6-4");
+
+            A11B = new Node(A1_1Bocht);
+
+            //A11BA = new Node(A1_1_BA); //route A richting A6-1
+            //A12B = new Node(A1_2_B); //eindpunt A
 
             NW_3B = new Node(765, 256); //route B richting A6-2
             //A62 = new TrafficLight(394, 256, "A6-2");
@@ -113,14 +165,13 @@ namespace WpfApp1
         private void InitializeRoutes()
         {
             EW = new Route(new List<Node> { A23, A61, OW3 }); // Route from East to West
-            NW_A = new Route(new List<Node> { A11, NW_2, NW_3A, A61, NW_5A });
-            NW_B = new Route(new List<Node> { A11, NW_2, NW_3B, A11, NW_5B });
+            NW_A = new Route(new List<Node> { A11, A11B, A61});
+            //NW_B = new Route(new List<Node> { A11, NW_2, NW_3B, A11, NW_5B });
         }
        
         private void InitializeObjects() //Initialize alle auto's en trafficlights uit lijst.
         {
-            cars = new List<Car> { new Car(NW_A.GetNodes()[0].GetLeft(), NW_A.GetNodes()[0].GetTop() - 100, NW_A) };
-            foreach (Car car in cars)
+            foreach (Car car in Car.cars)
             {
                 canvas.Children.Add(car.ToUIElement());
             }
@@ -180,32 +231,49 @@ namespace WpfApp1
             {
                 SetTrafficLightsFromJson(SocketClient.jObjects.Dequeue());
             }
-                
+
+            
+
         }
 
         private void SpawnCarTick(object sender, EventArgs e)
         {
-            cars.Add(new Car(NW_A.GetNodes()[0].GetLeft(), NW_A.GetNodes()[0].GetTop() - 100, NW_A));
+            Car.cars.Add(new Car(NW_A.GetNodes()[0].GetLeft(), NW_A.GetNodes()[0].GetTop() - 100, NW_A));
         }
 
         private void UpdateCars()
         {
-            if (cars.Count > 0)
+            if (Car.cars.Count > 0)
             {
-                foreach (Car car in cars)
+                for (int i = 0; i < Car.cars.Count - 1;i++)
+                //foreach (Car car in Car.cars)
                 {
-                    car.Update();
+                    Car.cars[i].Update();
 
-                    if (!canvas.Children.Contains(car.ToUIElement()))
+                    if (!canvas.Children.Contains(Car.cars[i].ToUIElement()))
                     {
-                        canvas.Children.Add(car.ToUIElement());
+                        canvas.Children.Add(Car.cars[i].ToUIElement());
                     }
 
 
                 }
-
             }
+
+            /* destroy rectangles */
+            if (Car.destroyedCars.Count > 0)
+            {
+                for (int i = 0; i < Car.destroyedCars.Count - 1; i++)
+                {
+                    if (canvas.Children.Contains(Car.destroyedCars[i].ToUIElement()))
+                    {
+                        canvas.Children.Remove(Car.destroyedCars[i].ToUIElement());
+                    }
+                }
+            }
+
+
         }
+
 
         private void InitializeSocketClient()
         {
@@ -237,8 +305,8 @@ namespace WpfApp1
             }
             else if (e.Key == Key.S)
             {
-                Car car = new Car(NW_A.GetNodes()[0].GetLeft(), NW_A.GetNodes()[0].GetTop() - 100, NW_A);
-                cars.Add(car);
+                Car car = new Car(NW_A.GetNodes()[0].GetLeft(), NW_A.GetNodes()[0].GetTop(), NW_A);
+                Car.cars.Add(car);
                 canvas.Children.Add(car.ToUIElement());
 
             }
@@ -287,60 +355,6 @@ namespace WpfApp1
                 }
             }
         }
-
-        //public class TraffiqueLight
-        //{
-        //    public int A1_1 {get; set;}
-        //         int A1_2;
-        //         int A1_3;
-        //         int B1_1;
-        //         int B1_2;
-        //         int F1_1;
-        //         int F1_2;
-        //         int V1_1;
-        //         int V1_2;
-        //         int V1_3;
-        //         int V1_4;
-        //         int A2_1;
-        //         int A2_2;
-        //         int A2_3;
-        //         int A2_4;
-        //         int F2_1;
-        //         int F2_2;
-        //         int V2_1;
-        //         int V2_2;
-        //         int V2_3;
-        //         int V2_4;
-        //         int A3_1;
-        //         int A3_2;
-        //         int A3_3;
-        //         int A3_4;
-        //         int A4_1;
-        //         int A4_2;
-        //         int A4_3;
-        //         int A4_4;
-        //         int B4_1;
-        //         int F4_1;
-        //         int F4_2;
-        //         int V4_1;
-        //         int V4_2;
-        //         int V4_3;
-        //         int V4_4;
-        //         int A5_1;
-        //         int A5_2;
-        //         int A5_3;
-        //         int A5_4;
-        //         int F5_1;
-        //         int F5_2;
-        //         int V5_1;
-        //         int V5_2;
-        //         int V5_3;
-        //         int V5_4;
-        //         int A6_1;
-        //         int A6_2;
-        //         int A6_3;
-        //         int A6_4;
-        //}      
     }          
 }              
                
