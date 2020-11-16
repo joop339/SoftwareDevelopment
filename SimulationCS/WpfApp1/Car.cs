@@ -28,11 +28,11 @@ namespace WpfApp1
         static int idCount = 0;
         int id;
 
-        public Car(double left, double top, Route route) //aanmaken van een nieuwe auto met de juiste coordinaten.
+        public Car(Route route) //aanmaken van een nieuwe auto met de juiste coordinaten.
         {
             cars.Add(this);
-            this.left = left;
-            this.top = top;
+            this.left = route.GetNodes()[0].GetLeft();
+            this.top = route.GetNodes()[0].GetTop();
             this.id = idCount;
             idCount++;
             this.route = route;
@@ -49,6 +49,28 @@ namespace WpfApp1
             Canvas.SetLeft(carRect, left);
             Canvas.SetTop(carRect, top);
         }
+
+        //public Car(double left, double top, Route route) //aanmaken van een nieuwe auto met de juiste coordinaten.
+        //{
+        //    cars.Add(this);
+        //    this.left = left;
+        //    this.top = top;
+        //    this.id = idCount;
+        //    idCount++;
+        //    this.route = route;
+        //    this.target = route.GetNodes()[0];
+
+        //    carRect = new Rectangle()
+        //    {
+        //        //Source = new BitmapImage(new Uri("/resources/car.png")),
+        //        Width = 19,
+        //        Height = 13,
+        //        Fill = Brushes.Maroon,
+        //        Stroke = Brushes.Black
+        //    };
+        //    Canvas.SetLeft(carRect, left);
+        //    Canvas.SetTop(carRect, top);
+        //}
 
         //~Car()
         //{
@@ -116,7 +138,8 @@ namespace WpfApp1
                     Canvas.SetTop(carRect, top);
                 }
 
-                if (target.GetTop() - 0.05 < top && target.GetTop() + 0.05 > top && target.GetLeft() - 0.05 < left && target.GetLeft() + 0.05 > left) // if target is reached
+                if (target.GetTop() - 0.05 < top && target.GetTop() + 0.05 > top && target.GetLeft() - 0.05 < left && target.GetLeft() + 0.05 > left)
+                { // if target is reached
 
                     if (target is TrafficLight)
                     { // and target is TL AND TL is green
@@ -126,6 +149,7 @@ namespace WpfApp1
                             if (index < route.GetNodes().Count - 1)
                             {
                                 this.target = route.GetNodes()[index + 1];
+                                //Console.WriteLine(target.name);
                             }
                             else
                             {
@@ -143,12 +167,14 @@ namespace WpfApp1
                         if (index < route.GetNodes().Count - 1)
                         {
                             this.target = route.GetNodes()[index + 1];
+                            //Console.WriteLine(target.name);
                         }
                         else
                         {
                             this.Destroy();
                         }
                     }
+                }
             }
         }
 

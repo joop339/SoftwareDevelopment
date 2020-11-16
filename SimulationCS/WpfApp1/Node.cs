@@ -14,6 +14,8 @@ namespace WpfApp1
         public static List<Node> nodeList = new List<Node>();
         protected double left;
         protected double top;
+
+        public string name;
         public Node()
         {
             nodeList.Add(this);
@@ -30,6 +32,8 @@ namespace WpfApp1
             nodeList.Add(this);
             left = Canvas.GetLeft(ellipse);
             top = Canvas.GetTop(ellipse);
+
+            name = ellipse.Name;
         }
 
         public double GetLeft()

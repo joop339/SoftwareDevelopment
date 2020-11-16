@@ -22,6 +22,13 @@ using System.Windows.Threading;
 
 namespace WpfApp1
 { 
+    public static class Settings
+    {
+        public const bool SimulationOnly = true;
+        public const int SpawnCarInterval = 1;
+
+    }
+    
     // Traffic light colors
     public enum Color
     {
@@ -41,14 +48,39 @@ namespace WpfApp1
         //private List<Car> cars; // List of cars
         private const int fps = 60; // Simulation speed
         private DispatcherTimer simulationTickTimer; // Timer for ticks
+        private DispatcherTimer socketConnectTimer; // Timer for ticks
         private DispatcherTimer socketReceiveTimer; // Timer for ticks
         private DispatcherTimer trafficLightTimer; // Timer for ticks
         private DispatcherTimer spawnCarTimer; // Timer for ticks
 
-        private bool connected = false;
+        private bool connected = false; // 
 
-        private Node OW3;
+        //Startpunten
+        private List<Node> spawnNodes = new List<Node>();
 
+        private Node A11S;
+        private Node A12S;
+        private Node A13S;
+        private Node A14S;
+
+        private Node A21S;
+        private Node A22S;
+        private Node A23S;
+        private Node A24S;
+
+        private Node A41S;
+        private Node A42S;
+        private Node A43S;
+        private Node A44S;
+        private Node B41S;
+
+        private Node A51S;
+        private Node A52S;
+        private Node A53S;
+        private Node A54S;
+
+        // de rest van de punten
+        // TODO: netjes maken
         private Node A11;
         private Node A12;
         private Node A13;
@@ -81,13 +113,51 @@ namespace WpfApp1
         private Node NW_3B;
         private Node NW_5B;
 
-        private Route EW;
-        private Route NW_A;
-        private Route NW_B;
+        private Node A11Bocht;
+        private Node A12Bocht;
+        private Node A13Bocht;
 
-        //TraffiqueLight traffiqueLight;
-        //TraffiqueLight tl;
+        private Node A21Bocht;
+        private Node A22Bocht;
+        private Node A23Bocht;
+        private Node A24Bocht;
 
+        private Node A41Bocht;
+        private Node A42Bocht;
+        private Node A43Bocht;
+        private Node A44Bocht;
+
+        private Node A31Bocht;
+        private Node A32Bocht;
+                     
+                     
+        private Node A51Bocht;
+        private Node A52Bocht;
+        private Node A53Bocht;
+        private Node A54Bocht;
+                     
+                     
+        private Node A63Bocht;
+        private Node A64Bocht;
+
+        private Node A21E;
+        private Node A22E;
+
+
+        private Node A33E;
+        private Node A34E;
+
+
+        private Node A53E;
+        private Node A54E;
+
+
+        private Node A61E;
+        private Node A62E;
+
+        /// <summary>
+        /// Do on MainWindow creation
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
@@ -102,16 +172,22 @@ namespace WpfApp1
 
             InitializeDispatcherTimer(simulationTickTimer, 1/60, SimulationTick);
 
-            //InitializeDispatcherTimer(socketReceiveTimer, 1, SocketReceiveTick);
+            //InitializeDispatcherTimer(socketConnectTimer, 1, SocketConnectTick);
 
-            InitializeDispatcherTimer(trafficLightTimer, 2, TrafficLightTick);
+            InitializeDispatcherTimer(socketReceiveTimer, 1/60, SocketReceiveTick);
 
-            //InitializeDispatcherTimer(spawnCarTimer, 5, SpawnCarTick);
+            InitializeDispatcherTimer(trafficLightTimer, 1/60, TrafficLightTick);
+
+            InitializeDispatcherTimer(spawnCarTimer, Settings.SpawnCarInterval, SpawnCarTick);
 
             //Keydown events
-            KeyDown += new KeyEventHandler(MainWindow_KeyDown);           
+            KeyDown += new KeyEventHandler(MainWindow_KeyDown);         
+            
         }
 
+        /// <summary>
+        ///Initialize nodes
+        /// </summary>
         private void InitializeNodes()
         {
             //A23 = new TrafficLight(1062, 223, "A2-3");
@@ -160,23 +236,138 @@ namespace WpfApp1
             NW_5B = new Node(10, 256); //eindpunt Route B          
 
             //A2-3 to A6-1
+
+            A11S = new Node(A1_1S);
+            A12S = new Node(A1_2S);
+            A13S = new Node(A1_3S);
+            A14S = new Node(A1_4S);
+                              
+            A21S = new Node(A2_1S);
+            A22S = new Node(A2_2S);
+            A23S = new Node(A2_3S);
+            A24S = new Node(A2_4S);
+                              
+            A41S = new Node(A4_1S);
+            A42S = new Node(A4_2S);
+            A43S = new Node(A4_3S);
+            A44S = new Node(A4_4S);
+            B41S = new Node(B4_1S);
+                              
+            A51S = new Node(A5_1S);
+            A52S = new Node(A5_2S);
+            A53S = new Node(A5_3S);
+            A54S = new Node(A5_4S);
+
+            // Bochten
+            A11Bocht = new Node(A1_1Bocht);
+            A12Bocht = new Node(A1_2Bocht);
+            A13Bocht = new Node(A1_3Bocht);
+
+            A21Bocht = new Node(A2_1Bocht);
+            A22Bocht = new Node(A2_2Bocht);
+            A23Bocht = new Node(A2_3Bocht);
+            A24Bocht = new Node(A2_4Bocht);
+
+            A41Bocht = new Node(A4_1Bocht);
+            A42Bocht = new Node(A4_2Bocht);
+            A43Bocht = new Node(A4_3Bocht);
+            A44Bocht = new Node(A4_4Bocht);
+
+            A31Bocht = new Node(A3_1Bocht);
+            A32Bocht = new Node(A3_2Bocht);
+
+            A51Bocht = new Node(A5_1Bocht);
+            A52Bocht = new Node(A5_2Bocht);
+            A53Bocht = new Node(A5_3Bocht);
+            A54Bocht = new Node(A5_4Bocht);
+
+            A63Bocht = new Node(A6_3Bocht);
+            A64Bocht = new Node(A6_4Bocht);
+
+            A21E = new Node(A2_1E);
+            A22E = new Node(A2_2E);
+
+            A33E = new Node(A3_3E);
+            A34E = new Node(A3_4E);
+
+            A53E = new Node(A5_3E);
+            A54E = new Node(A5_4E);
+
+            A61E = new Node(A6_1E);
+            A62E = new Node(A6_2E);
+
+
+
+
+            //foreach (var element in canvas.Children)
+            //{
+            //    if (element is Ellipse)
+            //    {
+            //        Ellipse ellipse = (Ellipse)element;
+            //        if (ellipse.Name.Contains("S"))
+            //        {
+            //            spawnNodes.Add(new Node(ellipse));
+            //        }
+            //    }
+            //}
         }
 
+        /// <summary>
+        ///Initialize routes
+        /// </summary>
         private void InitializeRoutes()
         {
-            EW = new Route(new List<Node> { A23, A61, OW3 }); // Route from East to West
-            NW_A = new Route(new List<Node> { A11, A11B, A61});
-            //NW_B = new Route(new List<Node> { A11, NW_2, NW_3B, A11, NW_5B });
+            Route Route1 = new Route(new List<Node> { A11S, A11, A11Bocht, A61, A61E });
+            Route Route1_1 = new Route(new List<Node> { A11S, A11, A11Bocht, A62, A62E });
+
+            Route Route2 = new Route(new List<Node> { A12S, A12, A12Bocht, A63, A63Bocht, A53E });
+            Route Route2_1 = new Route(new List<Node> { A12S, A12, A12Bocht, A64, A64Bocht, A54E });
+
+            Route Route3 = new Route(new List<Node> { A13S, A13, A13Bocht, A33E });
+
+            Route Route4 = new Route(new List<Node> { A21S, A21, A21Bocht, A21E });
+
+            Route Route5 = new Route(new List<Node> { A22S, A22, A22Bocht, A22E });
+
+            Route Route6 = new Route(new List<Node> { A23S, A23, A23Bocht, A61, A61E });
+            Route Route6_1 = new Route(new List<Node> { A23S, A23, A23Bocht, A62, A62E });
+
+            Route Route7 = new Route(new List<Node> { A24S, A24, A24Bocht, A63, A63Bocht, A53E });
+            Route Route7_1 = new Route(new List<Node> { A24S, A24, A24Bocht, A64, A64Bocht, A54E });
+
+            Route Route8 = new Route(new List<Node> { A41S, A41, A41Bocht, A62E });
+
+            Route Route9 = new Route(new List<Node> { A42S, A42, A42Bocht, A61E });
+
+            Route Route10 = new Route(new List<Node> { A43S, A43, A43Bocht, A31, A31Bocht, A22E });
+            Route Route10_1 = new Route(new List<Node> { A43S, A43, A43Bocht, A32, A32Bocht, A21E });
+
+            Route Route11 = new Route(new List<Node> { A44S, A44, A44Bocht, A33, A33E });
+            Route Route11_1 = new Route(new List<Node> { A44S, A44, A44Bocht, A34, A34E });
+
+            Route Route12 = new Route(new List<Node> { A51S, A51Bocht, A31, A31Bocht, A22E });
+            Route Route12_1 = new Route(new List<Node> { A51S, A51Bocht, A32, A32Bocht, A21E });
+
+            Route Route13 = new Route(new List<Node> { A52S, A52Bocht, A33, A33E });
+            Route Route13_1 = new Route(new List<Node> { A52S, A52Bocht, A34, A34E });
+
+            Route Route14 = new Route(new List<Node> { A53S, A53Bocht, A54E });
+
+            Route Route15 = new Route(new List<Node> { A54S, A54Bocht, A53E });
         }
-       
-        private void InitializeObjects() //Initialize alle auto's en trafficlights uit lijst.
+
+        /// <summary>
+        ///Initialize alle bestaande auto's en trafficlights uit lijst.
+        /// </summary>
+        private void InitializeObjects() 
         {
+            //Draw predefined cars
             foreach (Car car in Car.cars)
             {
                 canvas.Children.Add(car.ToUIElement());
             }
 
-            //Draw traffic lights V2
+            //Draw predefined traffic lights V2
             foreach (Node node in Node.nodeList)
             {
                 if (node is TrafficLight)
@@ -206,12 +397,31 @@ namespace WpfApp1
             timer.Start();
         }
 
+        private void SimulationTick(object sender, EventArgs e)
+        {
+            lblTime.Content = DateTime.Now.ToLongTimeString();
+            UpdateCars();
+        }
+        /// <summary>
+        /// Try connecting to socket
+        /// </summary>
+        private void SocketConnectTick(object sender, EventArgs e)
+        {
+            if (!Settings.SimulationOnly) 
+            {
+                if (!connected)
+                {
+                    InitializeSocketClient();
+                }
+            }
+            
+        }
+
+        /// <summary>
+        /// Receive and Handle data when connected
+        /// </summary>
         private void SocketReceiveTick(object sender, EventArgs e)
         {
-            if (!connected)
-            {
-                InitializeSocketClient();
-            }
             if (connected)
             {
                 connected = SocketClient.Receive();
@@ -219,12 +429,9 @@ namespace WpfApp1
             }     
         }
 
-        private void SimulationTick(object sender, EventArgs e)
-        {
-            lblTime.Content = DateTime.Now.ToLongTimeString();
-            UpdateCars();           
-        }
-
+        /// <summary>
+        /// Set traffic Lights from jObject buffer
+        /// </summary>
         private void TrafficLightTick(object sender, EventArgs e)
         {
             if (SocketClient.jObjects.Count > 0)
@@ -232,13 +439,38 @@ namespace WpfApp1
                 SetTrafficLightsFromJson(SocketClient.jObjects.Dequeue());
             }
 
-            
-
         }
 
+        int counter = 0;
         private void SpawnCarTick(object sender, EventArgs e)
         {
-            Car.cars.Add(new Car(NW_A.GetNodes()[0].GetLeft(), NW_A.GetNodes()[0].GetTop() - 100, NW_A));
+            int amountOfCars = 0;
+
+            foreach (var element in canvas.Children)
+            {
+                if (element is Rectangle)
+                {
+                    amountOfCars++;
+                }
+            }
+
+            if (amountOfCars < 20)
+            {
+                
+                if(counter == 23)
+                {
+                    counter = 0;
+                }
+
+                Car.cars.Add(new Car(Route.routes[counter]));
+                //Console.WriteLine("Spawning: '" + 1 + "' car, at: '" + Route.routes[counter].GetNodes()[0].name + "'");
+                counter++;
+
+            }
+            else
+            {
+                //Console.WriteLine("Spawning stopped cars at: " + amountOfCars);
+            }
         }
 
         private void UpdateCars()
@@ -274,6 +506,22 @@ namespace WpfApp1
 
         }
 
+        private void RandomSpawnCars()
+        {
+            Random random = new Random();
+
+            int randomAmountOfCars = random.Next(4);
+
+            Route randomRoute = Route.GetRandomRoute();
+
+            for (int i = 0; i < randomAmountOfCars; i++)
+            {
+                Car.cars.Add(new Car(randomRoute));
+            }
+
+            Console.WriteLine("Spawning: '" + randomAmountOfCars + "' cars, at: '" + randomRoute.GetNodes()[0].name + "'");
+        }
+
 
         private void InitializeSocketClient()
         {
@@ -305,9 +553,9 @@ namespace WpfApp1
             }
             else if (e.Key == Key.S)
             {
-                Car car = new Car(NW_A.GetNodes()[0].GetLeft(), NW_A.GetNodes()[0].GetTop(), NW_A);
-                Car.cars.Add(car);
-                canvas.Children.Add(car.ToUIElement());
+                //Car car = new Car(NW_A.GetNodes()[0].GetLeft(), NW_A.GetNodes()[0].GetTop(), NW_A);
+                //Car.cars.Add(car);
+                //canvas.Children.Add(car.ToUIElement());
 
             }
             e.Handled = true;

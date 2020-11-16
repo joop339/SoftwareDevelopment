@@ -14,11 +14,21 @@ namespace WpfApp1
         public Route(List<Node> nodes)
         {
             this.nodes = nodes;
+            routes.Add(this);
         }
 
         public List<Node> GetNodes()
         {
             return nodes;
+        }
+
+        public static Route GetRandomRoute()
+        {
+            Random random = new Random();
+
+            int randomIndex = random.Next(routes.Count);
+
+            return routes[randomIndex];
         }
     }
 }
