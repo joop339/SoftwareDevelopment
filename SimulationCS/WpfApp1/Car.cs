@@ -158,7 +158,7 @@ namespace WpfApp1
                         }
                         else if (CheckTrafficLight() == Color.Red)
                         {
-
+                            ((TrafficLight)target).SetWaiting(true);
                         }
                     }
                     else if (!(target is TrafficLight))

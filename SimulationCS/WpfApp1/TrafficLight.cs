@@ -19,6 +19,7 @@ namespace WpfApp1
         private Ellipse trafficLight;
         Color color = Color.Red;
         public string id;
+        private bool waiting = false;
 
         public TrafficLight(int left, int top, string id) : base(left, top)
         {
@@ -82,11 +83,18 @@ namespace WpfApp1
 
         public void Update()
         {
+            if (waiting)
+                Console.WriteLine("TL: " + id +"I got cars: " + waiting);
         }
 
         public Color GetColor()
         {
             return color;
+        }
+
+        public void SetWaiting(bool state)
+        {
+            waiting = state;
         }
 
         public void SetColor(Color color)
@@ -99,6 +107,7 @@ namespace WpfApp1
             else if (color == Color.Green)
             {
                trafficLight.Fill = Brushes.Green;
+                waiting = false;
             }
 
         }

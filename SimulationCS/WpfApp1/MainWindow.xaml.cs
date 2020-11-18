@@ -28,7 +28,7 @@ namespace WpfApp1
         public const int SpawnCarInterval = 1;
 
     }
-    
+
     // Traffic light colors
     public enum Color
     {
@@ -49,6 +49,7 @@ namespace WpfApp1
         private const int fps = 60; // Simulation speed
         private DispatcherTimer simulationTickTimer; // Timer for ticks
         private DispatcherTimer socketConnectTimer; // Timer for ticks
+        private DispatcherTimer socketSendTimer; // Timer for ticks
         private DispatcherTimer socketReceiveTimer; // Timer for ticks
         private DispatcherTimer trafficLightTimer; // Timer for ticks
         private DispatcherTimer spawnCarTimer; // Timer for ticks
@@ -170,15 +171,19 @@ namespace WpfApp1
 
             InitializeSocketClient();
 
-            InitializeDispatcherTimer(simulationTickTimer, 1/60, SimulationTick);
+            InitializeDispatcherTimer(simulationTickTimer, 1/fps, SimulationTick);
 
-            //InitializeDispatcherTimer(socketConnectTimer, 1, SocketConnectTick);
+            InitializeDispatcherTimer(socketConnectTimer, 1, SocketConnectTick);
+
+            InitializeDispatcherTimer(socketSendTimer, 1, SocketSendTick);
 
             InitializeDispatcherTimer(socketReceiveTimer, 1/60, SocketReceiveTick);
 
             InitializeDispatcherTimer(trafficLightTimer, 1/60, TrafficLightTick);
 
             InitializeDispatcherTimer(spawnCarTimer, Settings.SpawnCarInterval, SpawnCarTick);
+
+            SendJson();
 
             //Keydown events
             KeyDown += new KeyEventHandler(MainWindow_KeyDown);         
@@ -401,6 +406,7 @@ namespace WpfApp1
         {
             lblTime.Content = DateTime.Now.ToLongTimeString();
             UpdateCars();
+            UpdateTrafficLights();
         }
         /// <summary>
         /// Try connecting to socket
@@ -415,6 +421,29 @@ namespace WpfApp1
                 }
             }
             
+        }
+
+        JObject jObject1 = new JObject();
+
+        /// <summary>
+        /// Send to over socket
+        /// </summary>
+        private void SocketSendTick(object sender, EventArgs e)
+        {
+            foreach(JProperty p in jObject1.Properties())
+            {
+
+            }
+            //Console.Clear();
+            Console.WriteLine("-------------------------------");
+            UpdateTrafficLights();
+            Console.WriteLine("-------------------------------");
+
+            if (connected)
+            {
+                //send json over socket
+            }
+
         }
 
         /// <summary>
@@ -502,8 +531,44 @@ namespace WpfApp1
                     }
                 }
             }
+        }
+        public class data
+        {
+            public int Id { get; set; }
+            public int SSN { get; set; }
+            public string Message { get; set; }
+        }
 
+        private void SendJson()
+        {
+           
+            int Id = 341;
+            int SSN = 2;
+            string Message = "A Message";
 
+            JObject jObject1 = new JObject();
+            jObject1.Add("A1-1", 0);
+            jObject1.Add("A1-2", 1);
+
+            string json = JsonConvert.SerializeObject(jObject1, Formatting.Indented);
+
+            //write string to file
+            System.IO.File.WriteAllText(@"path.txt", json);
+        }
+
+        private void UpdateTrafficLights()
+        {
+            if (Node.nodeList.Count > 0)
+            {
+                for (int i = 0; i < Node.nodeList.Count - 1; i++)
+                {
+                    if (Node.nodeList[i] is TrafficLight)
+                    {
+                        ((TrafficLight)Node.nodeList[i]).Update();
+                    }
+
+                }
+            }
         }
 
         private void RandomSpawnCars()
