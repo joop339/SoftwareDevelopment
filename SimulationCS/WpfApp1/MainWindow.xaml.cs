@@ -2,28 +2,16 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Windows.Threading;
+
 
 namespace WpfApp1
-{ 
+{
     // Traffic light colors
     public enum Color
     {
@@ -40,9 +28,13 @@ namespace WpfApp1
     /// </summary>
     public partial class MainWindow : Window
     {
-        //private const int fps = 60; // Simulation speed
+        private const int fps = 60; // Simulation speed
+
+        private bool looping = true;
 
         private bool connected = false;
+
+        Random random = new Random();
 
         #region Nodes
         //Startpunten
@@ -152,22 +144,25 @@ namespace WpfApp1
 
             InitializeObjects();
 
-            InitializeThread(SimulationLoop);
+            InitializeThread(() => { Loopify(SimulationTick); });
 
-            InitializeThread(SocketClientConnectLoop);
+            InitializeThread(() => { Loopify(DrawTick, 1000 / fps, true); });
 
-            InitializeThread(SocketClientReceiveLoop);
+            InitializeThread(()=> { Loopify(SocketClientConnect); });
+
+            InitializeThread(()=> { Loopify(SocketClientReceive); });
 
             //InitializeThread(()=> { Loopify(SpawnCars, 1000); });
 
-            //InitializeThread(() => { Loopify(RandomSpawnCars, 1000); });
+            //InitializeThread(() => { Loopify(RandomSpawnCars, 1000, true); });
+
 
             //Keydown events
             KeyDown += new KeyEventHandler(MainWindow_KeyDown);
         }
         ~MainWindow()  // finalizer
         {
-            // cleanup statements...
+            looping = false;
         }
 
         /// <summary>
@@ -211,7 +206,7 @@ namespace WpfApp1
         private void InitializeThread(ThreadStart function)
         {
             Thread thread = new Thread(function);
-            //thread.IsBackground = true;
+            thread.IsBackground = true;
             thread.Start();
         }
         /// <summary>
@@ -219,16 +214,27 @@ namespace WpfApp1
         /// </summary>
         /// <param name="function">void function</param>
         /// <param name="interval">integer in milliseconds</param>
-        private void Loopify(Action function, int interval)
+        private void Loopify(Action function, int interval = 0, bool isUI = false)
         {
-            while (true)
+            
+            while (looping)
             {
-                this.Dispatcher.Invoke(() =>
+                if (isUI)
+                {
+                    this.Dispatcher.Invoke(() => { // dit hoort soms te breken, komt doordat Thread.Sleep() wordt onderbroken
+
+                        function();
+                    });
+                }
+                else
                 {
                     function();
-                });
-                Task.Delay(interval);
+                }
+               
+                Thread.Sleep(interval);
+
             }
+            if (!looping) { return; }
         }
 
         #region Initializers
@@ -337,10 +343,10 @@ namespace WpfApp1
         private void InitializeRoutes()
         {
             Route Route1 = new Route(new List<Node> { A11S, A11, A11Bocht, A61, A61E });
-            Route Route1_1 = new Route(new List<Node> { A11S, A11, A11Bocht, A62, A62E });
+            Route Route1_1 = new Route(new List<Node> { A11S, A11, A11Bocht, A62, A62E }, true);
 
             Route Route2 = new Route(new List<Node> { A12S, A12, A12Bocht, A63, A63Bocht, A53E });
-            Route Route2_1 = new Route(new List<Node> { A12S, A12, A12Bocht, A64, A64Bocht, A54E });
+            Route Route2_1 = new Route(new List<Node> { A12S, A12, A12Bocht, A64, A64Bocht, A54E }, true);
 
             Route Route3 = new Route(new List<Node> { A13S, A13, A13Bocht, A34E });//
 
@@ -359,16 +365,16 @@ namespace WpfApp1
             Route Route9 = new Route(new List<Node> { A42S, A42, A42Bocht, A61E });
 
             Route Route10 = new Route(new List<Node> { A43S, A43, A43Bocht, A31, A31Bocht, A22E });
-            Route Route10_1 = new Route(new List<Node> { A43S, A43, A43Bocht, A32, A32Bocht, A21E });
+            Route Route10_1 = new Route(new List<Node> { A43S, A43, A43Bocht, A32, A32Bocht, A21E }, true);
 
             Route Route11 = new Route(new List<Node> { A44S, A44, A44Bocht, A33, A33E });
-            Route Route11_1 = new Route(new List<Node> { A44S, A44, A44Bocht, A34, A34E });
+            Route Route11_1 = new Route(new List<Node> { A44S, A44, A44Bocht, A34, A34E }, true);
 
             Route Route12 = new Route(new List<Node> { A51S, A51, A51Bocht, A31, A31Bocht, A22E });
-            Route Route12_1 = new Route(new List<Node> { A51S, A51, A51Bocht, A32, A32Bocht, A21E });
+            Route Route12_1 = new Route(new List<Node> { A51S, A51, A51Bocht, A32, A32Bocht, A21E }, true);
 
             Route Route13 = new Route(new List<Node> { A52S, A52, A52Bocht, A33, A33E });
-            Route Route13_1 = new Route(new List<Node> { A52S, A52, A52Bocht, A34, A34E });
+            Route Route13_1 = new Route(new List<Node> { A52S, A52, A52Bocht, A34, A34E }, true);
 
             Route Route14 = new Route(new List<Node> { A53S, A53, A53Bocht, A54E });
 
@@ -404,13 +410,11 @@ namespace WpfApp1
         #endregion
 
         /// <summary>
-        /// While true: update moving objects only
+        /// update moving objects only
         /// </summary>
-        private void SimulationLoop()
-        {
-            while (true)
-            {                
-                this.Dispatcher.Invoke(() => // used because thread does not own objects
+        private void SimulationTick()
+        {       
+                this.Dispatcher.Invoke(() => // used because thread does not own UI objects
                 {
                     UpdateCars();
                     UpdateTrafficLights();
@@ -426,37 +430,41 @@ namespace WpfApp1
                 //}
 
                 //Task.Delay(0);
-            }
+        }
+
+        private void DrawTick()
+        {
+            this.Dispatcher.Invoke(() => // used because thread does not own UI objects
+            {
+                DrawCars();
+            });
         }
 
         /// <summary>
-        /// While connected == false: connect socket and set bool connected
+        /// If connected == false: connect socket and set bool connected
         /// </summary>
-        private void SocketClientConnectLoop()
+        private void SocketClientConnect()
         {
-            while (true)
-            {
+
                 if (connected == false)
                 {
                     connected = SocketClient.StartClient();
                 }
-            }
         }
 
         /// <summary>
         /// While connected: Receive and Handle data 
         /// </summary>
-        private void SocketClientReceiveLoop()
+        private void SocketClientReceive()
         {
-            while (true)
-            {
+
                 if (connected)
                 {
                     Console.WriteLine("Connected and receiving");
                     connected = SocketClient.Receive();
                     SocketClient.HandleData();
                 }
-            }
+
         }
 
         /// <summary>
@@ -471,14 +479,27 @@ namespace WpfApp1
             {
                 for (int i = 0; i < Car.cars.Count - 1; i++)
                 {
-                    Car.cars[i].Update();
+                    Car.cars[i].Drive();
+                }
+            }
+          
+        }
+
+        private void DrawCars()
+        {
+            if (Car.cars.Count > 0)
+            {
+                for (int i = 0; i < Car.cars.Count - 1; i++)
+                {
+                    Car.cars[i].Draw();
 
                     if (!canvas.Children.Contains(Car.cars[i].ToUIElement()))
                     {
                         canvas.Children.Add(Car.cars[i].ToUIElement());
                     }
-
                 }
+
+                
             }
 
             // destroy rectangles 
@@ -493,39 +514,6 @@ namespace WpfApp1
                 }
             }
         }
-
-        /// <summary>
-        /// Spawn cars on every route, maximum 50 cars spawnable
-        /// </summary>
-        private void SpawnCars()
-        {
-            int amountOfCars = 0;
-
-            foreach (var element in canvas.Children)
-            {
-                if (element is Rectangle)
-                {
-                    amountOfCars++;
-                }
-            }
-
-            if (amountOfCars < 50)
-            {
-                foreach (Route r in Route.routes)
-                {
-                    new Car(r);
-                }
-
-                //Console.WriteLine("Spawning: '" + 1 + "' car, at: '" + Route.routes[counter].GetNodes()[0].name + "'");
-                Console.WriteLine("Spawning on every route");
-                Console.WriteLine("amountOfCars: "+ amountOfCars);
-            }
-            else
-            {
-                Console.WriteLine("Spawning stopped cars at: " + amountOfCars);
-            }
-        }
-
 
         public class data
         {
@@ -598,21 +586,66 @@ namespace WpfApp1
         {
             new Car(Route.routes[0]);
         }
+        private void SpawnCar(Route route)
+        {
+            new Car(route);
+        }
+        /// <summary>
+        /// Spawn cars on every route, maximum 100 cars spawnable
+        /// </summary>
+        private void SpawnCars()
+        {
+            int amountOfCars = 0;
+
+            foreach (var element in canvas.Children)
+            {
+                if (element is Rectangle)
+                {
+                    amountOfCars++;
+                }
+            }
+
+            if (amountOfCars < 400)
+            {
+                foreach (Route r in Route.routes)
+                {
+                    new Car(r);
+                }
+
+                //foreach (Route r in Route.altRoutes)
+                //{
+                //    new Car(r);
+                //}
+
+                //Console.WriteLine("Spawning: '" + 1 + "' car, at: '" + Route.routes[counter].GetNodes()[0].name + "'");
+                Console.WriteLine("Spawning on every route");
+                Console.WriteLine("amountOfCars: " + amountOfCars);
+            }
+            else
+            {
+                Console.WriteLine("Spawning stopped cars at: " + amountOfCars);
+            }
+        }
 
         private void RandomSpawnCars()
         {
-            Random random = new Random();
+            int randomAmountOfLanes = random.Next(16);
 
-            int randomAmountOfCars = random.Next(6);
-
-            Route randomRoute = Route.GetRandomRoute();
-
-            for (int i = 0; i < randomAmountOfCars; i++)
+            for (int i = 0; i < randomAmountOfLanes; i++)
             {
-                Car.cars.Add(new Car(randomRoute));
-            }
+                int randomAmountOfCars = random.Next(6);
 
-            Console.WriteLine("Spawning: '" + randomAmountOfCars + "' cars, at: '" + randomRoute.GetNodes()[0].name + "'");
+                int randomRouteIndex = random.Next(Route.routes.Count);
+
+                Route randomRoute = Route.routes[randomRouteIndex];
+
+                for (int j = 0; j < randomAmountOfCars; j++)
+                {
+                    Car.cars.Add(new Car(randomRoute));
+                }
+
+                Console.WriteLine("Spawning: '" + randomAmountOfCars + "' cars, at: '" + randomRoute.GetNodes()[0].name + "'");
+            }
         }
 
         public void SetTrafficLightsFromJson(JObject jObject)

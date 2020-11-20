@@ -28,6 +28,11 @@ void sendJson(const SOCKET& socket, const char file[], const char hdr);
 /// </summary>
 int main()
 {
+	std::cout << "Enter server delay in milliseconds: (1000 milliseconds = 1 second)" << std::endl;
+
+	int time;
+	std::cin >> time;
+
 	// Initialize winsock
 	WSADATA wsData;
 	WORD ver = MAKEWORD(2, 2);
@@ -94,11 +99,6 @@ int main()
 	// Close listening socket
 	closesocket(listening);
 
-	std::cout << "Enter server delay in milliseconds: (1000 milliseconds = 1 second)" << std::endl;
-
-	int time;
-	std::cin >> time;
-
 	// While loop: send json once in a while
 	
 	while (connected)
@@ -153,14 +153,7 @@ void sendJson(const SOCKET& socket, const char file[])
 
 	std::string header = std::to_string(content.length()) + ":";
 
-	if (hdr == 'y')
-	{
-		package = header + content;
-	}
-	else if (hdr == 'n')
-	{
-		package = content;
-	}
+	package = header + content;
 
 	if (connected)
 	{
@@ -169,6 +162,7 @@ void sendJson(const SOCKET& socket, const char file[])
 		if (bytesSend == SOCKET_ERROR)
 		{
 			std::cerr << "Client disconnected!" << std::endl;
+			counter = 0;
 			connected = false;
 			main();
 		}
@@ -176,7 +170,7 @@ void sendJson(const SOCKET& socket, const char file[])
 		{
 			counter++;
 
-			std::cout << "SENT: " << package << std::endl;
+			std::cout << "SENT: \n" << package << std::endl;
 			std::cout << "SENT_AMOUNT: " << counter << std::endl;
 		}
 

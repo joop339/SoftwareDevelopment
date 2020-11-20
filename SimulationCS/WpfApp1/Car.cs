@@ -46,8 +46,6 @@ namespace WpfApp1
                 Fill = Brushes.Maroon,
                 Stroke = Brushes.Black
             };
-            Canvas.SetLeft(carRect, left);
-            Canvas.SetTop(carRect, top);
         }
 
         //public Car(double left, double top, Route route) //aanmaken van een nieuwe auto met de juiste coordinaten.
@@ -87,11 +85,6 @@ namespace WpfApp1
             return carRect;
         }
 
-        public void Update(/*Color trafficLightColor*/) //Visueel updaten kleur stoplicht.
-        {
-            Drive();
-        }
-
         //void Drive(double distance) //Positie auto updaten.
         //{
 
@@ -110,8 +103,12 @@ namespace WpfApp1
             cars.Remove(this);
             destroyedCars.Add(this);
         }
-
-        void Drive() //Positie auto updaten wanneer stoplicht groen is. of de auto nog niet bij het stoplicht is aangekomen.
+        public void Draw()
+        {
+            Canvas.SetLeft(carRect, left);
+            Canvas.SetTop(carRect, top);
+        }
+        public void Drive() //Positie auto updaten wanneer stoplicht groen is. of de auto nog niet bij het stoplicht is aangekomen.
         {
             if (this.DetectCollision() == false)
             {
@@ -119,26 +116,24 @@ namespace WpfApp1
                 if (target.GetLeft() > left)
                 {
                     left = left + 0.025;
-                    Canvas.SetLeft(carRect, left);
                 }
                 else if (target.GetLeft() < left)
                 {
                     left = left - 0.025;
-                    Canvas.SetLeft(carRect, left);
+                    
                 }
 
                 if (target.GetTop() > top)
                 {
                     top = top + 0.025;
-                    Canvas.SetTop(carRect, top);
+                    
                 }
                 else if (target.GetTop() < top)
                 {
                     top = top - 0.025;
-                    Canvas.SetTop(carRect, top);
                 }
 
-                if (target.GetTop() - 0.05 < top && target.GetTop() + 0.05 > top && target.GetLeft() - 0.05 < left && target.GetLeft() + 0.05 > left)
+            if (target.GetTop() - 0.05 < top && target.GetTop() + 0.05 > top && target.GetLeft() - 0.05 < left && target.GetLeft() + 0.05 > left)
                 { // if target is reached
 
                     if (target is TrafficLight)

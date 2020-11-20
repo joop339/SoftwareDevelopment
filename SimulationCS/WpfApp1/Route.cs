@@ -9,26 +9,27 @@ namespace WpfApp1
     public class Route
     {
         public static List<Route> routes = new List<Route>();
+        public static List<Route> altRoutes = new List<Route>();
         private List<Node> nodes = new List<Node>();
 
-        public Route(List<Node> nodes)
+        public Route(List<Node> nodes, bool isAlt = false)
         {
-            this.nodes = nodes;
-            routes.Add(this);
+            if (isAlt == false)
+            {
+                this.nodes = nodes;
+                routes.Add(this);
+            }
+            else
+            {
+                this.nodes = nodes;
+                altRoutes.Add(this);
+            }
+
         }
 
         public List<Node> GetNodes()
         {
             return nodes;
-        }
-
-        public static Route GetRandomRoute()
-        {
-            Random random = new Random();
-
-            int randomIndex = random.Next(routes.Count);
-
-            return routes[randomIndex];
-        }
+        }     
     }
 }
