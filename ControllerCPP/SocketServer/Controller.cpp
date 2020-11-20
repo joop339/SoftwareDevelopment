@@ -9,6 +9,7 @@
 #include <chrono>
 #include <thread>
 #include <cstdio>
+#include <regex>
 #pragma comment(lib, "ws2_32.lib")
 
 #define PORT			54000
@@ -18,9 +19,8 @@
 #define PHASE_THREE		"phase_three.json"
 
 const std::vector<std::string> cycle{ PHASE_ONE, PHASE_TWO, PHASE_THREE };
-char hdr = 'n';
 bool connected = false;
-
+char hdr = 'y';
 void sendJson(const SOCKET& socket, const char file[], const char hdr);
 
 /// <summary>
@@ -94,10 +94,6 @@ int main()
 	// Close listening socket
 	closesocket(listening);
 
-	std::cout << "Send with headers?: (y/n)" << std::endl;
-
-	std::cin >> hdr;
-
 	std::cout << "Enter server delay in milliseconds: (1000 milliseconds = 1 second)" << std::endl;
 
 	int time;
@@ -110,7 +106,7 @@ int main()
 			for (auto phase : cycle)
 			{
 				std::this_thread::sleep_for(std::chrono::milliseconds(time));
-				sendJson(socket, phase.c_str(), hdr);
+				sendJson(socket, phase.c_str());
 			}		
 	}
 
@@ -136,7 +132,7 @@ int counter = 0;
 /// <param name="socket">SOCKET</param>
 /// <param name="file">Filename</param>
 /// <param name="hdr">with header: 'y' without header: 'no'</param>
-void sendJson(const SOCKET& socket, const char file[], const char hdr)
+void sendJson(const SOCKET& socket, const char file[])
 {
 	std::ifstream f;
 	f.open(file);
@@ -148,6 +144,10 @@ void sendJson(const SOCKET& socket, const char file[], const char hdr)
 	
 	std::string content((std::istreambuf_iterator<char>(f)),
 		(std::istreambuf_iterator<char>()));
+
+	content.erase(remove(content.begin(), content.end(), ' '), content.end());
+	content.erase(remove(content.begin(), content.end(), '\n'), content.end());
+	content.erase(remove(content.begin(), content.end(), '\t'), content.end());
 
 	std::string package = "";
 

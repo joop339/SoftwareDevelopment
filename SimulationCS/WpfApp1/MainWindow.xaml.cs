@@ -3,10 +3,12 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
@@ -22,13 +24,6 @@ using System.Windows.Threading;
 
 namespace WpfApp1
 { 
-    public static class Settings
-    {
-        public const bool SimulationOnly = true;
-        public const int SpawnCarInterval = 1;
-
-    }
-
     // Traffic light colors
     public enum Color
     {
@@ -41,24 +36,16 @@ namespace WpfApp1
     /// Interaction logic for MainWindow.xaml
     /// 
     /// Stoplichten zijn klikbaar!
-    /// Druk S op keyboard: Spawn auto op bij stoplicht A2-3L
+    /// Zie private void MainWindow_KeyDown(object sender, KeyEventArgs e) functie voor keyDowns
     /// </summary>
     public partial class MainWindow : Window
     {
-        //private List<Car> cars; // List of cars
-        private const int fps = 60; // Simulation speed
-        private DispatcherTimer simulationTickTimer; // Timer for ticks
-        private DispatcherTimer socketConnectTimer; // Timer for ticks
-        private DispatcherTimer socketSendTimer; // Timer for ticks
-        private DispatcherTimer socketReceiveTimer; // Timer for ticks
-        private DispatcherTimer trafficLightTimer; // Timer for ticks
-        private DispatcherTimer spawnCarTimer; // Timer for ticks
+        //private const int fps = 60; // Simulation speed
 
-        private bool connected = false; // 
+        private bool connected = false;
 
+        #region Nodes
         //Startpunten
-        private List<Node> spawnNodes = new List<Node>();
-
         private Node A11S;
         private Node A12S;
         private Node A13S;
@@ -80,8 +67,7 @@ namespace WpfApp1
         private Node A53S;
         private Node A54S;
 
-        // de rest van de punten
-        // TODO: netjes maken
+        // Stoplichten
         private Node A11;
         private Node A12;
         private Node A13;
@@ -108,12 +94,7 @@ namespace WpfApp1
         private Node A63;
         private Node A64;
 
-        private Node A11B;
-        private Node A11BA;
-        private Node A12B;
-        private Node NW_3B;
-        private Node NW_5B;
-
+        //Bochten
         private Node A11Bocht;
         private Node A12Bocht;
         private Node A13Bocht;
@@ -130,17 +111,18 @@ namespace WpfApp1
 
         private Node A31Bocht;
         private Node A32Bocht;
-                     
-                     
+
+
         private Node A51Bocht;
         private Node A52Bocht;
         private Node A53Bocht;
         private Node A54Bocht;
-                     
-                     
+
+
         private Node A63Bocht;
         private Node A64Bocht;
 
+        //Eindpunten
         private Node A21E;
         private Node A22E;
 
@@ -155,6 +137,7 @@ namespace WpfApp1
 
         private Node A61E;
         private Node A62E;
+        #endregion
 
         /// <summary>
         /// Do on MainWindow creation
@@ -169,37 +152,92 @@ namespace WpfApp1
 
             InitializeObjects();
 
-            InitializeSocketClient();
+            InitializeThread(SimulationLoop);
 
-            InitializeDispatcherTimer(simulationTickTimer, 1/fps, SimulationTick);
+            InitializeThread(SocketClientConnectLoop);
 
-            InitializeDispatcherTimer(socketConnectTimer, 1, SocketConnectTick);
+            InitializeThread(SocketClientReceiveLoop);
 
-            InitializeDispatcherTimer(socketSendTimer, 1, SocketSendTick);
+            //InitializeThread(()=> { Loopify(SpawnCars, 1000); });
 
-            InitializeDispatcherTimer(socketReceiveTimer, 1/60, SocketReceiveTick);
-
-            InitializeDispatcherTimer(trafficLightTimer, 1/60, TrafficLightTick);
-
-            InitializeDispatcherTimer(spawnCarTimer, Settings.SpawnCarInterval, SpawnCarTick);
-
-            SendJson();
+            //InitializeThread(() => { Loopify(RandomSpawnCars, 1000); });
 
             //Keydown events
-            KeyDown += new KeyEventHandler(MainWindow_KeyDown);         
-            
+            KeyDown += new KeyEventHandler(MainWindow_KeyDown);
+        }
+        ~MainWindow()  // finalizer
+        {
+            // cleanup statements...
         }
 
+        /// <summary>
+        /// Keydowns
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.D1)
+            {
+                CycleTrafficLight((TrafficLight)A11); 
+            }
+            else if (e.Key == Key.D2)
+            {
+                CycleTrafficLight((TrafficLight)A61);
+            }
+            else if (e.Key == Key.S)
+            {
+                SpawnCar();//spawn car op route1
+            }
+            else if (e.Key == Key.R)
+            {
+                RandomSpawnCars();//spawn op random route aantal autos onder de 5
+            }
+            else if (e.Key == Key.A)
+            {
+                SpawnCars(); // spawn op elke route een auto
+            }
+            else if (e.Key == Key.T)
+            {
+                CycleTrafficLights(); //alle verkeerslichten op groen of rood
+            }
+
+            e.Handled = true;
+        }
+        /// <summary>
+        /// Initialize Thread helper
+        /// </summary>
+        /// <param name="function">Function name</param>
+        private void InitializeThread(ThreadStart function)
+        {
+            Thread thread = new Thread(function);
+            //thread.IsBackground = true;
+            thread.Start();
+        }
+        /// <summary>
+        /// Loopify helper to be used in combination with Threads
+        /// </summary>
+        /// <param name="function">void function</param>
+        /// <param name="interval">integer in milliseconds</param>
+        private void Loopify(Action function, int interval)
+        {
+            while (true)
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    function();
+                });
+                Task.Delay(interval);
+            }
+        }
+
+        #region Initializers
         /// <summary>
         ///Initialize nodes
         /// </summary>
         private void InitializeNodes()
         {
-            //A23 = new TrafficLight(1062, 223, "A2-3");
-            //A61 = new TrafficLight(392, 223, "A6-1");
-            //OW3 = new Node(10, 233);
-
-            /*A11 = new TrafficLight(792, 80, "A1-1");*/ //beginpunt A1-1 naar A6-1 of A6-2
+            //Stoplichten
             A11 = new TrafficLight(A1_1, "A1-1");
             A12 = new TrafficLight(A1_2, "A1-2");
             A13 = new TrafficLight(A1_3, "A1-3");
@@ -231,17 +269,7 @@ namespace WpfApp1
             A63 = new TrafficLight(A6_3, "A6-3");
             A64 = new TrafficLight(A6_4, "A6-4");
 
-            A11B = new Node(A1_1Bocht);
-
-            //A11BA = new Node(A1_1_BA); //route A richting A6-1
-            //A12B = new Node(A1_2_B); //eindpunt A
-
-            NW_3B = new Node(765, 256); //route B richting A6-2
-            //A62 = new TrafficLight(394, 256, "A6-2");
-            NW_5B = new Node(10, 256); //eindpunt Route B          
-
-            //A2-3 to A6-1
-
+            //Startpunten
             A11S = new Node(A1_1S);
             A12S = new Node(A1_2S);
             A13S = new Node(A1_3S);
@@ -289,6 +317,7 @@ namespace WpfApp1
             A63Bocht = new Node(A6_3Bocht);
             A64Bocht = new Node(A6_4Bocht);
 
+            //Eindpunten
             A21E = new Node(A2_1E);
             A22E = new Node(A2_2E);
 
@@ -300,21 +329,6 @@ namespace WpfApp1
 
             A61E = new Node(A6_1E);
             A62E = new Node(A6_2E);
-
-
-
-
-            //foreach (var element in canvas.Children)
-            //{
-            //    if (element is Ellipse)
-            //    {
-            //        Ellipse ellipse = (Ellipse)element;
-            //        if (ellipse.Name.Contains("S"))
-            //        {
-            //            spawnNodes.Add(new Node(ellipse));
-            //        }
-            //    }
-            //}
         }
 
         /// <summary>
@@ -328,7 +342,7 @@ namespace WpfApp1
             Route Route2 = new Route(new List<Node> { A12S, A12, A12Bocht, A63, A63Bocht, A53E });
             Route Route2_1 = new Route(new List<Node> { A12S, A12, A12Bocht, A64, A64Bocht, A54E });
 
-            Route Route3 = new Route(new List<Node> { A13S, A13, A13Bocht, A33E });
+            Route Route3 = new Route(new List<Node> { A13S, A13, A13Bocht, A34E });//
 
             Route Route4 = new Route(new List<Node> { A21S, A21, A21Bocht, A21E });
 
@@ -350,19 +364,19 @@ namespace WpfApp1
             Route Route11 = new Route(new List<Node> { A44S, A44, A44Bocht, A33, A33E });
             Route Route11_1 = new Route(new List<Node> { A44S, A44, A44Bocht, A34, A34E });
 
-            Route Route12 = new Route(new List<Node> { A51S, A51Bocht, A31, A31Bocht, A22E });
-            Route Route12_1 = new Route(new List<Node> { A51S, A51Bocht, A32, A32Bocht, A21E });
+            Route Route12 = new Route(new List<Node> { A51S, A51, A51Bocht, A31, A31Bocht, A22E });
+            Route Route12_1 = new Route(new List<Node> { A51S, A51, A51Bocht, A32, A32Bocht, A21E });
 
-            Route Route13 = new Route(new List<Node> { A52S, A52Bocht, A33, A33E });
-            Route Route13_1 = new Route(new List<Node> { A52S, A52Bocht, A34, A34E });
+            Route Route13 = new Route(new List<Node> { A52S, A52, A52Bocht, A33, A33E });
+            Route Route13_1 = new Route(new List<Node> { A52S, A52, A52Bocht, A34, A34E });
 
-            Route Route14 = new Route(new List<Node> { A53S, A53Bocht, A54E });
+            Route Route14 = new Route(new List<Node> { A53S, A53, A53Bocht, A54E });
 
-            Route Route15 = new Route(new List<Node> { A54S, A54Bocht, A53E });
+            Route Route15 = new Route(new List<Node> { A54S, A54, A54Bocht, A53E });
         }
 
         /// <summary>
-        ///Initialize alle bestaande auto's en trafficlights uit lijst.
+        ///Initialize all pre-existing cars and traffic lights from list
         /// </summary>
         private void InitializeObjects() 
         {
@@ -385,129 +399,77 @@ namespace WpfApp1
                 }
             }
 
-        }              
-       
-        /// <summary>
-        /// Initializes a DispatcherTimer
-        /// </summary>
-        /// <param name="timer">timer</param>
-        /// <param name="interval">interval in seconds</param>
-        private void InitializeDispatcherTimer(DispatcherTimer timer, int interval, EventHandler e)
-        {
-            timer = new DispatcherTimer();
-
-            timer.Interval = TimeSpan.FromSeconds(interval);
-            timer.Tick += e;
-
-            timer.Start();
         }
 
-        private void SimulationTick(object sender, EventArgs e)
-        {
-            lblTime.Content = DateTime.Now.ToLongTimeString();
-            UpdateCars();
-            UpdateTrafficLights();
-        }
+        #endregion
+
         /// <summary>
-        /// Try connecting to socket
+        /// While true: update moving objects only
         /// </summary>
-        private void SocketConnectTick(object sender, EventArgs e)
+        private void SimulationLoop()
         {
-            if (!Settings.SimulationOnly) 
-            {
-                if (!connected)
+            while (true)
+            {                
+                this.Dispatcher.Invoke(() => // used because thread does not own objects
                 {
-                    InitializeSocketClient();
+                    UpdateCars();
+                    UpdateTrafficLights();
+                });
+
+                // TODO: Delay moet netter
+                //var durationTicks = Math.Round((0.00001) * Stopwatch.Frequency);
+                //var sw = Stopwatch.StartNew();
+
+                //while (sw.ElapsedTicks < durationTicks)
+                //{
+                //    // do nothing
+                //}
+
+                //Task.Delay(0);
+            }
+        }
+
+        /// <summary>
+        /// While connected == false: connect socket and set bool connected
+        /// </summary>
+        private void SocketClientConnectLoop()
+        {
+            while (true)
+            {
+                if (connected == false)
+                {
+                    connected = SocketClient.StartClient();
                 }
             }
-            
-        }
-
-        JObject jObject1 = new JObject();
-
-        /// <summary>
-        /// Send to over socket
-        /// </summary>
-        private void SocketSendTick(object sender, EventArgs e)
-        {
-            foreach(JProperty p in jObject1.Properties())
-            {
-
-            }
-            //Console.Clear();
-            Console.WriteLine("-------------------------------");
-            UpdateTrafficLights();
-            Console.WriteLine("-------------------------------");
-
-            if (connected)
-            {
-                //send json over socket
-            }
-
         }
 
         /// <summary>
-        /// Receive and Handle data when connected
+        /// While connected: Receive and Handle data 
         /// </summary>
-        private void SocketReceiveTick(object sender, EventArgs e)
+        private void SocketClientReceiveLoop()
         {
-            if (connected)
+            while (true)
             {
-                connected = SocketClient.Receive();
-                SocketClient.HandleData();               
-            }     
-        }
-
-        /// <summary>
-        /// Set traffic Lights from jObject buffer
-        /// </summary>
-        private void TrafficLightTick(object sender, EventArgs e)
-        {
-            if (SocketClient.jObjects.Count > 0)
-            {
-                SetTrafficLightsFromJson(SocketClient.jObjects.Dequeue());
-            }
-
-        }
-
-        int counter = 0;
-        private void SpawnCarTick(object sender, EventArgs e)
-        {
-            int amountOfCars = 0;
-
-            foreach (var element in canvas.Children)
-            {
-                if (element is Rectangle)
+                if (connected)
                 {
-                    amountOfCars++;
+                    Console.WriteLine("Connected and receiving");
+                    connected = SocketClient.Receive();
+                    SocketClient.HandleData();
                 }
             }
-
-            if (amountOfCars < 20)
-            {
-                
-                if(counter == 23)
-                {
-                    counter = 0;
-                }
-
-                Car.cars.Add(new Car(Route.routes[counter]));
-                //Console.WriteLine("Spawning: '" + 1 + "' car, at: '" + Route.routes[counter].GetNodes()[0].name + "'");
-                counter++;
-
-            }
-            else
-            {
-                //Console.WriteLine("Spawning stopped cars at: " + amountOfCars);
-            }
         }
 
+        /// <summary>
+        /// UpdateCars: update each car, 
+        /// add each car sprite to canvas if not already added, 
+        /// remove car sprites from canvas on destroyedCars list
+        /// </summary>
         private void UpdateCars()
         {
+
             if (Car.cars.Count > 0)
             {
-                for (int i = 0; i < Car.cars.Count - 1;i++)
-                //foreach (Car car in Car.cars)
+                for (int i = 0; i < Car.cars.Count - 1; i++)
                 {
                     Car.cars[i].Update();
 
@@ -516,11 +478,10 @@ namespace WpfApp1
                         canvas.Children.Add(Car.cars[i].ToUIElement());
                     }
 
-
                 }
             }
 
-            /* destroy rectangles */
+            // destroy rectangles 
             if (Car.destroyedCars.Count > 0)
             {
                 for (int i = 0; i < Car.destroyedCars.Count - 1; i++)
@@ -532,6 +493,40 @@ namespace WpfApp1
                 }
             }
         }
+
+        /// <summary>
+        /// Spawn cars on every route, maximum 50 cars spawnable
+        /// </summary>
+        private void SpawnCars()
+        {
+            int amountOfCars = 0;
+
+            foreach (var element in canvas.Children)
+            {
+                if (element is Rectangle)
+                {
+                    amountOfCars++;
+                }
+            }
+
+            if (amountOfCars < 50)
+            {
+                foreach (Route r in Route.routes)
+                {
+                    new Car(r);
+                }
+
+                //Console.WriteLine("Spawning: '" + 1 + "' car, at: '" + Route.routes[counter].GetNodes()[0].name + "'");
+                Console.WriteLine("Spawning on every route");
+                Console.WriteLine("amountOfCars: "+ amountOfCars);
+            }
+            else
+            {
+                Console.WriteLine("Spawning stopped cars at: " + amountOfCars);
+            }
+        }
+
+
         public class data
         {
             public int Id { get; set; }
@@ -554,44 +549,28 @@ namespace WpfApp1
 
             //write string to file
             System.IO.File.WriteAllText(@"path.txt", json);
+            Console.WriteLine("SUCCESS");
         }
 
         private void UpdateTrafficLights()
         {
-            if (Node.nodeList.Count > 0)
+            //if (Node.nodeList.Count > 0)
+            //{
+            //    for (int i = 0; i < Node.nodeList.Count - 1; i++)
+            //    {
+            //        if (Node.nodeList[i] is TrafficLight)
+            //        {
+            //            ((TrafficLight)Node.nodeList[i]).Update();
+            //        }
+
+            //    }
+            //}
+
+            if (SocketClient.jObjects.Count > 0)
             {
-                for (int i = 0; i < Node.nodeList.Count - 1; i++)
-                {
-                    if (Node.nodeList[i] is TrafficLight)
-                    {
-                        ((TrafficLight)Node.nodeList[i]).Update();
-                    }
-
-                }
+                    SetTrafficLightsFromJson(SocketClient.jObjects.Dequeue());
             }
-        }
-
-        private void RandomSpawnCars()
-        {
-            Random random = new Random();
-
-            int randomAmountOfCars = random.Next(4);
-
-            Route randomRoute = Route.GetRandomRoute();
-
-            for (int i = 0; i < randomAmountOfCars; i++)
-            {
-                Car.cars.Add(new Car(randomRoute));
-            }
-
-            Console.WriteLine("Spawning: '" + randomAmountOfCars + "' cars, at: '" + randomRoute.GetNodes()[0].name + "'");
-        }
-
-
-        private void InitializeSocketClient()
-        {
-            connected = SocketClient.StartClient();          
-        }
+        }   
 
         private void CycleTrafficLight(TrafficLight trafficLight)//traffic light color cycle
         {
@@ -604,26 +583,36 @@ namespace WpfApp1
                 trafficLight.SetColor(Color.Red);
             }
         }
-
-
-        private void MainWindow_KeyDown(object sender, KeyEventArgs e)
+        private void CycleTrafficLights()//traffic lights color cycle
         {
-            if (e.Key == Key.D1)
+            foreach (Node node in Node.nodeList)
             {
-                CycleTrafficLight((TrafficLight)A23);
-            }
-            else if (e.Key == Key.D2)
-            {
-                CycleTrafficLight((TrafficLight)A61);
-            }
-            else if (e.Key == Key.S)
-            {
-                //Car car = new Car(NW_A.GetNodes()[0].GetLeft(), NW_A.GetNodes()[0].GetTop(), NW_A);
-                //Car.cars.Add(car);
-                //canvas.Children.Add(car.ToUIElement());
+                if (node is TrafficLight)
+                {
+                    CycleTrafficLight((TrafficLight)node);
+                }
 
             }
-            e.Handled = true;
+        }
+        private void SpawnCar()
+        {
+            new Car(Route.routes[0]);
+        }
+
+        private void RandomSpawnCars()
+        {
+            Random random = new Random();
+
+            int randomAmountOfCars = random.Next(6);
+
+            Route randomRoute = Route.GetRandomRoute();
+
+            for (int i = 0; i < randomAmountOfCars; i++)
+            {
+                Car.cars.Add(new Car(randomRoute));
+            }
+
+            Console.WriteLine("Spawning: '" + randomAmountOfCars + "' cars, at: '" + randomRoute.GetNodes()[0].name + "'");
         }
 
         public void SetTrafficLightsFromJson(JObject jObject)
@@ -644,30 +633,30 @@ namespace WpfApp1
             }
         }
 
-        public void SetTrafficLightsFromJson()
-        {
-            // read JSON directly from a file https://www.newtonsoft.com/json/help/html/ReadJson.htm
-            var path = (@"Resources\IncomingJson\jason_controller.json");
-            using (StreamReader file = File.OpenText(path))// link aanpassen
-            using (JsonTextReader reader = new JsonTextReader(file))
-            {
-                JObject o = (JObject)JToken.ReadFrom(reader);
-                foreach (JProperty property in o.Properties())
-                {
-                    foreach (Node node in Node.nodeList)
-                    {
-                        if (node is TrafficLight)
-                        {
-                            if (property.Name == ((TrafficLight)node).id)
-                            {
-                                ((TrafficLight)node).SetColor((Color)property.Value.ToObject<int>());
-                            }
-                        }
+        //public void SetTrafficLightsFromJson()
+        //{
+        //    // read JSON directly from a file https://www.newtonsoft.com/json/help/html/ReadJson.htm
+        //    var path = (@"Resources\IncomingJson\jason_controller.json");
+        //    using (StreamReader file = File.OpenText(path))// link aanpassen
+        //    using (JsonTextReader reader = new JsonTextReader(file))
+        //    {
+        //        JObject o = (JObject)JToken.ReadFrom(reader);
+        //        foreach (JProperty property in o.Properties())
+        //        {
+        //            foreach (Node node in Node.nodeList)
+        //            {
+        //                if (node is TrafficLight)
+        //                {
+        //                    if (property.Name == ((TrafficLight)node).id)
+        //                    {
+        //                        ((TrafficLight)node).SetColor((Color)property.Value.ToObject<int>());
+        //                    }
+        //                }
                         
-                    }                 
-                }
-            }
-        }
+        //            }                 
+        //        }
+        //    }
+        //}
     }          
 }              
                

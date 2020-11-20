@@ -63,6 +63,7 @@ namespace WpfApp1
             {
                 trafficLight.Fill = Brushes.Green;
                 color = Color.Green;
+                waiting = false;
             }
             else
             {
@@ -84,7 +85,7 @@ namespace WpfApp1
         public void Update()
         {
             if (waiting)
-                Console.WriteLine("TL: " + id +"I got cars: " + waiting);
+                Console.WriteLine("TL: " + id +" I got cars: " + waiting);
         }
 
         public Color GetColor()

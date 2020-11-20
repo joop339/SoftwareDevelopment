@@ -1,3 +1,5 @@
+#define DEBUG
+
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -86,7 +88,6 @@ namespace WpfApp1
                 return false;
             }
 
-
             return true;
         }
 
@@ -138,11 +139,15 @@ namespace WpfApp1
 
             if (int.TryParse(header, out length))
             {
+                #if DEBUG
                 Console.WriteLine("header " + header + " was found! Parsing to int " + length);
+                #endif
             }
             else
             {
+                #if DEBUG
                 Console.WriteLine("Can't parse header into int");
+                #endif
             }
 
             List<byte> bytesList = new List<byte>();// all bytes for one phase/json
