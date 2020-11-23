@@ -140,25 +140,27 @@ namespace WpfApp1
 
             InitializeNodes();
 
-            InitializeRoutes();
+            //InitializeRoutes();
 
-            InitializeObjects();
+            //InitializeObjects();
 
-            InitializeThread(() => { Loopify(SimulationTick); });
+            //InitializeThread(() => { Loopify(SimulationTick); });
 
-            InitializeThread(() => { Loopify(DrawTick, 1000 / fps, true); });
+            //InitializeThread(() => { Loopify(DrawTick, 1000 / fps, true); });
 
-            InitializeThread(()=> { Loopify(SocketClientConnect); });
+            //InitializeThread(()=> { Loopify(SocketClientConnect); });
 
-            InitializeThread(()=> { Loopify(SocketClientReceive); });
+            //InitializeThread(()=> { Loopify(SocketClientReceive); });
 
             //InitializeThread(()=> { Loopify(SpawnCars, 1000); });
 
             //InitializeThread(() => { Loopify(RandomSpawnCars, 1000, true); });
 
-
             //Keydown events
             KeyDown += new KeyEventHandler(MainWindow_KeyDown);
+
+            WriteJson(Node.nodeList);
+
         }
         ~MainWindow()  // finalizer
         {
@@ -515,31 +517,6 @@ namespace WpfApp1
             }
         }
 
-        public class data
-        {
-            public int Id { get; set; }
-            public int SSN { get; set; }
-            public string Message { get; set; }
-        }
-
-        private void SendJson()
-        {
-           
-            int Id = 341;
-            int SSN = 2;
-            string Message = "A Message";
-
-            JObject jObject1 = new JObject();
-            jObject1.Add("A1-1", 0);
-            jObject1.Add("A1-2", 1);
-
-            string json = JsonConvert.SerializeObject(jObject1, Formatting.Indented);
-
-            //write string to file
-            System.IO.File.WriteAllText(@"path.txt", json);
-            Console.WriteLine("SUCCESS");
-        }
-
         private void UpdateTrafficLights()
         {
             //if (Node.nodeList.Count > 0)
@@ -616,14 +593,17 @@ namespace WpfApp1
                 //{
                 //    new Car(r);
                 //}
-
+#if DEBUG
                 //Console.WriteLine("Spawning: '" + 1 + "' car, at: '" + Route.routes[counter].GetNodes()[0].name + "'");
                 Console.WriteLine("Spawning on every route");
                 Console.WriteLine("amountOfCars: " + amountOfCars);
+#endif
             }
             else
             {
+#if DEBUG
                 Console.WriteLine("Spawning stopped cars at: " + amountOfCars);
+#endif
             }
         }
 
@@ -643,8 +623,9 @@ namespace WpfApp1
                 {
                     Car.cars.Add(new Car(randomRoute));
                 }
-
+#if DEBUG
                 Console.WriteLine("Spawning: '" + randomAmountOfCars + "' cars, at: '" + randomRoute.GetNodes()[0].name + "'");
+#endif
             }
         }
 
@@ -663,6 +644,35 @@ namespace WpfApp1
                     }
 
                 }
+            }
+        }
+
+        private static void WriteJson(List<Node> nodeList)
+        {
+            JObject j = new JObject();
+            JObject x = new JObject();
+
+            foreach (Node node in nodeList)
+            {
+                if (node is TrafficLight)
+                {
+                    TrafficLight trafficLight = (TrafficLight)node;
+                    j.Add(trafficLight.ToJson());
+                }
+
+            }
+
+            string json = JsonConvert.SerializeObject(j, Formatting.Indented);
+
+            //write string to file
+            try
+            {
+                System.IO.File.WriteAllText(@"json.json", json);
+                Console.WriteLine("File Written");
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
@@ -685,7 +695,7 @@ namespace WpfApp1
         //                        ((TrafficLight)node).SetColor((Color)property.Value.ToObject<int>());
         //                    }
         //                }
-                        
+
         //            }                 
         //        }
         //    }

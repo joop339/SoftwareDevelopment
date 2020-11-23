@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -82,6 +83,11 @@ namespace WpfApp1
             return trafficLight;
         }
 
+        public JObject ToJson()
+        {
+            return new JObject(id, GetStatus());
+        }
+
         public void Update()
         {
             if (waiting)
@@ -111,6 +117,11 @@ namespace WpfApp1
                 waiting = false;
             }
 
+        }
+
+        public int GetStatus()
+        {
+            return waiting ? 1 : 0;
         }
     }
 }

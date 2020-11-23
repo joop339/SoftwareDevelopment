@@ -1,5 +1,6 @@
 #define DEBUG
 
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -201,6 +202,8 @@ namespace WpfApp1
 
             return header;
         }
+
+        
 
 
         //public static JObject SendReceiveReturn()
