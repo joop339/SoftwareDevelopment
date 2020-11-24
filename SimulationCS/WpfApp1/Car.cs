@@ -17,8 +17,6 @@ namespace WpfApp1
         RotateTransform rotateTransform = new RotateTransform();
         RotateTransform rotateTransform2 = new RotateTransform();
 
-
-
         public static List<Car> cars = new List<Car>();
         public static List<Car> destroyedCars = new List<Car>();
         Rectangle carRect; //car icon
@@ -58,8 +56,9 @@ namespace WpfApp1
                 Stroke = Brushes.Black
             };
 
-            var x1 = this.left;
-            var y1 = this.top;          
+
+            //var x1 = this.left;
+            //var y1 = this.top;          
 
             rect = new Rectangle() // rectangle infront of carRect, This is for collision detection
             {
@@ -67,103 +66,74 @@ namespace WpfApp1
                 Height = 13,
                 Fill = Brushes.Red,
                 Stroke = Brushes.Red,
-                Opacity = 100
+                //Opacity = 100,
             };
 
             rotateTransform.CenterX = carRect.Width / 2;
             rotateTransform.CenterY = carRect.Height / 2;
 
-            rotateTransform2.CenterX = rect.Width + carRect.Width / 2;
-            rotateTransform2.CenterY = rect.Height / 2;
+            rotateTransform2.CenterX = carRect.Width / 2;
+            rotateTransform2.CenterY = carRect.Height / 2;
 
-            hitboxCarRect = new Rect(left, top, carRect.Width, carRect.Height);
-            hitboxRect = new Rect(left - rect.Width, top + 0, rect.Width, rect.Height);
+            //hitboxCarRect = new Rect(left, top, carRect.Width, carRect.Height);
+            //hitboxRect = new Rect(left - rect.Width, top + 0, rect.Width, rect.Height);
         }
 
-<<<<<<< Updated upstream
-        public Car(Route route, bool isTest) //aanmaken van een nieuwe auto met de juiste coordinaten.
-        {
-            cars.Add(this);
-            this.left = route.GetNodes()[0].GetLeft();
-            this.top = route.GetNodes()[0].GetTop();
-            this.id = idCount;
-            idCount++;
-            this.route = route;
-            this.target = route.GetNodes()[0];
-=======
-        public Car()
-        {
-            cars.Add(this);
-            left = 100;
-            top = 100;
 
-            carRect = new Rectangle()
-            {
-                //Source = new BitmapImage(new Uri("/resources/car.png")),
-                Width = 19,
-                Height = 13,
-                Fill = Brushes.Maroon,
-                Stroke = Brushes.Black
-            };
-        }
-
-        //public Car(double left, double top, Route route) //aanmaken van een nieuwe auto met de juiste coordinaten.
+        //public Car(Route route, bool isTest) //aanmaken van een nieuwe auto met de juiste coordinaten.
         //{
         //    cars.Add(this);
-        //    this.left = left;
-        //    this.top = top;
-        //    this.id = idCount;
-        //    idCount++;
+
+        //    this.left = route.GetNodes()[0].GetLeft();
+        //    this.top = route.GetNodes()[0].GetTop();
         //    this.route = route;
         //    this.target = route.GetNodes()[0];
 
-        //    carRect = new Rectangle()
+        //    carRect = new Path()
         //    {
-        //        //Source = new BitmapImage(new Uri("/resources/car.png")),
-        //        Width = 19,
-        //        Height = 13,
-        //        Fill = Brushes.Maroon,
+        //        Fill = Brushes.Yellow,
         //        Stroke = Brushes.Black
         //    };
-        //    Canvas.SetLeft(carRect, left);
-        //    Canvas.SetTop(carRect, top);
+
+        //    hitboxCarRect = new Rect()
+        //    {
+        //        Width = 19,
+        //        Height = 13,
+        //    };
+
+        //    RectangleGeometry carRectangleGeometry = new RectangleGeometry(); // maak geometry met vorm rect
+        //     carRectangleGeometry.Rect = hitboxCarRect;  
+
+        //    hitboxRect = new Rect()
+        //    {          
+        //        Width = 7,
+        //        Height = 13,
+        //        X = -6,
+        //        Y = 0,
+        //    };
+
+        //    RectangleGeometry hitboxRectangleGeometry = new RectangleGeometry(); // maak geometry met vorm rect
+        //    hitboxRectangleGeometry.Rect = hitboxRect;
+
+        //    GeometryGroup myGeometryGroup1 = new GeometryGroup(); // conversie
+        //    myGeometryGroup1.Children.Add(carRectangleGeometry);
+        //    myGeometryGroup1.Children.Add(hitboxRectangleGeometry);
+
+        //    ((Path)carRect).Data = myGeometryGroup1; // lijntjes met deze geometry  
+
+        //    rotateTransform.CenterX = hitboxCarRect.Width / 2;
+        //    rotateTransform.CenterY = hitboxCarRect.Height / 2;
+
         //}
->>>>>>> Stashed changes
-
-            carLines = new Path()
-            {
-                //Source = new BitmapImage(new Uri("/resources/car.png")),
-                //Width = 19,
-                //Height = 13,
-                Fill = Brushes.Blue,
-                Stroke = Brushes.Black
-            };
-
-            hitboxCarRect = new Rect(left, top, 19, 13);
-
-            RectangleGeometry myRectangleGeometry1 = new RectangleGeometry(); // maak geometry met vorm rect
-             myRectangleGeometry1.Rect = hitboxCarRect;
-
-            GeometryGroup myGeometryGroup1 = new GeometryGroup(); // conversie
-            myGeometryGroup1.Children.Add(myRectangleGeometry1);
-
-            carLines.Data = myGeometryGroup1; // lijntjes met deze geometry
-
-           
-        }
 
         public UIElement ToUIElement()
         {
             return carRect;
         }
+
         public UIElement ToUIElement2()
         {
             return rect;
-        }
-
-        public UIElement ToUIElement3()
-        {
-            return carLines;
         }
 
         //void Drive(double distance) //Positie auto updaten.
@@ -189,25 +159,15 @@ namespace WpfApp1
             Canvas.SetLeft(carRect, left);
             Canvas.SetTop(carRect, top);
 
-            Canvas.SetLeft(rect, left - rect.Width);
-            Canvas.SetTop(rect, top + 0);
-
+            Canvas.SetLeft(rect, left);
+            Canvas.SetTop(rect, top);
         }
 
-        //public static void UpdateRects()
-        //{
-        //    foreach(var car in cars)
-        //    {
-        //        car.rect.X = car.left;
-        //        car.rect.Y = car.top;
-        //    }
-        //}
 
         public void Drive() //Positie auto updaten wanneer stoplicht groen is. of de auto nog niet bij het stoplicht is aangekomen.
         {
-            //directionCheck();
-            //hitboxCarRect = new Rect(left, top, carRect.Width, carRect.Height);
-            //hitboxRect = new Rect(left - rect.Width, top + 0, rect.Width, rect.Height);
+            directionCheck();
+
             if (this.DetectCollision() == false)
             {
 
@@ -273,14 +233,16 @@ namespace WpfApp1
         }
 
 
-
+        IntersectionDetail d1;
         bool DetectCollision()
         {
-           // Rect bodyRect = new Rect(Canvas.GetLeft(rect), Canvas.getTop(rect), rect.ActualWidth, rect.ActualHeight);
+            //hitboxCarRect = new Rect(left, top, carRect.Width, carRect.Height);
+            //hitboxRect = new Rect(left - rect.Width, top + 0, rect.Width, rect.Height);
+            // Rect bodyRect = new Rect(Canvas.GetLeft(rect), Canvas.getTop(rect), rect.ActualWidth, rect.ActualHeight);
 
-            foreach (Car car in cars) // check alle autos
+            foreach (Car oCar in cars) // check alle autos
             {
-                if (car != this)
+                if (oCar != this)
                 { // als de auto niet this is           
 
                     //if (directionCheck(car))
@@ -294,11 +256,21 @@ namespace WpfApp1
                     //var y2 = Canvas.GetTop(car.carRect);
                     //Rect r2 = new Rect(x2, y2, car.carRect.ActualWidth + 7, car.carRect.ActualHeight + 7);
 
-                    if (hitboxCarRect.IntersectsWith(car.hitboxRect))
+                    //if (this.hitboxCarRect.IntersectsWith(oCar.hitboxCarRect))
+                    //{
+                    //    Console.WriteLine("Collission");
+                    //    return true;
+
+                    //}
+
+                    SetG();
+                    d1 = 
+                        g.FillContainsWithDetail(oCar.g);
+
+                    if (d1 == IntersectionDetail.Intersects)
                     {
                         return true;
                     }
-                    //}
                 }
             }
 
@@ -360,16 +332,38 @@ namespace WpfApp1
             }
 
             rotateTransform2.Angle = rotateTransform.Angle;
-            //carRect.RenderTransform = rotateTransform;
-           // rect.RenderTransform = rotateTransform2;
 
-            Matrix matrix = new Matrix(); // used for transformations
+            carRect.RenderTransform = rotateTransform;
+            rect.RenderTransform = rotateTransform2;
+        }
 
-            matrix.Rotate(rotateTransform.Angle); // set rotation
-            hitboxRect.Transform(matrix); // apply rotation to rect
+        TransformGroup transforms;
+        TranslateTransform translateTransform;
+        double xTranslate;
+        double yTranslate;
+        Geometry g;
+        private void SetG()
+        {
+            g = rect.RenderedGeometry;
 
-            matrix.Rotate(rotateTransform.Angle); // set rotation
-            hitboxCarRect.Transform(matrix); // apply rotation to rect
+            // The order in which transforms are applied is important!
+            transforms = new TransformGroup();
+
+            if (rect.RenderTransform != null)
+                transforms.Children.Add(rect.RenderTransform);
+
+            xTranslate = (double)rect.GetValue(Canvas.LeftProperty);
+            if (double.IsNaN(xTranslate))
+                xTranslate = 0D;
+
+            yTranslate = (double)rect.GetValue(Canvas.TopProperty);
+            if (double.IsNaN(yTranslate))
+                yTranslate = 0D;
+
+            translateTransform = new TranslateTransform(xTranslate, yTranslate);
+            transforms.Children.Add(translateTransform);
+
+            g.Transform = transforms;
         }
     }
 

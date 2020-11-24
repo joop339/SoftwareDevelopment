@@ -87,7 +87,7 @@
         <Ellipse Name="A6_4" Fill="red" Height="20" Canvas.Left="361" Stroke="Black" Canvas.Top="314" Width="23"/>
 
         <!--Bocht nodes-->
-        <Ellipse Name="A1_1Bocht" Fill="Aqua" Height="8" Canvas.Left="546" Stroke="Black" Canvas.Top="111" Width="8"/>
+        <Ellipse Name="A1_1Bocht" Fill="Aqua" Height="8" Canvas.Left="809" Stroke="Black" Canvas.Top="230" Width="8"/>
         <Ellipse Name="A1_2Bocht" Fill="Aqua" Height="8" Canvas.Left="844" Stroke="Black" Canvas.Top="214" Width="8"/>
         <Ellipse Name="A1_3Bocht" Fill="Aqua" Height="8" Canvas.Left="868" Stroke="Black" Canvas.Top="398" Width="8"/>
         <Ellipse Name="B1_1Bocht" Fill="Aqua" Height="8" Canvas.Left="902" Stroke="Black" Canvas.Top="443" Width="8"/>

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿#define DEBUG
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -6,13 +7,16 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
 
+
 namespace WpfApp1
 {
+
     // Traffic light colors
     public enum Color
     {
@@ -143,19 +147,10 @@ namespace WpfApp1
 
             InitializeRoutes();
 
-<<<<<<< Updated upstream
             InitializeObjects();
 
             InitializeThread(() => { Loopify(SimulationTick); });
 
-=======
-            new Car();
-
-            InitializeObjects();
-
-            InitializeThread(() => { Loopify(SimulationTick); });
-
->>>>>>> Stashed changes
             InitializeThread(() => { Loopify(DrawTick, 1000 / fps, true); });
 
 //           //InitializeThread(() => { Loopify(WriteJson, 3000); });
@@ -170,7 +165,6 @@ namespace WpfApp1
             KeyDown += new KeyEventHandler(MainWindow_KeyDown);
 
             //WriteJson(Node.nodeList);
-<<<<<<< Updated upstream
 
             //Path myPath1 = new Path(); // Path = lijntjes
             //myPath1.Stroke = Brushes.Black;
@@ -194,8 +188,6 @@ namespace WpfApp1
             //myPath1.Data = myGeometryGroup1; // lijntjes met deze geometry
             //canvas.Children.Add(myPath1); // add to canvas
 
-=======
->>>>>>> Stashed changes
 
             
         }
@@ -539,8 +531,7 @@ namespace WpfApp1
             if (Car.cars.Count > 0)
             {
                 for (int i = 0; i < Car.cars.Count - 1; i++)
-                {
-                    
+                {                  
                     Car.cars[i].Drive();
                 }
             }
@@ -559,7 +550,6 @@ namespace WpfApp1
                     {
                         canvas.Children.Add(Car.cars[i].ToUIElement());
                         canvas.Children.Add(Car.cars[i].ToUIElement2());
-                        canvas.Children.Add(Car.cars[i].ToUIElement3());
                     }
                 }
 
@@ -624,7 +614,7 @@ namespace WpfApp1
         }
         private void SpawnCar()
         {
-            new Car(Route.routes[0], true);
+            new Car(Route.routes[0]);
         }
         private void SpawnCar(Route route)
         {
