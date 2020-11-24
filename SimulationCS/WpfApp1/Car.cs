@@ -18,6 +18,7 @@ namespace WpfApp1
         public static List<Car> cars = new List<Car>();
         public static List<Car> destroyedCars = new List<Car>();
         Rectangle carRect; //car icon
+        Rect rect;
         //Node tl = MainWindow.GetNode();
         Node target;
 
@@ -46,6 +47,10 @@ namespace WpfApp1
                 Fill = Brushes.Maroon,
                 Stroke = Brushes.Black
             };
+
+            var x1 = this.left;
+            var y1 = this.top;
+            rect = new Rect(x1, y1, this.carRect.Width + 7, this.carRect.Height + 7);
         }
 
         //public Car(double left, double top, Route route) //aanmaken van een nieuwe auto met de juiste coordinaten.
@@ -108,8 +113,20 @@ namespace WpfApp1
             Canvas.SetLeft(carRect, left);
             Canvas.SetTop(carRect, top);
         }
+
+        public static void UpdateRects()
+        {
+            foreach(var car in cars)
+            {
+                car.rect.X = car.left;
+                car.rect.Y = car.top;
+            }
+        }
+
         public void Drive() //Positie auto updaten wanneer stoplicht groen is. of de auto nog niet bij het stoplicht is aangekomen.
         {
+            
+
             if (this.DetectCollision() == false)
             {
 
@@ -185,15 +202,15 @@ namespace WpfApp1
                     if (directionCheck(car))
                     {
 
-                        var x1 = Canvas.GetLeft(this.carRect);
-                        var y1 = Canvas.GetTop(this.carRect);
-                        Rect r1 = new Rect(x1, y1, this.carRect.ActualWidth + 7, this.carRect.ActualHeight + 7);
+                        //var x1 = Canvas.GetLeft(this.carRect);
+                        //var y1 = Canvas.GetTop(this.carRect);
+                        //Rect r1 = new Rect(x1, y1, this.carRect.ActualWidth + 7, this.carRect.ActualHeight + 7);
 
-                        var x2 = Canvas.GetLeft(car.carRect);
-                        var y2 = Canvas.GetTop(car.carRect);
-                        Rect r2 = new Rect(x2, y2, car.carRect.ActualWidth + 7, car.carRect.ActualHeight + 7);
+                        //var x2 = Canvas.GetLeft(car.carRect);
+                        //var y2 = Canvas.GetTop(car.carRect);
+                        //Rect r2 = new Rect(x2, y2, car.carRect.ActualWidth + 7, car.carRect.ActualHeight + 7);
 
-                        if (r1.IntersectsWith(r2))
+                        if (this.rect.IntersectsWith(car.rect))
                         {
                             return true;
                         }

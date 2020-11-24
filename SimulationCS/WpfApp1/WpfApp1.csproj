@@ -132,7 +132,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Resource Include="NewFile1.txt" />
     <Content Include="Resources\IncomingJson\jason_controller.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -165,7 +164,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="NewFolder1\" />
     <Folder Include="Resources\OutgoingJson\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

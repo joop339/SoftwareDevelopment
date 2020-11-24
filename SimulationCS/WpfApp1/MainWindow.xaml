@@ -112,9 +112,41 @@
         <Ellipse Name="A5_2Bocht" Fill="Aqua" Height="8" Canvas.Left="286" Stroke="Black" Canvas.Top="450" Width="8"/>
         <Ellipse Name="A5_3Bocht" Fill="Aqua" Height="8" Canvas.Left="221" Stroke="Black" Canvas.Top="482" Width="8"/>
         <Ellipse Name="A5_4Bocht" Fill="Aqua" Height="8" Canvas.Left="215" Stroke="Black" Canvas.Top="508" Width="8"/>
-        
+
         <Ellipse Name="A6_3Bocht" Fill="Aqua" Height="8" Canvas.Left="247" Stroke="Black" Canvas.Top="301" Width="8"/>
         <Ellipse Name="A6_4Bocht" Fill="Aqua" Height="8" Canvas.Left="251" Stroke="Black" Canvas.Top="326" Width="8"/>
+
+        <!--Voetganger/fietser start en eindpunten-->
+        <Ellipse x:Name="V_NorthS" Fill="Blue" Height="8" Canvas.Left="1029" Stroke="Black" Width="8" Canvas.Top="1"/>
+        <Ellipse x:Name="V_EastS" Fill="Blue" Height="8" Canvas.Left="1192" Stroke="Black" Width="8" Canvas.Top="141"/>
+        <Ellipse x:Name="V_East2S" Fill="Blue" Height="8" Canvas.Left="1192" Stroke="Black" Width="8" Canvas.Top="508"/>
+        <Ellipse x:Name="V_West2S" Fill="Blue" Height="8" Stroke="Black" Width="8" Canvas.Top="551" Canvas.Left="1"/>
+        <Ellipse x:Name="V_WestS" Fill="Blue" Height="8" Stroke="Black" Width="8" Canvas.Top="190" Canvas.Left="1"/>
+        
+        <!--Voetganger/fietser Stoplichten-->
+        <Ellipse x:Name="V5_3a" Fill="red" Height="8" Canvas.Left="165" Stroke="Black" Canvas.Top="519" Width="8"/>
+        <Ellipse x:Name="V5_3b" Fill="red" Height="8" Canvas.Left="165" Stroke="Black" Canvas.Top="404" Width="8"/>
+        
+        <Ellipse x:Name="V5_2a" Fill="red" Height="8" Canvas.Left="165" Stroke="Black" Canvas.Top="285" Width="8"/>
+        <Ellipse x:Name="V5_2b" Fill="red" Height="8" Canvas.Left="165" Stroke="Black" Canvas.Top="226" Width="8"/>
+        
+        <Ellipse x:Name="V1_1a" Fill="red" Height="8" Canvas.Left="800" Stroke="Black" Canvas.Top="141" Width="8"/>
+        <Ellipse x:Name="V1_1b" Fill="red" Height="8" Canvas.Left="911" Stroke="Black" Canvas.Top="141" Width="8"/>
+
+        <Ellipse x:Name="V1_2a" Fill="red" Height="8" Canvas.Left="930" Stroke="Black" Canvas.Top="141" Width="8"/>
+        <Ellipse x:Name="V1_2b" Fill="red" Height="8" Canvas.Left="989" Stroke="Black" Canvas.Top="141" Width="8"/>
+        
+        <Ellipse x:Name="V2_1a" Fill="red" Height="8" Canvas.Left="1029" Stroke="Black" Canvas.Top="174" Width="8"/>
+        <Ellipse x:Name="V2_1b" Fill="red" Height="8" Canvas.Left="1029" Stroke="Black" Canvas.Top="285" Width="8"/>
+        
+        <Ellipse x:Name="V2_3a" Fill="red" Height="8" Canvas.Left="1029" Stroke="Black" Canvas.Top="407" Width="8"/>
+        <Ellipse x:Name="V2_3b" Fill="red" Height="8" Canvas.Left="1029" Stroke="Black" Canvas.Top="469" Width="8"/>
+        
+        <Ellipse x:Name="V4_4a" Fill="red" Height="8" Canvas.Left="420" Stroke="Black" Canvas.Top="551" Width="8"/>
+        <Ellipse x:Name="V4_4b" Fill="red" Height="8" Canvas.Left="282" Stroke="Black" Canvas.Top="551" Width="8"/>
+        
+        <Ellipse x:Name="V4_1a" Fill="red" Height="8" Canvas.Left="264" Stroke="Black" Canvas.Top="551" Width="8"/>
+        <Ellipse x:Name="V4_1b" Fill="red" Height="8" Canvas.Left="205" Stroke="Black" Canvas.Top="551" Width="8"/>
 
 
 

@@ -148,8 +148,15 @@ namespace WpfApp1
 
             //InitializeThread(() => { Loopify(DrawTick, 1000 / fps, true); });
 
+<<<<<<< Updated upstream
             //InitializeThread(()=> { Loopify(SocketClientConnect); });
 
+=======
+            //InitializeThread(() => { Loopify(WriteJson, 3000); });
+
+            //InitializeThread(()=> { Loopify(SocketClientConnect); });
+
+>>>>>>> Stashed changes
             //InitializeThread(()=> { Loopify(SocketClientReceive); });
 
             //InitializeThread(()=> { Loopify(SpawnCars, 1000); });
@@ -418,6 +425,7 @@ namespace WpfApp1
         {       
                 this.Dispatcher.Invoke(() => // used because thread does not own UI objects
                 {
+                    
                     UpdateCars();
                     UpdateTrafficLights();
                 });
@@ -476,11 +484,12 @@ namespace WpfApp1
         /// </summary>
         private void UpdateCars()
         {
-
+            Car.UpdateRects();//nice
             if (Car.cars.Count > 0)
             {
                 for (int i = 0; i < Car.cars.Count - 1; i++)
                 {
+                    
                     Car.cars[i].Drive();
                 }
             }
@@ -650,14 +659,21 @@ namespace WpfApp1
         private static void WriteJson(List<Node> nodeList)
         {
             JObject j = new JObject();
+<<<<<<< Updated upstream
             JObject x = new JObject();
+=======
+>>>>>>> Stashed changes
 
             foreach (Node node in nodeList)
             {
                 if (node is TrafficLight)
                 {
                     TrafficLight trafficLight = (TrafficLight)node;
+<<<<<<< Updated upstream
                     j.Add(trafficLight.ToJson());
+=======
+                    //j.Add(trafficLight.ToJson());
+>>>>>>> Stashed changes
                 }
 
             }
