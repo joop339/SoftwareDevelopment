@@ -80,6 +80,7 @@ namespace WpfApp1
             hitboxRect = new Rect(left - rect.Width, top + 0, rect.Width, rect.Height);
         }
 
+<<<<<<< Updated upstream
         public Car(Route route, bool isTest) //aanmaken van een nieuwe auto met de juiste coordinaten.
         {
             cars.Add(this);
@@ -89,6 +90,45 @@ namespace WpfApp1
             idCount++;
             this.route = route;
             this.target = route.GetNodes()[0];
+=======
+        public Car()
+        {
+            cars.Add(this);
+            left = 100;
+            top = 100;
+
+            carRect = new Rectangle()
+            {
+                //Source = new BitmapImage(new Uri("/resources/car.png")),
+                Width = 19,
+                Height = 13,
+                Fill = Brushes.Maroon,
+                Stroke = Brushes.Black
+            };
+        }
+
+        //public Car(double left, double top, Route route) //aanmaken van een nieuwe auto met de juiste coordinaten.
+        //{
+        //    cars.Add(this);
+        //    this.left = left;
+        //    this.top = top;
+        //    this.id = idCount;
+        //    idCount++;
+        //    this.route = route;
+        //    this.target = route.GetNodes()[0];
+
+        //    carRect = new Rectangle()
+        //    {
+        //        //Source = new BitmapImage(new Uri("/resources/car.png")),
+        //        Width = 19,
+        //        Height = 13,
+        //        Fill = Brushes.Maroon,
+        //        Stroke = Brushes.Black
+        //    };
+        //    Canvas.SetLeft(carRect, left);
+        //    Canvas.SetTop(carRect, top);
+        //}
+>>>>>>> Stashed changes
 
             carLines = new Path()
             {

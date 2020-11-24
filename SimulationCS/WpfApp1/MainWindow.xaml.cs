@@ -143,10 +143,19 @@ namespace WpfApp1
 
             InitializeRoutes();
 
+<<<<<<< Updated upstream
             InitializeObjects();
 
             InitializeThread(() => { Loopify(SimulationTick); });
 
+=======
+            new Car();
+
+            InitializeObjects();
+
+            InitializeThread(() => { Loopify(SimulationTick); });
+
+>>>>>>> Stashed changes
             InitializeThread(() => { Loopify(DrawTick, 1000 / fps, true); });
 
 //           //InitializeThread(() => { Loopify(WriteJson, 3000); });
@@ -161,6 +170,7 @@ namespace WpfApp1
             KeyDown += new KeyEventHandler(MainWindow_KeyDown);
 
             //WriteJson(Node.nodeList);
+<<<<<<< Updated upstream
 
             //Path myPath1 = new Path(); // Path = lijntjes
             //myPath1.Stroke = Brushes.Black;
@@ -184,7 +194,10 @@ namespace WpfApp1
             //myPath1.Data = myGeometryGroup1; // lijntjes met deze geometry
             //canvas.Children.Add(myPath1); // add to canvas
 
+=======
+>>>>>>> Stashed changes
 
+            
         }
         ~MainWindow()  // finalizer
         {
