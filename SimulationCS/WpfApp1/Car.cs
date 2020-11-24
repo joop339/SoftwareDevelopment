@@ -14,6 +14,8 @@ namespace WpfApp1
 {
     public class Car
     {
+        RotateTransform rotateTransform = new RotateTransform();
+        
 
         public static List<Car> cars = new List<Car>();
         public static List<Car> destroyedCars = new List<Car>();
@@ -51,6 +53,9 @@ namespace WpfApp1
             var x1 = this.left;
             var y1 = this.top;
             rect = new Rect(x1, y1, this.carRect.Width + 7, this.carRect.Height + 7);
+
+            rotateTransform.CenterX = carRect.Width / 2;
+            rotateTransform.CenterY = carRect.Height / 2;
         }
 
         //public Car(double left, double top, Route route) //aanmaken van een nieuwe auto met de juiste coordinaten.
@@ -125,14 +130,14 @@ namespace WpfApp1
 
         public void Drive() //Positie auto updaten wanneer stoplicht groen is. of de auto nog niet bij het stoplicht is aangekomen.
         {
-            
 
-            if (this.DetectCollision() == false)
-            {
-
+            //if (this.DetectCollision() == false)
+            //{
+            directionCheck();
                 if (target.GetLeft() > left)
                 {
                     left = left + 0.025;
+
                 }
                 else if (target.GetLeft() < left)
                 {
@@ -186,7 +191,7 @@ namespace WpfApp1
                             this.Destroy();
                         }
                     }
-                }
+               // }
             }
         }
 
@@ -199,8 +204,8 @@ namespace WpfApp1
                 if (car != this)
                 { // als de auto niet this is           
 
-                    if (directionCheck(car))
-                    {
+                    //if (directionCheck(car))
+                    //{
 
                         //var x1 = Canvas.GetLeft(this.carRect);
                         //var y1 = Canvas.GetTop(this.carRect);
@@ -214,7 +219,7 @@ namespace WpfApp1
                         {
                             return true;
                         }
-                    }
+                    //}
                 }
             }
 
@@ -222,36 +227,98 @@ namespace WpfApp1
 
         }
 
-        bool directionCheck(Car car) // check of de auto in de zelfde richting is als het huidige doelwit
+
+
+        string directionCheck() // check of de auto in de zelfde richting is als het huidige doelwit
         {
-            double roundedLeft = Math.Round(left);
-            double roundedTop = Math.Round(top);
+            double targetX = Math.Round(target.GetLeft());
+            double targetY = Math.Round(target.GetTop());
+            double thisX = Math.Round(left);
+            double thisY = Math.Round(top);
 
-            double carLeft = Math.Round(car.left);
-            double carTop = Math.Round(car.top);
 
-            double targetLeft = Math.Round(target.GetLeft());
-            double targetTop = Math.Round(target.GetTop());
 
-            bool isTargetAndCarLeft = roundedLeft > carLeft && roundedLeft > targetLeft;
-            bool isTargetAndCarRight = roundedLeft < carLeft && roundedLeft < targetLeft;
-            bool isTargetAndCarTop = roundedTop > carTop && roundedTop > targetTop;
-            bool isTargetAndCarDown = roundedTop < carTop && roundedTop < targetTop;
-
-            
-            if (
-                        (isTargetAndCarLeft) // doelwit en andere auto zijn links van this
-                        || (isTargetAndCarRight) // doelwit en andere auto zijn rechts van this
-                        || (isTargetAndCarTop) // doelwit en andere auto zijn boven this
-                        || (isTargetAndCarDown) // doelwit en andere auto zijn onder this
-               )
+            if (thisX > targetX && targetY == thisY)
             {
-                return true;
+                rotateTransform.Angle = 0;
+                carRect.RenderTransform = rotateTransform;
+                return "W";
             }
 
-            return false;
+            else if (thisX < targetX && targetY == thisY)
+            {
+                rotateTransform.Angle = 180;
+                carRect.RenderTransform = rotateTransform;
+                return "E";
+            }
+
+            else if (thisY > targetY && targetX == thisX)
+            {
+                rotateTransform.Angle = 90;
+                carRect.RenderTransform = rotateTransform;
+                return "N";
+            }
+
+            else if (thisY < targetY && targetX == thisX)
+            {
+                rotateTransform.Angle = 270;
+                carRect.RenderTransform = rotateTransform;
+                return "S";
+            }
+
+            else if (thisX < targetX && thisY < targetY)
+            {                
+                rotateTransform.Angle = 225;
+                carRect.RenderTransform = rotateTransform;
+                return "SE";
+            }
+
+            else if (thisX > targetX && thisY > targetY)
+            {               
+                rotateTransform.Angle = 45;
+                carRect.RenderTransform = rotateTransform;
+                return "NW"; 
+            }
+
+            else if (thisX < targetX && thisY > targetY)
+            {                
+                rotateTransform.Angle = 135;
+                carRect.RenderTransform = rotateTransform;
+                return "NE";
+            }
+
+            else if (thisX > targetX && thisY < targetY)
+            {
+                rotateTransform.Angle = 315;
+                carRect.RenderTransform = rotateTransform;
+                return "SW";
+            }
+            //double roundedLeft = Math.Round(left);
+            //double roundedTop = Math.Round(top);
+
+            //double carLeft = Math.Round(car.left);
+            //double carTop = Math.Round(car.top);
+
+            //double targetLeft = Math.Round(target.GetLeft());
+            //double targetTop = Math.Round(target.GetTop());
+
+            //bool isTargetAndCarLeft = roundedLeft > carLeft && roundedLeft > targetLeft;
+            //bool isTargetAndCarRight = roundedLeft < carLeft && roundedLeft < targetLeft;
+            //bool isTargetAndCarTop = roundedTop > carTop && roundedTop > targetTop;
+            //bool isTargetAndCarDown = roundedTop < carTop && roundedTop < targetTop;
 
 
+            //if (
+            //            (isTargetAndCarLeft) // doelwit en andere auto zijn links van this
+            //            || (isTargetAndCarRight) // doelwit en andere auto zijn rechts van this
+            //            || (isTargetAndCarTop) // doelwit en andere auto zijn boven this
+            //            || (isTargetAndCarDown) // doelwit en andere auto zijn onder this
+            //   )
+            //{
+            //    return true;
+            //}
+
+            return null;
         }
     }
 

@@ -140,33 +140,26 @@ namespace WpfApp1
 
             InitializeNodes();
 
-            //InitializeRoutes();
+            InitializeRoutes();
 
-            //InitializeObjects();
+            InitializeObjects();
 
-            //InitializeThread(() => { Loopify(SimulationTick); });
+            InitializeThread(() => { Loopify(SimulationTick); });
 
-            //InitializeThread(() => { Loopify(DrawTick, 1000 / fps, true); });
+            InitializeThread(() => { Loopify(DrawTick, 1000 / fps, true); });
 
-<<<<<<< Updated upstream
-            //InitializeThread(()=> { Loopify(SocketClientConnect); });
+//           //InitializeThread(() => { Loopify(WriteJson, 3000); });
 
-=======
-            //InitializeThread(() => { Loopify(WriteJson, 3000); });
+//            //InitializeThread(()=> { Loopify(SocketClientConnect); });
 
-            //InitializeThread(()=> { Loopify(SocketClientConnect); });
+//            //InitializeThread(()=> { Loopify(SpawnCars, 1000); });
 
->>>>>>> Stashed changes
-            //InitializeThread(()=> { Loopify(SocketClientReceive); });
+//            //InitializeThread(() => { Loopify(RandomSpawnCars, 1000, true); });
 
-            //InitializeThread(()=> { Loopify(SpawnCars, 1000); });
-
-            //InitializeThread(() => { Loopify(RandomSpawnCars, 1000, true); });
-
-            //Keydown events
+//            //Keydown events
             KeyDown += new KeyEventHandler(MainWindow_KeyDown);
 
-            WriteJson(Node.nodeList);
+            //WriteJson(Node.nodeList);
 
         }
         ~MainWindow()  // finalizer
@@ -223,6 +216,7 @@ namespace WpfApp1
         /// </summary>
         /// <param name="function">void function</param>
         /// <param name="interval">integer in milliseconds</param>
+        /// <param name="isUI">zet op true als je error krijgt</param>
         private void Loopify(Action function, int interval = 0, bool isUI = false)
         {
             
@@ -659,21 +653,14 @@ namespace WpfApp1
         private static void WriteJson(List<Node> nodeList)
         {
             JObject j = new JObject();
-<<<<<<< Updated upstream
-            JObject x = new JObject();
-=======
->>>>>>> Stashed changes
 
             foreach (Node node in nodeList)
             {
                 if (node is TrafficLight)
                 {
                     TrafficLight trafficLight = (TrafficLight)node;
-<<<<<<< Updated upstream
+
                     j.Add(trafficLight.ToJson());
-=======
-                    //j.Add(trafficLight.ToJson());
->>>>>>> Stashed changes
                 }
 
             }
