@@ -51,7 +51,7 @@
         <Ellipse Name="A5_3E" Fill="red" Height="8" Canvas.Left="221" Stroke="Black" Width="8" Canvas.Top="692"/>
         <Ellipse Name="A5_4E" Fill="red" Height="8" Canvas.Left="247" Stroke="Black" Width="8" Canvas.Top="692"/>
 
-        <Ellipse Name="A6_1E" Fill="red" Height="8" Stroke="Black" Width="8" Canvas.Top="10" Canvas.Left="756"/>
+        <Ellipse Name="A6_1E" Fill="red" Height="8" Stroke="Black" Width="8" Canvas.Top="243" Canvas.Left="1"/>
         <Ellipse Name="A6_2E" Fill="red" Height="8" Stroke="Black" Width="8" Canvas.Top="268" Canvas.Left="1"/>
 
         <!--Stoplichten-->
@@ -81,7 +81,7 @@
         <Ellipse Name="A5_3" Fill="red" Height="21" Canvas.Left="136" Stroke="Black" Canvas.Top="469" Width="23"/>
         <Ellipse Name="A5_4" Fill="red" Height="21" Canvas.Left="136" Stroke="Black" Canvas.Top="495" Width="23"/>
 
-        <Ellipse Name="A6_1" Fill="red" Height="21" Canvas.Left="546" Stroke="Black" Canvas.Top="10" Width="23"/>
+        <Ellipse Name="A6_1" Fill="red" Height="21" Canvas.Left="361" Stroke="Black" Canvas.Top="236" Width="23"/>
         <Ellipse Name="A6_2" Fill="red" Height="21" Canvas.Left="361" Stroke="Black" Canvas.Top="262" Width="23"/>
         <Ellipse Name="A6_3" Fill="red" Height="21" Canvas.Left="361" Stroke="Black" Canvas.Top="288" Width="23"/>
         <Ellipse Name="A6_4" Fill="red" Height="20" Canvas.Left="361" Stroke="Black" Canvas.Top="314" Width="23"/>

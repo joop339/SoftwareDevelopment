@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Shapes;
 
 
@@ -161,6 +162,29 @@ namespace WpfApp1
 
             //WriteJson(Node.nodeList);
 
+            //Path myPath1 = new Path(); // Path = lijntjes
+            //myPath1.Stroke = Brushes.Black;
+            //myPath1.StrokeThickness = 1;
+            //SolidColorBrush mySolidColorBrush = new SolidColorBrush();
+            //mySolidColorBrush.Color = System.Windows.Media.Color.FromArgb(255, 204, 204, 255);
+            //myPath1.Fill = mySolidColorBrush;
+
+            //Rect myRect1 = new Rect(); // Rect = vorm
+            //myRect1.X = 10;
+            //myRect1.Y = 100;
+            //myRect1.Width = 150;
+            //myRect1.Height = 100;
+
+            //RectangleGeometry myRectangleGeometry1 = new RectangleGeometry(); // maak geometry met vorm rect
+            //myRectangleGeometry1.Rect = myRect1; 
+
+            //GeometryGroup myGeometryGroup1 = new GeometryGroup(); // conversie
+            //myGeometryGroup1.Children.Add(myRectangleGeometry1); 
+
+            //myPath1.Data = myGeometryGroup1; // lijntjes met deze geometry
+            //canvas.Children.Add(myPath1); // add to canvas
+
+
         }
         ~MainWindow()  // finalizer
         {
@@ -197,6 +221,26 @@ namespace WpfApp1
             else if (e.Key == Key.T)
             {
                 CycleTrafficLights(); //alle verkeerslichten op groen of rood
+            }
+            else if (e.Key == Key.P)
+            {
+                //spawn manual car
+            }
+            else if (e.Key == Key.Up)
+            {
+                //goup
+            }
+            else if (e.Key == Key.Down)
+            {
+                //godown
+            }
+            else if (e.Key == Key.Left)
+            {
+                //goleft
+            }
+            else if (e.Key == Key.Right)
+            {
+                //goright
             }
 
             e.Handled = true;
@@ -478,7 +522,7 @@ namespace WpfApp1
         /// </summary>
         private void UpdateCars()
         {
-            Car.UpdateRects();//nice
+            //Car.UpdateRects();
             if (Car.cars.Count > 0)
             {
                 for (int i = 0; i < Car.cars.Count - 1; i++)
@@ -501,6 +545,8 @@ namespace WpfApp1
                     if (!canvas.Children.Contains(Car.cars[i].ToUIElement()))
                     {
                         canvas.Children.Add(Car.cars[i].ToUIElement());
+                        canvas.Children.Add(Car.cars[i].ToUIElement2());
+                        canvas.Children.Add(Car.cars[i].ToUIElement3());
                     }
                 }
 
@@ -515,6 +561,7 @@ namespace WpfApp1
                     if (canvas.Children.Contains(Car.destroyedCars[i].ToUIElement()))
                     {
                         canvas.Children.Remove(Car.destroyedCars[i].ToUIElement());
+                        canvas.Children.Remove(Car.destroyedCars[i].ToUIElement2());
                     }
                 }
             }
@@ -564,7 +611,7 @@ namespace WpfApp1
         }
         private void SpawnCar()
         {
-            new Car(Route.routes[0]);
+            new Car(Route.routes[0], true);
         }
         private void SpawnCar(Route route)
         {
