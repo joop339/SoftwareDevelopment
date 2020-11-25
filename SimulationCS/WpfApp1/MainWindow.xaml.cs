@@ -40,6 +40,7 @@ namespace WpfApp1
 
         Random random = new Random();
 
+
         #region Nodes
         //Startpunten
         private Node A11S;
@@ -164,34 +165,7 @@ namespace WpfApp1
             KeyDown += new KeyEventHandler(MainWindow_KeyDown);
 
             //WriteJson(Node.nodeList);
-
-<<<<<<< HEAD
-            //Path myPath1 = new Path(); // Path = lijntjes
-            //myPath1.Stroke = Brushes.Black;
-            //myPath1.StrokeThickness = 1;
-            //SolidColorBrush mySolidColorBrush = new SolidColorBrush();
-            //mySolidColorBrush.Color = System.Windows.Media.Color.FromArgb(255, 204, 204, 255);
-            //myPath1.Fill = mySolidColorBrush;
-
-            //Rect myRect1 = new Rect(); // Rect = vorm
-            //myRect1.X = 10;
-            //myRect1.Y = 100;
-            //myRect1.Width = 150;
-            //myRect1.Height = 100;
-
-            //RectangleGeometry myRectangleGeometry1 = new RectangleGeometry(); // maak geometry met vorm rect
-            //myRectangleGeometry1.Rect = myRect1; 
-
-            //GeometryGroup myGeometryGroup1 = new GeometryGroup(); // conversie
-            //myGeometryGroup1.Children.Add(myRectangleGeometry1); 
-
-            //myPath1.Data = myGeometryGroup1; // lijntjes met deze geometry
-            //canvas.Children.Add(myPath1); // add to canvas
-
-
             
-=======
->>>>>>> parent of 62d95ae... wip collision
         }
         ~MainWindow()  // finalizer
         {
@@ -450,7 +424,6 @@ namespace WpfApp1
         {       
                 this.Dispatcher.Invoke(() => // used because thread does not own UI objects
                 {
-                    
                     UpdateCars();
                     UpdateTrafficLights();
                 });
@@ -464,7 +437,7 @@ namespace WpfApp1
                 //    // do nothing
                 //}
 
-                //Task.Delay(0);
+                //Thread.Sleep(0);
         }
 
         private void DrawTick()
@@ -509,7 +482,7 @@ namespace WpfApp1
         /// </summary>
         private void UpdateCars()
         {
-            Car.UpdateRects();//nice
+            //Car.UpdateRects();//nice
             if (Car.cars.Count > 0)
             {
                 for (int i = 0; i < Car.cars.Count - 1; i++)
@@ -531,10 +504,9 @@ namespace WpfApp1
                     if (!canvas.Children.Contains(Car.cars[i].ToUIElement()))
                     {
                         canvas.Children.Add(Car.cars[i].ToUIElement());
-<<<<<<< HEAD
-                        canvas.Children.Add(Car.cars[i].ToUIElement2());
-=======
->>>>>>> parent of 62d95ae... wip collision
+
+                        //canvas.Children.Add(Car.cars[i].ToUIElement2());
+
                     }
                 }
 
@@ -550,6 +522,11 @@ namespace WpfApp1
                     {
                         canvas.Children.Remove(Car.destroyedCars[i].ToUIElement());
                     }
+                    //if (canvas.Children.Contains(Car.destroyedCars[i].ToUIElement2()))
+                    //{
+                    //    canvas.Children.Add(Car.destroyedCars[i].ToUIElement2());
+                    //}
+
                 }
             }
         }
@@ -626,10 +603,10 @@ namespace WpfApp1
                     new Car(r);
                 }
 
-                //foreach (Route r in Route.altRoutes)
-                //{
-                //    new Car(r);
-                //}
+                foreach (Route r in Route.altRoutes)
+                {
+                    new Car(r);
+                }
 #if DEBUG
                 //Console.WriteLine("Spawning: '" + 1 + "' car, at: '" + Route.routes[counter].GetNodes()[0].name + "'");
                 Console.WriteLine("Spawning on every route");
@@ -642,6 +619,55 @@ namespace WpfApp1
                 Console.WriteLine("Spawning stopped cars at: " + amountOfCars);
 #endif
             }
+        }
+
+       
+
+        //public void DetectCollision(List<Car> cars)
+        //{
+        //    foreach (Car car in cars) // check elke autos
+        //    {
+        //        car.hasCollided = false; // reset
+
+        //        foreach(UIElement e in canvas.Children)
+        //        {
+        //            if(e == car.ToUIElement2())
+        //            {
+        //                Console.WriteLine("Stuf WORKS?!"); // probly not working tho
+        //            }
+        //        }
+
+        //        //int index = canvas.Children.IndexOf(car.ToUIElement2()); // get index of car hitbox in canvas
+        //       // Console.WriteLine(index);
+
+        //        //var hitboxBounds = GetBounds((Rectangle)canvas.Children[index], canvas); // pak de hitbox
+
+        //        foreach (Car oCar in cars) // met alle autos
+        //        {
+        //            if (oCar != car) // behalve zichzelf
+        //            {
+        //                index = canvas.Children.IndexOf(car.ToUIElement2()); // get index of car hitbox in canvas
+        //                //Console.WriteLine(index);
+
+        //                //var oCarBounds = GetBounds((Rectangle)canvas.Children[index], canvas); // pak de hitbox van alle andere autos
+
+        //                //if (hitboxBounds.IntersectsWith(oCarBounds)) // colliden de hitbox van de huidige auto en een andere
+        //                //{
+        //                //    car.hasCollided = true; // zet hasColllided op true
+        //                //    break;
+        //                //}
+                        
+        //            }
+                    
+        //        }
+        //    }
+
+        //}
+
+
+        public Canvas GetCanvas()
+        {
+            return canvas;
         }
 
         private void RandomSpawnCars()
