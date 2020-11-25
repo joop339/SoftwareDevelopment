@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Shapes;
 
 
@@ -166,6 +165,7 @@ namespace WpfApp1
 
             //WriteJson(Node.nodeList);
 
+<<<<<<< HEAD
             //Path myPath1 = new Path(); // Path = lijntjes
             //myPath1.Stroke = Brushes.Black;
             //myPath1.StrokeThickness = 1;
@@ -190,6 +190,8 @@ namespace WpfApp1
 
 
             
+=======
+>>>>>>> parent of 62d95ae... wip collision
         }
         ~MainWindow()  // finalizer
         {
@@ -226,26 +228,6 @@ namespace WpfApp1
             else if (e.Key == Key.T)
             {
                 CycleTrafficLights(); //alle verkeerslichten op groen of rood
-            }
-            else if (e.Key == Key.P)
-            {
-                //spawn manual car
-            }
-            else if (e.Key == Key.Up)
-            {
-                //goup
-            }
-            else if (e.Key == Key.Down)
-            {
-                //godown
-            }
-            else if (e.Key == Key.Left)
-            {
-                //goleft
-            }
-            else if (e.Key == Key.Right)
-            {
-                //goright
             }
 
             e.Handled = true;
@@ -527,7 +509,7 @@ namespace WpfApp1
         /// </summary>
         private void UpdateCars()
         {
-            //Car.UpdateRects();
+            Car.UpdateRects();//nice
             if (Car.cars.Count > 0)
             {
                 for (int i = 0; i < Car.cars.Count - 1; i++)
@@ -549,7 +531,10 @@ namespace WpfApp1
                     if (!canvas.Children.Contains(Car.cars[i].ToUIElement()))
                     {
                         canvas.Children.Add(Car.cars[i].ToUIElement());
+<<<<<<< HEAD
                         canvas.Children.Add(Car.cars[i].ToUIElement2());
+=======
+>>>>>>> parent of 62d95ae... wip collision
                     }
                 }
 
@@ -564,7 +549,6 @@ namespace WpfApp1
                     if (canvas.Children.Contains(Car.destroyedCars[i].ToUIElement()))
                     {
                         canvas.Children.Remove(Car.destroyedCars[i].ToUIElement());
-                        canvas.Children.Remove(Car.destroyedCars[i].ToUIElement2());
                     }
                 }
             }

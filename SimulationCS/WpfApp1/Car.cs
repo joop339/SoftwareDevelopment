@@ -15,16 +15,16 @@ namespace WpfApp1
     public class Car
     {
         RotateTransform rotateTransform = new RotateTransform();
+<<<<<<< HEAD
         RotateTransform rotateTransform2 = new RotateTransform();
+=======
+        
+>>>>>>> parent of 62d95ae... wip collision
 
         public static List<Car> cars = new List<Car>();
         public static List<Car> destroyedCars = new List<Car>();
         Rectangle carRect; //car icon
-        Rectangle rect;
-
-        Rect hitboxCarRect; // carrect hitbox
-        Rect hitboxRect; // rect hitbox
-
+        Rect rect;
         //Node tl = MainWindow.GetNode();
         Node target;
 
@@ -34,8 +34,6 @@ namespace WpfApp1
         Route route;
         static int idCount = 0;
         int id;
-
-        Path carLines;
 
         public Car(Route route) //aanmaken van een nieuwe auto met de juiste coordinaten.
         {
@@ -56,6 +54,7 @@ namespace WpfApp1
                 Stroke = Brushes.Black
             };
 
+<<<<<<< HEAD
 
             //var x1 = this.left;
             //var y1 = this.top;          
@@ -124,6 +123,46 @@ namespace WpfApp1
         //    rotateTransform.CenterX = hitboxCarRect.Width / 2;
         //    rotateTransform.CenterY = hitboxCarRect.Height / 2;
 
+=======
+            var x1 = this.left;
+            var y1 = this.top;
+            rect = new Rect(x1, y1, this.carRect.Width + 7, this.carRect.Height + 7);
+
+            rotateTransform.CenterX = carRect.Width / 2;
+            rotateTransform.CenterY = carRect.Height / 2;
+        }
+
+        //public Car(double left, double top, Route route) //aanmaken van een nieuwe auto met de juiste coordinaten.
+        //{
+        //    cars.Add(this);
+        //    this.left = left;
+        //    this.top = top;
+        //    this.id = idCount;
+        //    idCount++;
+        //    this.route = route;
+        //    this.target = route.GetNodes()[0];
+
+        //    carRect = new Rectangle()
+        //    {
+        //        //Source = new BitmapImage(new Uri("/resources/car.png")),
+        //        Width = 19,
+        //        Height = 13,
+        //        Fill = Brushes.Maroon,
+        //        Stroke = Brushes.Black
+        //    };
+        //    Canvas.SetLeft(carRect, left);
+        //    Canvas.SetTop(carRect, top);
+        //}
+
+        //~Car()
+        //{
+        //    cars.Remove(this);        
+        //}
+
+        //public static implicit operator UIElement(Car car) //Omzetten UI-element
+        //{
+
+>>>>>>> parent of 62d95ae... wip collision
         //}
 
         public UIElement ToUIElement()
@@ -131,11 +170,14 @@ namespace WpfApp1
             return carRect;
         }
 
+<<<<<<< HEAD
         public UIElement ToUIElement2()
         {
             return rect;
         }
 
+=======
+>>>>>>> parent of 62d95ae... wip collision
         //void Drive(double distance) //Positie auto updaten.
         //{
 
@@ -158,6 +200,7 @@ namespace WpfApp1
         {
             Canvas.SetLeft(carRect, left);
             Canvas.SetTop(carRect, top);
+<<<<<<< HEAD
 
             Canvas.SetLeft(rect, left);
             Canvas.SetTop(rect, top);
@@ -170,7 +213,25 @@ namespace WpfApp1
 
             if (this.DetectCollision() == false)
             {
+=======
+        }
 
+        public static void UpdateRects()
+        {
+            foreach(var car in cars)
+            {
+                car.rect.X = car.left;
+                car.rect.Y = car.top;
+            }
+        }
+
+        public void Drive() //Positie auto updaten wanneer stoplicht groen is. of de auto nog niet bij het stoplicht is aangekomen.
+        {
+>>>>>>> parent of 62d95ae... wip collision
+
+            //if (this.DetectCollision() == false)
+            //{
+            directionCheck();
                 if (target.GetLeft() > left)
                 {
                     left = left + 0.025;
@@ -228,7 +289,7 @@ namespace WpfApp1
                             this.Destroy();
                         }
                     }
-                }
+               // }
             }
         }
 
@@ -236,11 +297,15 @@ namespace WpfApp1
         IntersectionDetail d1;
         bool DetectCollision()
         {
+<<<<<<< HEAD
             //hitboxCarRect = new Rect(left, top, carRect.Width, carRect.Height);
             //hitboxRect = new Rect(left - rect.Width, top + 0, rect.Width, rect.Height);
             // Rect bodyRect = new Rect(Canvas.GetLeft(rect), Canvas.getTop(rect), rect.ActualWidth, rect.ActualHeight);
 
             foreach (Car oCar in cars) // check alle autos
+=======
+            foreach (Car car in cars) // check alle autos
+>>>>>>> parent of 62d95ae... wip collision
             {
                 if (oCar != this)
                 { // als de auto niet this is           
@@ -248,14 +313,15 @@ namespace WpfApp1
                     //if (directionCheck(car))
                     //{
 
-                    //var x1 = Canvas.GetLeft(this.carRect);
-                    //var y1 = Canvas.GetTop(this.carRect);
-                    //Rect r1 = new Rect(x1, y1, this.carRect.ActualWidth + 7, this.carRect.ActualHeight + 7);
+                        //var x1 = Canvas.GetLeft(this.carRect);
+                        //var y1 = Canvas.GetTop(this.carRect);
+                        //Rect r1 = new Rect(x1, y1, this.carRect.ActualWidth + 7, this.carRect.ActualHeight + 7);
 
-                    //var x2 = Canvas.GetLeft(car.carRect);
-                    //var y2 = Canvas.GetTop(car.carRect);
-                    //Rect r2 = new Rect(x2, y2, car.carRect.ActualWidth + 7, car.carRect.ActualHeight + 7);
+                        //var x2 = Canvas.GetLeft(car.carRect);
+                        //var y2 = Canvas.GetTop(car.carRect);
+                        //Rect r2 = new Rect(x2, y2, car.carRect.ActualWidth + 7, car.carRect.ActualHeight + 7);
 
+<<<<<<< HEAD
                     //if (this.hitboxCarRect.IntersectsWith(oCar.hitboxCarRect))
                     //{
                     //    Console.WriteLine("Collission");
@@ -271,6 +337,13 @@ namespace WpfApp1
                     {
                         return true;
                     }
+=======
+                        if (this.rect.IntersectsWith(car.rect))
+                        {
+                            return true;
+                        }
+                    //}
+>>>>>>> parent of 62d95ae... wip collision
                 }
             }
 
@@ -280,10 +353,8 @@ namespace WpfApp1
 
 
 
-        void directionCheck() // check of de auto in de zelfde richting is als het huidige doelwit
+        string directionCheck() // check of de auto in de zelfde richting is als het huidige doelwit
         {
-            
-
             double targetX = Math.Round(target.GetLeft());
             double targetY = Math.Round(target.GetTop());
             double thisX = Math.Round(left);
@@ -291,46 +362,71 @@ namespace WpfApp1
 
 
 
-            if (thisX > targetX && targetY == thisY) // West
+            if (thisX > targetX && targetY == thisY)
             {
-                rotateTransform.Angle = 0;             
+                rotateTransform.Angle = 0;
+                carRect.RenderTransform = rotateTransform;
+                return "W";
             }
 
-            else if (thisX < targetX && targetY == thisY) // East
+            else if (thisX < targetX && targetY == thisY)
             {
                 rotateTransform.Angle = 180;
+                carRect.RenderTransform = rotateTransform;
+                return "E";
             }
 
-            else if (thisY > targetY && targetX == thisX) // North
+            else if (thisY > targetY && targetX == thisX)
             {
                 rotateTransform.Angle = 90;
+                carRect.RenderTransform = rotateTransform;
+                return "N";
             }
 
-            else if (thisY < targetY && targetX == thisX) // South
+            else if (thisY < targetY && targetX == thisX)
             {
                 rotateTransform.Angle = 270;
+                carRect.RenderTransform = rotateTransform;
+                return "S";
             }
 
-            else if (thisX < targetX && thisY < targetY) // South East
+            else if (thisX < targetX && thisY < targetY)
             {                
                 rotateTransform.Angle = 225;
+                carRect.RenderTransform = rotateTransform;
+                return "SE";
             }
 
-            else if (thisX > targetX && thisY > targetY) // North West
+            else if (thisX > targetX && thisY > targetY)
             {               
                 rotateTransform.Angle = 45;
+                carRect.RenderTransform = rotateTransform;
+                return "NW"; 
             }
 
-            else if (thisX < targetX && thisY > targetY) // North East
+            else if (thisX < targetX && thisY > targetY)
             {                
                 rotateTransform.Angle = 135;
+                carRect.RenderTransform = rotateTransform;
+                return "NE";
             }
 
-            else if (thisX > targetX && thisY < targetY) // South West
+            else if (thisX > targetX && thisY < targetY)
             {
                 rotateTransform.Angle = 315;
+                carRect.RenderTransform = rotateTransform;
+                return "SW";
             }
+            //double roundedLeft = Math.Round(left);
+            //double roundedTop = Math.Round(top);
 
+            //double carLeft = Math.Round(car.left);
+            //double carTop = Math.Round(car.top);
+
+            //double targetLeft = Math.Round(target.GetLeft());
+            //double targetTop = Math.Round(target.GetTop());
+
+<<<<<<< HEAD
             rotateTransform2.Angle = rotateTransform.Angle;
 
             carRect.RenderTransform = rotateTransform;
@@ -364,6 +460,25 @@ namespace WpfApp1
             transforms.Children.Add(translateTransform);
 
             g.Transform = transforms;
+=======
+            //bool isTargetAndCarLeft = roundedLeft > carLeft && roundedLeft > targetLeft;
+            //bool isTargetAndCarRight = roundedLeft < carLeft && roundedLeft < targetLeft;
+            //bool isTargetAndCarTop = roundedTop > carTop && roundedTop > targetTop;
+            //bool isTargetAndCarDown = roundedTop < carTop && roundedTop < targetTop;
+
+
+            //if (
+            //            (isTargetAndCarLeft) // doelwit en andere auto zijn links van this
+            //            || (isTargetAndCarRight) // doelwit en andere auto zijn rechts van this
+            //            || (isTargetAndCarTop) // doelwit en andere auto zijn boven this
+            //            || (isTargetAndCarDown) // doelwit en andere auto zijn onder this
+            //   )
+            //{
+            //    return true;
+            //}
+
+            return null;
+>>>>>>> parent of 62d95ae... wip collision
         }
     }
 
