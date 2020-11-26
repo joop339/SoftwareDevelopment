@@ -24,8 +24,9 @@ namespace WpfApp1
         public Rectangle carRect; //car icon
         //public Rectangle carHitbox;
 
+        public bool waitingSend = false;
         public bool hasCollided = false;
-        Node target; // next target
+        public Node target; // next target
 
         double left;
         double top;
@@ -51,7 +52,7 @@ namespace WpfApp1
                 Height = 13,
                 Fill = Brushes.Maroon,
                 Stroke = Brushes.Black
-            }; 
+            };
 
             //carHitbox = new Rectangle() // rectangle infront of carRect, This is for collision detection
             //{
@@ -105,36 +106,21 @@ namespace WpfApp1
         {
             if (this.hasCollided == false)
             {
-            directionCheck();
-                if (target.GetLeft() > left)
-                {
-                    left = left + 0.025;
+                directionCheck();
 
-                }
-                else if (target.GetLeft() < left)
-                {
-                    left = left - 0.025;
-                    
-                }
 
-                if (target.GetTop() > top)
-                {
-                    top = top + 0.025;
-                    
-                }
-                else if (target.GetTop() < top)
-                {
-                    top = top - 0.025;
-                }
+                // if target is reached
 
-            if (target.GetTop() - 0.05 < top && target.GetTop() + 0.05 > top && target.GetLeft() - 0.05 < left && target.GetLeft() + 0.05 > left)
-                { // if target is reached
-
-                    if (target is TrafficLight)
-                    { // and target is TL AND TL is green
+                if (target is TrafficLight)
+                { // and target is TL AND TL is green
+                    if (target.GetTop() - 0.05 - 25 * ((TrafficLight)target).waitingCars < top && target.GetTop() + 0.05 + 25 * ((TrafficLight)target).waitingCars > top && target.GetLeft() - 0.05 - 25 * ((TrafficLight)target).waitingCars < left && target.GetLeft() + 0.05 + 25 * ((TrafficLight)target).waitingCars > left)
+                    {
                         if (CheckTrafficLight() == Color.Green)
                         {// get next target
                             int index = route.GetNodes().IndexOf(target);
+                            ((TrafficLight)target).SetWaiting(false);
+                            ((TrafficLight)target).waitingCars = 0;
+                            this.waitingSend = false;
                             if (index < route.GetNodes().Count - 1)
                             {
                                 this.target = route.GetNodes()[index + 1];
@@ -147,10 +133,23 @@ namespace WpfApp1
                         }
                         else if (CheckTrafficLight() == Color.Red)
                         {
-                            ((TrafficLight)target).SetWaiting(true);
+                            if (this.waitingSend == false)
+                            {
+                                ((TrafficLight)target).SetWaiting(true);
+                                ((TrafficLight)target).waitingCars++;
+                                this.waitingSend = true;
+                            }
                         }
                     }
-                    else if (!(target is TrafficLight))
+                    else
+                    {
+                        this.waitingSend = false;
+                        moveCar(target);
+                    }
+                }
+                else if (!(target is TrafficLight))
+                {
+                    if (target.GetTop() - 0.05 < top && target.GetTop() + 0.05 > top && target.GetLeft() - 0.05 < left && target.GetLeft() + 0.05 > left)
                     {
                         int index = route.GetNodes().IndexOf(target);
                         if (index < route.GetNodes().Count - 1)
@@ -163,12 +162,39 @@ namespace WpfApp1
                             this.Destroy();
                         }
                     }
+                    else
+                    {
+                        moveCar(target);
+                    }
                 }
+
             }
-        }       
+        }
 
+        void moveCar(Node target)
+        {
+            if (target.GetLeft() > left)
+            {
+                left = left + 0.025;
 
-    
+            }
+            else if (target.GetLeft() < left)
+            {
+                left = left - 0.025;
+
+            }
+
+            if (target.GetTop() > top)
+            {
+                top = top + 0.025;
+
+            }
+            else if (target.GetTop() < top)
+            {
+                top = top - 0.025;
+            }
+        }
+
 
 
         void directionCheck() // check of de auto in de zelfde richting is als het huidige doelwit
@@ -201,17 +227,17 @@ namespace WpfApp1
             }
 
             else if (thisX < targetX && thisY < targetY)
-            {                
+            {
                 rotateTransform.Angle = 225;
             }
 
             else if (thisX > targetX && thisY > targetY)
-            {               
+            {
                 rotateTransform.Angle = 45;
             }
 
             else if (thisX < targetX && thisY > targetY)
-            {                
+            {
                 rotateTransform.Angle = 135;
 
             }
@@ -226,7 +252,7 @@ namespace WpfApp1
             carRect.RenderTransform = rotateTransform;
             //carHitbox.RenderTransform = rotateTransform2;
         }
-        }
+    }
     //bool isTargetAndCarLeft = roundedLeft > carLeft && roundedLeft > targetLeft;
     //bool isTargetAndCarRight = roundedLeft < carLeft && roundedLeft < targetLeft;
     //bool isTargetAndCarTop = roundedTop > carTop && roundedTop > targetTop;
