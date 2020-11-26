@@ -17,8 +17,10 @@
 #define PHASE_ONE		"phase_one.json"
 #define PHASE_TWO		"phase_two.json"
 #define PHASE_THREE		"phase_three.json"
+#define PHASE_FOUR		"phase_four.json"
+#define PHASE_RED		"phase_red.json"
 
-const std::vector<std::string> cycle{ PHASE_ONE, PHASE_TWO, PHASE_THREE };
+const std::vector<std::string> cycle{ PHASE_ONE, PHASE_RED, PHASE_TWO, PHASE_RED, PHASE_THREE, PHASE_RED, PHASE_FOUR, PHASE_RED, };
 bool connected = false;
 char hdr = 'y';
 void sendJson(const SOCKET& socket, const char file[], const char hdr);
