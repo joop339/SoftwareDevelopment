@@ -1,4 +1,4 @@
-﻿#define DEBUG
+#define DEBUG
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
