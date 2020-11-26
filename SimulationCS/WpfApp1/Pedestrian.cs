@@ -2,16 +2,20 @@
 using System.Windows.Shapes;
 using System.Windows.Media;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace WpfApp1
 {
     public class Pedestrian
     {
         public static List<Pedestrian> pedestrians = new List<Pedestrian>(); // List of pedestrians
+        public static List<Pedestrian> destroyedPedestrians = new List<Pedestrian>(); // List of pedestrians
 
         double left;
         double top;
 
+        double speed = Car.speed / 2;
+        bool waitingSend = true;
 
         Route route; // To be followed route
         Node target;
@@ -21,13 +25,18 @@ namespace WpfApp1
         public Pedestrian(Route route)
         {
             pedestrians.Add(this); // add to list
+            this.left = route.GetNodes()[0].GetLeft();
+            this.top = route.GetNodes()[0].GetTop();
 
+            this.target = route.GetNodes()[0];
             this.route = route; // set route
 
             body = new Ellipse() // set body
             {
-                Fill = Brushes.LightBlue,
-                Stroke = Brushes.Black,
+                Width = 10,
+                Height = 10,
+                Fill = Brushes.Black,
+                Stroke = Brushes.Black
             };
         }
 
@@ -40,46 +49,54 @@ namespace WpfApp1
         {
             return ((TrafficLight)target).GetColor();
         }
+        public void Draw()
+        {
+            Canvas.SetLeft(body, left);
+            Canvas.SetTop(body, top);
+        }
+
 
         public void Update()
         {
-            this.Walk();
-            this.CheckTrafficLight();
+            SwitchTarget();
         }
 
         public void Walk()
         {
             if (target.GetLeft() > left)
             {
-                left = left + 0.025;
+                left = left + speed;
 
             }
             else if (target.GetLeft() < left)
             {
-                left = left - 0.025;
+                left = left - speed;
 
             }
 
             if (target.GetTop() > top)
             {
-                top = top + 0.025;
+                top = top + speed;
 
             }
             else if (target.GetTop() < top)
             {
-                top = top - 0.025;
+                top = top - speed;
             }
         }
 
         public void SwitchTarget()
         {
-            if (target.GetTop() - 0.05 < top && target.GetTop() + 0.05 > top && target.GetLeft() - 0.05 < left && target.GetLeft() + 0.05 > left)
+            if (target is TrafficLight)
             { // if target is reached
 
-                if (target is TrafficLight)
+                if (target.GetTop() - 0.05 - 15 * ((TrafficLight)target).waitingPedestrians < top && target.GetTop() + 0.05 + 15 * ((TrafficLight)target).waitingPedestrians > top && target.GetLeft() - 0.05 - 15 * ((TrafficLight)target).waitingPedestrians < left && target.GetLeft() + 0.05 + 15 * ((TrafficLight)target).waitingPedestrians > left)
                 { // and target is TL AND TL is green
                     if (CheckTrafficLight() == Color.Green)
                     {// get next target
+                        ((TrafficLight)target).SetWaiting(false);
+                        ((TrafficLight)target).waitingPedestrians = 0;
+
                         int index = route.GetNodes().IndexOf(target);
                         if (index < route.GetNodes().Count - 1)
                         {
@@ -92,10 +109,25 @@ namespace WpfApp1
                     }
                     else if (CheckTrafficLight() == Color.Red)
                     {
-                        ((TrafficLight)target).SetWaiting(true);
+                        if (waitingSend == true)
+                        {
+                            ((TrafficLight)target).SetWaiting(true);
+                            ((TrafficLight)target).waitingPedestrians++;
+                            waitingSend = false;
+                        }
                     }
                 }
-                else if (!(target is TrafficLight))
+                else
+                {
+                    this.waitingSend = true;
+                    this.Walk();
+
+                }
+
+            }
+            else if (!(target is TrafficLight))
+            {
+                if (target.GetTop() - 0.05 < top && target.GetTop() + 0.05 > top && target.GetLeft() - 0.05 < left && target.GetLeft() + 0.05 > left)
                 {
                     int index = route.GetNodes().IndexOf(target);
                     if (index < route.GetNodes().Count - 1)
@@ -103,10 +135,15 @@ namespace WpfApp1
                         this.target = route.GetNodes()[index + 1];
                         //Console.WriteLine(target.name);
                     }
+
                     else
                     {
                         this.Destroy();
                     }
+                }
+                else
+                {
+                    this.Walk();
                 }
             }
         }
@@ -114,6 +151,7 @@ namespace WpfApp1
         void Destroy()
         {
             pedestrians.Remove(this);
+            destroyedPedestrians.Add(this);
         }
     }
 

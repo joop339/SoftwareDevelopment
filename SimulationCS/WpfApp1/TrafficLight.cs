@@ -22,6 +22,7 @@ namespace WpfApp1
         public string id;
         private bool waiting = false;
         public double waitingCars;
+        public double waitingPedestrians;
 
 
         public TrafficLight(int left, int top, string id) : base(left, top)

@@ -6,23 +6,29 @@ using System.Threading.Tasks;
 
 namespace WpfApp1
 {
+    public enum RoadType
+    {
+        Road, // 0
+        NonCarRoad, // 1
+    }
+
     public class Route
     {
         public static List<Route> routes = new List<Route>();
-        public static List<Route> altRoutes = new List<Route>();
+        public static List<Route> nonCarRoutes = new List<Route>();
         private List<Node> nodes = new List<Node>();
 
-        public Route(List<Node> nodes, bool isAlt = false)
+        public Route(List<Node> nodes, RoadType roadType = RoadType.Road)
         {
-            if (isAlt == false)
+            if (roadType == RoadType.Road)
             {
                 this.nodes = nodes;
                 routes.Add(this);
             }
-            else
+            else if (roadType == RoadType.NonCarRoad)
             {
                 this.nodes = nodes;
-                altRoutes.Add(this);
+                nonCarRoutes.Add(this);
             }
 
         }

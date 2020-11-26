@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -167,6 +168,21 @@ namespace WpfApp1
 
         private Node A61E;
         private Node A62E;
+        // pednodes
+        private Node VNorthS;
+        private Node VEastS;
+        private Node VEast2S;
+        private Node VWestS;
+        private Node VWest2S;
+
+        private Node VB1;
+        private Node VB2;
+        private Node VB3;
+        private Node VB4;
+        private Node VB5;
+        private Node VB6;
+        private Node VB7;
+        private Node VB8;
         #endregion
 
         /// <summary>
@@ -188,11 +204,15 @@ namespace WpfApp1
 
             //           //InitializeThread(() => { Loopify(WriteJson, 3000); });
 
-            //            //InitializeThread(()=> { Loopify(SocketClientConnect); });
+            InitializeThread(()=> { Loopify(SocketClientConnect); });
 
-            //            //InitializeThread(()=> { Loopify(SpawnCars, 1000); });
+            InitializeThread(() => { Loopify(SocketClientReceive); });
 
-            //            //InitializeThread(() => { Loopify(RandomSpawnCars, 1000, true); });
+            //InitializeThread(()=> { Loopify(SpawnCars, 2000, true); });
+
+            InitializeThread(() => { Loopify(RandomSpawnCars, 150, true); });
+
+            InitializeThread(() => { Loopify(RandomSpawnPedestrians, 150, true); });
 
             //            //Keydown events
             KeyDown += new KeyEventHandler(MainWindow_KeyDown);
@@ -235,8 +255,12 @@ namespace WpfApp1
             else if (e.Key == Key.T)
             {
                 CycleTrafficLights(); //alle verkeerslichten op groen of rood
+            
             }
-
+            else if (e.Key == Key.X)
+            {
+                SpawnPedestrian(); //alle verkeerslichten op groen of rood
+            }
             e.Handled = true;
         }
         /// <summary>
@@ -397,6 +421,24 @@ namespace WpfApp1
 
             A61E = new Node(A6_1E);
             A62E = new Node(A6_2E);
+
+            //Alles voor pedestrians
+            VNorthS = new Node(V_NorthS);
+            VEastS = new Node(V_EastS);
+            VEast2S = new Node(V_East2S);
+            VWestS = new Node(V_WestS);
+            VWest2S = new Node(V_West2S);
+
+            VB1 = new Node(V_B1);
+            VB2 = new Node(V_B2);
+            VB3 = new Node(V_B3);
+            VB4 = new Node(V_B4);
+            VB5 = new Node(V_B5);
+            VB6 = new Node(V_B6);
+            VB7 = new Node(V_B7);
+            VB8 = new Node(V_B8);
+
+
         }
 
         /// <summary>
@@ -405,10 +447,10 @@ namespace WpfApp1
         private void InitializeRoutes()
         {
             Route Route1 = new Route(new List<Node> { A11S, A11, A11Bocht, A61, A61E });
-            Route Route1_1 = new Route(new List<Node> { A11S, A11, A11Bocht, A62, A62E }, true);
+            Route Route1_1 = new Route(new List<Node> { A11S, A11, A11Bocht, A62, A62E });
 
             Route Route2 = new Route(new List<Node> { A12S, A12, A12Bocht, A63, A63Bocht, A53E });
-            Route Route2_1 = new Route(new List<Node> { A12S, A12, A12Bocht, A64, A64Bocht, A54E }, true);
+            Route Route2_1 = new Route(new List<Node> { A12S, A12, A12Bocht, A64, A64Bocht, A54E });
 
             Route Route3 = new Route(new List<Node> { A13S, A13, A13Bocht, A34E });//
 
@@ -427,21 +469,52 @@ namespace WpfApp1
             Route Route9 = new Route(new List<Node> { A42S, A42, A42Bocht, A61E });
 
             Route Route10 = new Route(new List<Node> { A43S, A43, A43Bocht, A31, A31Bocht, A22E });
-            Route Route10_1 = new Route(new List<Node> { A43S, A43, A43Bocht, A32, A32Bocht, A21E }, true);
+            Route Route10_1 = new Route(new List<Node> { A43S, A43, A43Bocht, A32, A32Bocht, A21E });
 
             Route Route11 = new Route(new List<Node> { A44S, A44, A44Bocht, A33, A33E });
-            Route Route11_1 = new Route(new List<Node> { A44S, A44, A44Bocht, A34, A34E }, true);
+            Route Route11_1 = new Route(new List<Node> { A44S, A44, A44Bocht, A34, A34E });
 
             Route Route12 = new Route(new List<Node> { A51S, A51, A51Bocht, A31, A31Bocht, A22E });
-            Route Route12_1 = new Route(new List<Node> { A51S, A51, A51Bocht, A32, A32Bocht, A21E }, true);
+            Route Route12_1 = new Route(new List<Node> { A51S, A51, A51Bocht, A32, A32Bocht, A21E });
 
             Route Route13 = new Route(new List<Node> { A52S, A52, A52Bocht, A33, A33E });
-            Route Route13_1 = new Route(new List<Node> { A52S, A52, A52Bocht, A34, A34E }, true);
+            Route Route13_1 = new Route(new List<Node> { A52S, A52, A52Bocht, A34, A34E });
 
             Route Route14 = new Route(new List<Node> { A53S, A53, A53Bocht, A54E });
 
             Route Route15 = new Route(new List<Node> { A54S, A54, A54Bocht, A53E });
+
+            Route Route1P = new Route(new List<Node> { VNorthS, VB5, V14, V12, VB6, VB7, VB8, VWestS}, RoadType.NonCarRoad);
+            Route Route1_1P = new Route(new List<Node> { VNorthS, VB5, V21, V23, VB4, VEast2S}, RoadType.NonCarRoad);
+
+            Route Route2P = new Route(new List<Node> { VWestS, VB8, V51, V53, VB1, V41, V43, VB2, VB3, VB4, VEast2S}, RoadType.NonCarRoad);
+            Route Route2_1P = new Route(new List<Node> { VWestS, VB8, V51, V53, VB1, V41, V43, VB2, VB3, VB4, V24, V22, VB5, VNorthS }, RoadType.NonCarRoad);
+
+            Route Route3P = new Route(new List<Node> { VWest2S, VB1, V54, V52, VB8, VWestS}, RoadType.NonCarRoad);
+            Route Route3_1P = new Route(new List<Node> { VWest2S, VB1, V41, V43, VB2, VB3, VB4, VEast2S }, RoadType.NonCarRoad);
+            Route Route3_2P = new Route(new List<Node> { VWest2S, VB1, V41, V43, VB2, VB3, VB4, V24, V22, VB5, VNorthS }, RoadType.NonCarRoad);
+
+            Route Route4P = new Route(new List<Node> { VEast2S, VB4, V24, V22, VB5, VNorthS }, RoadType.NonCarRoad);
+            Route Route4_1P = new Route(new List<Node> { VEast2S, VB4, V24, V22, VB5, VEastS }, RoadType.NonCarRoad);
+            Route Route4_2P = new Route(new List<Node> { VEast2S, VB4, V24, V22, VB5, V14, V12, VB6, VB7, VB8, VWestS }, RoadType.NonCarRoad);
+
+            Route Route5P = new Route(new List<Node> { VEastS, VB5, VNorthS }, RoadType.NonCarRoad);
+            Route Route5_1P = new Route(new List<Node> { VEastS, VB5, V14, V12, VB6, VB7, VB8, VWestS }, RoadType.NonCarRoad);
+
+            //new List<Ellipse> { V_EastS, V_B5, V1_4, V1_2, V_B6, V_B7, V_B8, V_WestS }
         }
+
+        //private List<Node> GetNodeList(List<Ellipse> ellipses)
+        //{
+        //    List<Node> nodes = new List<Node>();
+
+        //    foreach(Ellipse e in ellipses)
+        //    {
+        //        nodes.Add(new Node(e));
+        //    }
+
+        //    return nodes;
+        //}
 
         /// <summary>
         ///Initialize all pre-existing cars and traffic lights from list
@@ -452,6 +525,10 @@ namespace WpfApp1
             foreach (Car car in Car.cars)
             {
                 canvas.Children.Add(car.ToUIElement());
+            }
+            foreach (Pedestrian pedestrian in Pedestrian.pedestrians)
+            {
+                canvas.Children.Add(pedestrian.ToUIElement());
             }
 
             //Draw predefined traffic lights V2
@@ -478,6 +555,7 @@ namespace WpfApp1
         {
             this.Dispatcher.Invoke(() => // used because thread does not own UI objects
             {
+                UpdatePeds();
                 UpdateCars();
                 UpdateTrafficLights();
             });
@@ -499,6 +577,7 @@ namespace WpfApp1
             this.Dispatcher.Invoke(() => // used because thread does not own UI objects
             {
                 DrawCars();
+                DrawPeds();
             });
         }
 
@@ -546,6 +625,17 @@ namespace WpfApp1
             }
 
         }
+        private void UpdatePeds()
+        {
+            if (Pedestrian.pedestrians.Count > 0)
+            {
+                for (int i = 0; i < Pedestrian.pedestrians.Count - 1; i++)
+                {
+                    Pedestrian.pedestrians[i].Update();
+                }
+            }
+
+        }
 
         private void DrawCars()
         {
@@ -580,6 +670,38 @@ namespace WpfApp1
                     //{
                     //    canvas.Children.Add(Car.destroyedCars[i].ToUIElement2());
                     //}
+
+                }
+            }
+        }
+
+        private void DrawPeds()
+        {
+            if (Pedestrian.pedestrians.Count > 0)
+            {
+                for (int i = 0; i < Pedestrian.pedestrians.Count - 1; i++)
+                {
+                    Pedestrian.pedestrians[i].Draw();
+
+                    if (!canvas.Children.Contains(Pedestrian.pedestrians[i].ToUIElement()))
+                    {
+                        canvas.Children.Add(Pedestrian.pedestrians[i].ToUIElement());
+
+                    }
+                }
+
+
+            }
+
+            // destroy rectangles 
+            if (Pedestrian.destroyedPedestrians.Count > 0)
+            {
+                for (int i = 0; i < Pedestrian.destroyedPedestrians.Count - 1; i++)
+                {
+                    if (canvas.Children.Contains(Pedestrian.destroyedPedestrians[i].ToUIElement()))
+                    {
+                        canvas.Children.Remove(Pedestrian.destroyedPedestrians[i].ToUIElement());
+                    }
 
                 }
             }
@@ -639,6 +761,10 @@ namespace WpfApp1
         {
             new Car(Route.routes[0]);
         }
+        private void SpawnPedestrian()
+        {
+            new Pedestrian(Route.routes[0]);
+        }
         private void SpawnCar(Route route)
         {
             new Car(route);
@@ -665,10 +791,10 @@ namespace WpfApp1
                     new Car(r);
                 }
 
-                foreach (Route r in Route.altRoutes)
-                {
-                    new Car(r);
-                }
+                //foreach (Route r in Route.altRoutes)
+                //{
+                //    new Car(r);
+                //}
 #if DEBUG
                 //Console.WriteLine("Spawning: '" + 1 + "' car, at: '" + Route.routes[counter].GetNodes()[0].name + "'");
                 Console.WriteLine("Spawning on every route");
@@ -731,27 +857,55 @@ namespace WpfApp1
         {
             return canvas;
         }
+        private void RandomSpawnPedestrians()
+        {
 
+            int randomNonCarRouteIndex = random.Next(Route.nonCarRoutes.Count);
+
+            Route randomNonCarRoute = Route.nonCarRoutes[randomNonCarRouteIndex];
+
+            int randomAmountOfPedestrians = random.Next(2);
+
+            foreach (Node node in randomNonCarRoute.GetNodes())
+            {
+                if (node is TrafficLight)
+                {
+                    if (((TrafficLight)node).waitingPedestrians < 3)
+                    {
+                        for (int i = 0; i < randomAmountOfPedestrians; i++)
+                        {
+                            Pedestrian.pedestrians.Add(new Pedestrian(randomNonCarRoute));
+#if DEBUG
+                            Console.WriteLine("Spawning: '" + randomAmountOfPedestrians + "' peds, at: '" + randomNonCarRoute.GetNodes()[0].name + "'");
+#endif
+                        }
+                    }
+                }
+            }
+
+        }
         private void RandomSpawnCars()
         {
-            int randomAmountOfLanes = random.Next(16);
 
-            for (int i = 0; i < randomAmountOfLanes; i++)
+            int randomRouteIndex = random.Next(Route.routes.Count); // get random route number 5
+
+            Route randomRoute = Route.routes[randomRouteIndex]; //5 
+
+            int randomAmountOfCars = random.Next(2);
+
+            if (((TrafficLight)randomRoute.GetNodes()[1]).waitingCars < 4)
             {
-                int randomAmountOfCars = random.Next(6);
-
-                int randomRouteIndex = random.Next(Route.routes.Count);
-
-                Route randomRoute = Route.routes[randomRouteIndex];
-
-                for (int j = 0; j < randomAmountOfCars; j++)
+                for (int i = 0; i < randomAmountOfCars; i++)
                 {
                     Car.cars.Add(new Car(randomRoute));
-                }
 #if DEBUG
-                Console.WriteLine("Spawning: '" + randomAmountOfCars + "' cars, at: '" + randomRoute.GetNodes()[0].name + "'");
+                    Console.WriteLine("Spawning: '" + randomAmountOfCars + "' cars, at: '" + randomRoute.GetNodes()[0].name + "'");
 #endif
+                }
             }
+
+
+
         }
 
         public void SetTrafficLightsFromJson(JObject jObject)

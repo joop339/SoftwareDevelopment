@@ -30,6 +30,7 @@ namespace WpfApp1
 
         double left;
         double top;
+        public static double speed = 0.010;
 
         Route route; // to be followed route
         //static int idCount = 0;
@@ -175,23 +176,23 @@ namespace WpfApp1
         {
             if (target.GetLeft() > left)
             {
-                left = left + 0.025;
+                left = left + speed;
 
             }
             else if (target.GetLeft() < left)
             {
-                left = left - 0.025;
+                left = left - speed;
 
             }
 
             if (target.GetTop() > top)
             {
-                top = top + 0.025;
+                top = top + speed;
 
             }
             else if (target.GetTop() < top)
             {
-                top = top - 0.025;
+                top = top - speed;
             }
         }
 

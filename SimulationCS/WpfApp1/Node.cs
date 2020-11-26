@@ -36,6 +36,7 @@ namespace WpfApp1
             name = ellipse.Name;
         }
 
+
         public double GetLeft()
         {
             return left;
