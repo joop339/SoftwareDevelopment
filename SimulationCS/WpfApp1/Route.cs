@@ -30,6 +30,6 @@ namespace WpfApp1
         public List<Node> GetNodes()
         {
             return nodes;
-        }     
+        }
     }
 }

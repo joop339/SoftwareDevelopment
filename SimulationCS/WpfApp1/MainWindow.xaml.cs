@@ -68,11 +68,28 @@ namespace WpfApp1
         private Node A11;
         private Node A12;
         private Node A13;
+        private Node B11;
         private Node B12;
+
+        private Node F11;
+        private Node F12;
+        private Node V11;
+        private Node V12;
+        private Node V13;
+        private Node V14;
+
         private Node A21;
         private Node A22;
         private Node A23;
         private Node A24;
+
+        private Node F21;
+        private Node F22;
+        private Node V21;
+        private Node V22;
+        private Node V23;
+        private Node V24;
+
         private Node A31;
         private Node A32;
         private Node A33;
@@ -82,10 +99,26 @@ namespace WpfApp1
         private Node A43;
         private Node A44;
         private Node B41;
+
+        private Node F41;
+        private Node F42;
+        private Node V41;
+        private Node V42;
+        private Node V43;
+        private Node V44;
+
         private Node A51;
         private Node A52;
         private Node A53;
         private Node A54;
+
+        private Node F51;
+        private Node F52;
+        private Node V51;
+        private Node V52;
+        private Node V53;
+        private Node V54;
+
         private Node A61;
         private Node A62;
         private Node A63;
@@ -153,19 +186,19 @@ namespace WpfApp1
 
             InitializeThread(() => { Loopify(DrawTick, 1000 / fps, true); });
 
-//           //InitializeThread(() => { Loopify(WriteJson, 3000); });
+            //           //InitializeThread(() => { Loopify(WriteJson, 3000); });
 
-//            //InitializeThread(()=> { Loopify(SocketClientConnect); });
+            //            //InitializeThread(()=> { Loopify(SocketClientConnect); });
 
-//            //InitializeThread(()=> { Loopify(SpawnCars, 1000); });
+            //            //InitializeThread(()=> { Loopify(SpawnCars, 1000); });
 
-//            //InitializeThread(() => { Loopify(RandomSpawnCars, 1000, true); });
+            //            //InitializeThread(() => { Loopify(RandomSpawnCars, 1000, true); });
 
-//            //Keydown events
+            //            //Keydown events
             KeyDown += new KeyEventHandler(MainWindow_KeyDown);
 
             //WriteJson(Node.nodeList);
-            
+
         }
         ~MainWindow()  // finalizer
         {
@@ -181,7 +214,7 @@ namespace WpfApp1
         {
             if (e.Key == Key.D1)
             {
-                CycleTrafficLight((TrafficLight)A11); 
+                CycleTrafficLight((TrafficLight)A11);
             }
             else if (e.Key == Key.D2)
             {
@@ -224,12 +257,13 @@ namespace WpfApp1
         /// <param name="isUI">zet op true als je error krijgt</param>
         private void Loopify(Action function, int interval = 0, bool isUI = false)
         {
-            
+
             while (looping)
             {
                 if (isUI)
                 {
-                    this.Dispatcher.Invoke(() => { // dit hoort soms te breken, komt doordat Thread.Sleep() wordt onderbroken
+                    this.Dispatcher.Invoke(() =>
+                    { // dit hoort soms te breken, komt doordat Thread.Sleep() wordt onderbroken
 
                         function();
                     });
@@ -238,7 +272,7 @@ namespace WpfApp1
                 {
                     function();
                 }
-               
+
                 Thread.Sleep(interval);
 
             }
@@ -257,10 +291,20 @@ namespace WpfApp1
             A13 = new TrafficLight(A1_3, "A1-3");
             B12 = new TrafficLight(B1_2, "B1-2");
 
+            V11 = new TrafficLight(V1_1, "V1-1");
+            V12 = new TrafficLight(V1_2, "V1-2");
+            V13 = new TrafficLight(V1_3, "V1-3");
+            V14 = new TrafficLight(V1_4, "V1-4");
+
             A21 = new TrafficLight(A2_1, "A2-1");
             A22 = new TrafficLight(A2_2, "A2-2");
             A23 = new TrafficLight(A2_3, "A2-3");
             A24 = new TrafficLight(A2_4, "A2-4");
+
+            V21 = new TrafficLight(V2_1, "V2-1");
+            V22 = new TrafficLight(V2_2, "V2-2");
+            V23 = new TrafficLight(V2_3, "V2-3");
+            V24 = new TrafficLight(V2_4, "V2-4");
 
             A31 = new TrafficLight(A3_1, "A3-1");
             A32 = new TrafficLight(A3_2, "A3-2");
@@ -273,10 +317,20 @@ namespace WpfApp1
             A44 = new TrafficLight(A4_4, "A4-4");
             B41 = new TrafficLight(B4_1, "B4-1");
 
+            V41 = new TrafficLight(V4_1, "V4-1");
+            V42 = new TrafficLight(V4_2, "V4-2");
+            V43 = new TrafficLight(V4_3, "V4-3");
+            V44 = new TrafficLight(V4_4, "V4-4");
+
             A51 = new TrafficLight(A5_1, "A5-1");
             A52 = new TrafficLight(A5_2, "A5-2");
             A53 = new TrafficLight(A5_3, "A5-3");
             A54 = new TrafficLight(A5_4, "A5-4");
+
+            V51 = new TrafficLight(V5_1, "V5-1");
+            V52 = new TrafficLight(V5_2, "V5-2");
+            V53 = new TrafficLight(V5_3, "V5-3");
+            V54 = new TrafficLight(V5_4, "V5-4");
 
             A61 = new TrafficLight(A6_1, "A6-1");
             A62 = new TrafficLight(A6_2, "A6-2");
@@ -288,18 +342,18 @@ namespace WpfApp1
             A12S = new Node(A1_2S);
             A13S = new Node(A1_3S);
             A14S = new Node(A1_4S);
-                              
+
             A21S = new Node(A2_1S);
             A22S = new Node(A2_2S);
             A23S = new Node(A2_3S);
             A24S = new Node(A2_4S);
-                              
+
             A41S = new Node(A4_1S);
             A42S = new Node(A4_2S);
             A43S = new Node(A4_3S);
             A44S = new Node(A4_4S);
             B41S = new Node(B4_1S);
-                              
+
             A51S = new Node(A5_1S);
             A52S = new Node(A5_2S);
             A53S = new Node(A5_3S);
@@ -392,7 +446,7 @@ namespace WpfApp1
         /// <summary>
         ///Initialize all pre-existing cars and traffic lights from list
         /// </summary>
-        private void InitializeObjects() 
+        private void InitializeObjects()
         {
             //Draw predefined cars
             foreach (Car car in Car.cars)
@@ -421,23 +475,23 @@ namespace WpfApp1
         /// update moving objects only
         /// </summary>
         private void SimulationTick()
-        {       
-                this.Dispatcher.Invoke(() => // used because thread does not own UI objects
-                {
-                    UpdateCars();
-                    UpdateTrafficLights();
-                });
+        {
+            this.Dispatcher.Invoke(() => // used because thread does not own UI objects
+            {
+                UpdateCars();
+                UpdateTrafficLights();
+            });
 
-                // TODO: Delay moet netter
-                //var durationTicks = Math.Round((0.00001) * Stopwatch.Frequency);
-                //var sw = Stopwatch.StartNew();
+            // TODO: Delay moet netter
+            //var durationTicks = Math.Round((0.00001) * Stopwatch.Frequency);
+            //var sw = Stopwatch.StartNew();
 
-                //while (sw.ElapsedTicks < durationTicks)
-                //{
-                //    // do nothing
-                //}
+            //while (sw.ElapsedTicks < durationTicks)
+            //{
+            //    // do nothing
+            //}
 
-                //Thread.Sleep(0);
+            //Thread.Sleep(0);
         }
 
         private void DrawTick()
@@ -454,10 +508,10 @@ namespace WpfApp1
         private void SocketClientConnect()
         {
 
-                if (connected == false)
-                {
-                    connected = SocketClient.StartClient();
-                }
+            if (connected == false)
+            {
+                connected = SocketClient.StartClient();
+            }
         }
 
         /// <summary>
@@ -466,12 +520,12 @@ namespace WpfApp1
         private void SocketClientReceive()
         {
 
-                if (connected)
-                {
-                    Console.WriteLine("Connected and receiving");
-                    connected = SocketClient.Receive();
-                    SocketClient.HandleData();
-                }
+            if (connected)
+            {
+                Console.WriteLine("Connected and receiving");
+                connected = SocketClient.Receive();
+                SocketClient.HandleData();
+            }
 
         }
 
@@ -486,11 +540,11 @@ namespace WpfApp1
             if (Car.cars.Count > 0)
             {
                 for (int i = 0; i < Car.cars.Count - 1; i++)
-                {                  
+                {
                     Car.cars[i].Drive();
                 }
             }
-          
+
         }
 
         private void DrawCars()
@@ -510,7 +564,7 @@ namespace WpfApp1
                     }
                 }
 
-                
+
             }
 
             // destroy rectangles 
@@ -547,9 +601,17 @@ namespace WpfApp1
 
             if (SocketClient.jObjects.Count > 0)
             {
-                    SetTrafficLightsFromJson(SocketClient.jObjects.Dequeue());
+                SetTrafficLightsFromJson(SocketClient.jObjects.Dequeue());
             }
-        }   
+        }
+
+        //elke TL eigen amountWaiting cars
+
+        //elke auto wat is zijn target, if target == TL, TL amountwaiting cars++
+
+
+
+
 
         private void CycleTrafficLight(TrafficLight trafficLight)//traffic light color cycle
         {
@@ -621,7 +683,7 @@ namespace WpfApp1
             }
         }
 
-       
+
 
         //public void DetectCollision(List<Car> cars)
         //{
@@ -656,9 +718,9 @@ namespace WpfApp1
         //                //    car.hasCollided = true; // zet hasColllided op true
         //                //    break;
         //                //}
-                        
+
         //            }
-                    
+
         //        }
         //    }
 
@@ -763,11 +825,10 @@ namespace WpfApp1
         //        }
         //    }
         //}
-    }          
-}              
-               
-               
-               
-               
-               
-               
+    }
+}
+
+
+
+
+

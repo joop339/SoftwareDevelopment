@@ -21,6 +21,8 @@ namespace WpfApp1
         Color color = Color.Red;
         public string id;
         private bool waiting = false;
+        public double waitingCars;
+
 
         public TrafficLight(int left, int top, string id) : base(left, top)
         {
@@ -72,6 +74,8 @@ namespace WpfApp1
                 color = Color.Green;
             }
         }
+
+
 
         //public static implicit operator UIElement(TrafficLight trafficLight)
         //{

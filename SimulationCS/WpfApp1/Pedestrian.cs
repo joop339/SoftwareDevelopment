@@ -4,7 +4,7 @@ using System.Windows.Media;
 using System.Windows;
 
 namespace WpfApp1
-{ 
+{
     public class Pedestrian
     {
         public static List<Pedestrian> pedestrians = new List<Pedestrian>(); // List of pedestrians
@@ -68,7 +68,7 @@ namespace WpfApp1
             else if (target.GetTop() < top)
             {
                 top = top - 0.025;
-            }          
+            }
         }
 
         public void SwitchTarget()
@@ -116,5 +116,5 @@ namespace WpfApp1
             pedestrians.Remove(this);
         }
     }
-    
+
 }
