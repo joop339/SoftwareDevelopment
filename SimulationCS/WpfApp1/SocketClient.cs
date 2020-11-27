@@ -1,5 +1,4 @@
-#define DEBUG
-
+#undef DEBUG_SOCKET
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -69,23 +68,31 @@ namespace WpfApp1
                 }
                 catch (ArgumentNullException ane) // Handle error
                 {
+#if DEBUG_SOCKET
                     Console.WriteLine("ArgumentNullException : {0}", ane.ToString());
+#endif
                     return false;
                 }
                 catch (SocketException se) // Handle error
                 {
+#if DEBUG_SOCKET
                     Console.WriteLine("SocketException : {0}", se.ToString());
+#endif
                     return false;
                 }
                 catch (Exception e) // Handle error
                 {
+#if DEBUG_SOCKET
                     Console.WriteLine("Unexpected exception : {0}", e.ToString());
+#endif
                     return false;
                 }
             }
             catch (Exception e)
             {
+#if DEBUG_SOCKET
                 Console.WriteLine(e.ToString());
+#endif
                 return false;
             }
 
@@ -103,25 +110,34 @@ namespace WpfApp1
             // Init new buffer 
             byte[] buffer = new byte[1_000_000];
 
+
             try
             {
+
                 // Receive and put in buffer
                 int bytesRec = client.Receive(buffer);
-
+#if DEBUG_SOCKET
+                Console.WriteLine("RECEIVED: \n" + Encoding.UTF8.GetString(buffer, 0, buffer.Length));
+#endif
                 // Put buffer in static queue 
                 for (int i = 0; i < bytesRec; i++)
                 {
                     queue.Enqueue(buffer[i]);
                 }
+
             }
             catch (SocketException se) // Handle error
             {
+#if DEBUG_SOCKET
                 Console.WriteLine("SocketException : {0}", se.ToString());
+#endif
                 return false;
             }
             catch (Exception e)
             {
+#if DEBUG_SOCKET
                 Console.WriteLine("Unexpected exception : {0}", e.ToString());
+#endif
                 return false;
             }
 
@@ -140,15 +156,15 @@ namespace WpfApp1
 
             if (int.TryParse(header, out length))
             {
-                #if DEBUG
+#if DEBUG
                 Console.WriteLine("header " + header + " was found! Parsing to int " + length);
-                #endif
+#endif
             }
             else
             {
-                #if DEBUG
+#if DEBUG
                 Console.WriteLine("Can't parse header into int");
-                #endif
+#endif
             }
 
             List<byte> bytesList = new List<byte>();// all bytes for one phase/json
@@ -163,8 +179,6 @@ namespace WpfApp1
             if (bytesList.Count > 0)
             {
                 byte[] jsonBytes = bytesList.ToArray();
-
-                //Console.WriteLine(Encoding.UTF8.GetString(jsonBytes, 0, jsonBytes.Length));
 
                 // Parse received bytes to Json Object
                 JObject jObject = JObject.Parse(Encoding.UTF8.GetString(jsonBytes, 0, jsonBytes.Length));
@@ -203,32 +217,26 @@ namespace WpfApp1
             return header;
         }
 
-        
 
+        private static byte[] ConvertToByteArray(JObject jObject)
+        {
+            string json = jObject.ToString(Formatting.None);
 
-        //public static JObject SendReceiveReturn()
-        //{
-        //    string toSend = @"Resources\OutgoingJson\jason_simulation.json";
+            byte[] bytes = Encoding.UTF8.GetBytes(json);
 
-        //    // Encode the data string into a byte array.
-        //    byte[] msg = File.ReadAllBytes(toSend);
+            return bytes;
+        }
 
-        //    // Send the data through the socket
-        //    int bytesSend = client.Send(msg);
+        public static void Send(JObject jObject)
+        {
+            // Encode the data string into a byte array.
+            byte[] msg = ConvertToByteArray(jObject);
 
-        //    Console.WriteLine("SEND: {0}",
-        //        Encoding.ASCII.GetString(msg, 0, bytesSend));
-
-        //    byte[] bytes = new byte[4096];
-
-        //    // Receive the response from the remote device.
-        //    int bytesRec = client.Receive(bytes);
-        //    Console.WriteLine("SERVER> {0}",
-        //        Encoding.ASCII.GetString(bytes, 0, bytesRec));
-
-        //    JObject jObject = JObject.Parse(Encoding.UTF8.GetString(bytes)); // Parse received bytes to Json Object
-
-        //    return jObject;
-        //}
+            // Send the data through the socket
+            int bytesSend = client.Send(msg);
+#if DEBUG_SOCKET
+            Console.WriteLine("SENT: \n" + Encoding.UTF8.GetString(msg, 0, msg.Length));
+#endif
+        }
     }
 }

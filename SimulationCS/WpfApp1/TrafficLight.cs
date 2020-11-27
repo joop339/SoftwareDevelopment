@@ -88,11 +88,6 @@ namespace WpfApp1
             return trafficLight;
         }
 
-        public JObject ToJson()
-        {
-            return new JObject(id, GetStatus());
-        }
-
         public void Update()
         {
             if (waiting)

@@ -10,6 +10,7 @@
 #include <thread>
 #include <cstdio>
 #include <regex>
+
 #pragma comment(lib, "ws2_32.lib")
 
 #define PORT			54000
@@ -24,16 +25,43 @@ const std::vector<std::string> cycle{ PHASE_ONE, PHASE_RED, PHASE_TWO, PHASE_RED
 bool connected = false;
 char hdr = 'y';
 void sendJson(const SOCKET& socket, const char file[], const char hdr);
+void receiveJson(char buf[4096], const SOCKET& socket);
 
 /// <summary>
 /// Initializes listening socket, accepts client, inits socket, sends json data
 /// </summary>
 int main()
 {
-	std::cout << "Enter server delay in milliseconds: (1000 milliseconds = 1 second)" << std::endl;
+	int time = 5;
+	int time_ontruiming = 5;
 
-	int time;
+	/*std::cout << "Welcome, before we start sending the good stuff," << std::endl;
+	std::cout << "I will ask you to enter the following in seconds: " << std::endl;
+	std::cout << std::endl;
+	std::cout << "\"Groenfasetijd\"" << std::endl;
+	std::cout << std::endl;
+	std::cout << "\"Ontruimingstijd\"" << std::endl;
+	std::cout << std::endl;
+	std::cout << "Press [Enter] to continue..." << std::endl;
+	std::cin.ignore();
+	system("cls");
+
+	std::cout << "Enter \"Groenfasetijd\" in seconds: " << std::endl;	
 	std::cin >> time;
+	std::cout << std::endl;
+	std::cout << "Enter \"Ontruimingstijd\" in seconds: " << std::endl;
+	std::cin >> time_ontruiming;
+	std::cout << std::endl;
+	std::cout << "Thank you!" << std::endl;
+	std::cout << std::endl;*/
+
+
+	std::cout << "\"Groenfasetijd is 5 seconden\"" << std::endl;
+	std::cout << std::endl;
+	std::cout << "\"Ontruimingstijd is 5 seconden\"" << std::endl;
+	std::cout << std::endl;
+
+	std::cout << "Starting socket server..." << std::endl;
 
 	// Initialize winsock
 	WSADATA wsData;
@@ -53,6 +81,8 @@ int main()
 	{
 		std::cerr << "Can't create socket! Quitting!" << std::endl;
 	}
+
+	std::cout << "Socket server started successfully" << std::endl;
 
 	// Bind the ip address and port to a socket
 	sockaddr_in hint;
@@ -77,6 +107,11 @@ int main()
 	if (socket == INVALID_SOCKET) // Handle error
 	{
 		std::cerr << "Can't create socket! Quitting!" << std::endl;
+	}
+	else
+	{
+		std::cout << "Accepted!" << std::endl;
+		std::cout << "Creating socket..." << std::endl;
 	}
 
 	char host[NI_MAXHOST];		// Client's remote name
@@ -105,11 +140,18 @@ int main()
 	
 	while (connected)
 	{
-			for (auto phase : cycle)
-			{
-				std::this_thread::sleep_for(std::chrono::milliseconds(time));
-				sendJson(socket, phase.c_str());
-			}		
+		//char buf[4096];
+		for (auto phase : cycle)
+		{
+			
+			sendJson(socket, phase.c_str());
+			std::this_thread::sleep_for(std::chrono::seconds(time));
+			sendJson(socket, PHASE_RED);
+			std::this_thread::sleep_for(std::chrono::seconds(time_ontruiming));
+			
+			
+		}
+
 	}
 
 	// Close the socket
@@ -117,9 +159,6 @@ int main()
 
 	// Cleanup winsock
 	WSACleanup();
-
-	std::getchar();
-	std::getchar();
 
 	return 0;
 }
@@ -185,22 +224,26 @@ void sendJson(const SOCKET& socket, const char file[])
 /// </summary>
 /// <param name="buf">buffer to store data</param>
 /// <param name="socket">SOCKET</param>
-//void receiveJson(char buf[4096], const SOCKET& socket)
-//{
-//	ZeroMemory(buf, 4096);
-//
-//	// Wait for client to send data
-//	int bytesReceived = recv(socket, buf, 4096, 0);
-//	if (bytesReceived == SOCKET_ERROR) // Handle error
-//	{
-//		std::cerr << "Error in recv(). Quitting!" << std::endl;
-//	}
-//
-//	if (bytesReceived == 0) // Handle error
-//	{
-//		std::cout << "Client disconnected " << std::endl;
-//	}
-//
-//	std::cout << "CLIENT> " << std::string(buf, 0, bytesReceived) << std::endl;
-//}
+void receiveJson(char buf[4096], const SOCKET& socket)
+{
+	ZeroMemory(buf, 4096);
+
+	// Wait for client to send data
+	int bytesReceived = recv(socket, buf, 4096, 0);
+	if (bytesReceived == SOCKET_ERROR) // Handle error
+	{
+		std::cerr << "Error in recv(). Quitting!" << std::endl;
+		connected = false;
+		main();
+	}
+
+	if (bytesReceived == 0) // Handle error
+	{
+		std::cout << "Client disconnected " << std::endl;
+		connected = false;
+		main();
+	}
+
+	std::cout << "RECEIVED>: \n " << std::string(buf, 0, bytesReceived) << std::endl;
+}
 

@@ -33,11 +33,15 @@ namespace WpfApp1
     /// </summary>
     public partial class MainWindow : Window
     {
-        private const int fps = 60; // Simulation speed
+        private const int fps = 60; // Simulation Draw speed
 
         private bool looping = true;
 
         private bool connected = false;
+
+        private bool handled = false;
+
+        private bool firstSend = false;
 
         Random random = new Random();
 
@@ -202,22 +206,22 @@ namespace WpfApp1
 
             InitializeThread(() => { Loopify(DrawTick, 1000 / fps, true); });
 
-            //           //InitializeThread(() => { Loopify(WriteJson, 3000); });
+            //InitializeThread(()=> { Loopify(SocketClientConnect, 1); });
 
-            InitializeThread(()=> { Loopify(SocketClientConnect); });
+            InitializeThread(() => { Loopify(SocketClientSend); });
 
             InitializeThread(() => { Loopify(SocketClientReceive); });
 
+            //InitializeThread(() => { Loopify(() => { lblTime.Content = DateTime.Now.ToString("HH:mm:ss"); }, 1000 / fps, true); } );
+
             //InitializeThread(()=> { Loopify(SpawnCars, 2000, true); });
 
-            InitializeThread(() => { Loopify(RandomSpawnCars, 150, true); });
+            //InitializeThread(() => { Loopify(RandomSpawnCars, 150, true); });
 
-            InitializeThread(() => { Loopify(RandomSpawnPedestrians, 150, true); });
+            //InitializeThread(() => { Loopify(RandomSpawnPedestrians, 2000, true); });
 
-            //            //Keydown events
+            //Keydown events
             KeyDown += new KeyEventHandler(MainWindow_KeyDown);
-
-            //WriteJson(Node.nodeList);
 
         }
         ~MainWindow()  // finalizer
@@ -594,6 +598,24 @@ namespace WpfApp1
         }
 
         /// <summary>
+        /// if queue count == 0 and if connected == true then Write and Send json
+        /// </summary>
+        private void SocketClientSend()
+        {
+            if (firstSend == false || handled == true)
+            { 
+                    if (connected)
+                    {
+                        JObject j = WriteJson();
+                        SocketClient.Send(j);
+                        firstSend = true;
+                        handled = false;
+                    }
+            }
+            
+        }
+
+        /// <summary>
         /// While connected: Receive and Handle data 
         /// </summary>
         private void SocketClientReceive()
@@ -601,7 +623,6 @@ namespace WpfApp1
 
             if (connected)
             {
-                Console.WriteLine("Connected and receiving");
                 connected = SocketClient.Receive();
                 SocketClient.HandleData();
             }
@@ -666,11 +687,6 @@ namespace WpfApp1
                     {
                         canvas.Children.Remove(Car.destroyedCars[i].ToUIElement());
                     }
-                    //if (canvas.Children.Contains(Car.destroyedCars[i].ToUIElement2()))
-                    //{
-                    //    canvas.Children.Add(Car.destroyedCars[i].ToUIElement2());
-                    //}
-
                 }
             }
         }
@@ -709,30 +725,11 @@ namespace WpfApp1
 
         private void UpdateTrafficLights()
         {
-            //if (Node.nodeList.Count > 0)
-            //{
-            //    for (int i = 0; i < Node.nodeList.Count - 1; i++)
-            //    {
-            //        if (Node.nodeList[i] is TrafficLight)
-            //        {
-            //            ((TrafficLight)Node.nodeList[i]).Update();
-            //        }
-
-            //    }
-            //}
-
             if (SocketClient.jObjects.Count > 0)
             {
-                SetTrafficLightsFromJson(SocketClient.jObjects.Dequeue());
+                handled = SetTrafficLightsFromJson(SocketClient.jObjects.Dequeue());
             }
         }
-
-        //elke TL eigen amountWaiting cars
-
-        //elke auto wat is zijn target, if target == TL, TL amountwaiting cars++
-
-
-
 
 
         private void CycleTrafficLight(TrafficLight trafficLight)//traffic light color cycle
@@ -908,7 +905,7 @@ namespace WpfApp1
 
         }
 
-        public void SetTrafficLightsFromJson(JObject jObject)
+        public bool SetTrafficLightsFromJson(JObject jObject)
         {
             foreach (JProperty property in jObject.Properties())
             {
@@ -918,41 +915,53 @@ namespace WpfApp1
                     {
                         if (property.Name == ((TrafficLight)node).id)
                         {
-                            ((TrafficLight)node).SetColor((Color)property.Value.ToObject<int>());
+                            if (property.Value.ToObject<int>() == 0 || property.Value.ToObject<int>() == 1)
+                            {
+                                ((TrafficLight)node).SetColor((Color)property.Value.ToObject<int>());
+                            }
+                            else
+                            {
+                                Console.WriteLine("Invalid value of \"" + property.Name + "\":"+ property.Value.ToObject<int>());
+                            }
+
                         }
                     }
 
                 }
             }
+
+            return true;
         }
 
-        private static void WriteJson(List<Node> nodeList)
+        private static JObject WriteJson()
         {
             JObject j = new JObject();
 
-            foreach (Node node in nodeList)
+            foreach (Node node in Node.nodeList)
             {
                 if (node is TrafficLight)
                 {
                     TrafficLight trafficLight = (TrafficLight)node;
 
-                    j.Add(trafficLight.ToJson());
+                    j.Add(trafficLight.id, trafficLight.GetStatus());
                 }
 
             }
 
-            string json = JsonConvert.SerializeObject(j, Formatting.Indented);
+            //string json = JsonConvert.SerializeObject(j, Formatting.Indented);
 
-            //write string to file
-            try
-            {
-                System.IO.File.WriteAllText(@"json.json", json);
-                Console.WriteLine("File Written");
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            ////write string to file
+            //try
+            //{
+            //    System.IO.File.WriteAllText(@"json.json", json);
+            //    Console.WriteLine("File Written");
+            //}
+            //catch (Exception)
+            //{
+            //    throw;
+            //}
+
+            return j;
         }
 
         //public void SetTrafficLightsFromJson()
