@@ -39,9 +39,7 @@ namespace WpfApp1
 
         private bool connected = false;
 
-        private bool handled = false;
-
-        private bool firstSend = false;
+        private bool handled = true;
 
         Random random = new Random();
 
@@ -216,9 +214,9 @@ namespace WpfApp1
 
             //InitializeThread(()=> { Loopify(SpawnCars, 2000, true); });
 
-            //InitializeThread(() => { Loopify(RandomSpawnCars, 150, true); });
+            InitializeThread(() => { Loopify(RandomSpawnCars, 150, true); });
 
-            //InitializeThread(() => { Loopify(RandomSpawnPedestrians, 2000, true); });
+            InitializeThread(() => { Loopify(RandomSpawnPedestrians, 2000, true); });
 
             //Keydown events
             KeyDown += new KeyEventHandler(MainWindow_KeyDown);
@@ -602,13 +600,12 @@ namespace WpfApp1
         /// </summary>
         private void SocketClientSend()
         {
-            if (firstSend == false || handled == true)
+            if (handled == true)
             { 
                     if (connected)
                     {
                         JObject j = WriteJson();
                         SocketClient.Send(j);
-                        firstSend = true;
                         handled = false;
                     }
             }
