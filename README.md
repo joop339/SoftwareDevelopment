@@ -1,5 +1,9 @@
 # SoftwareDevelopment
 
 Om controller te testen:  
+
+Benodigdheden:
+Visual Studio 2019 met C++ of vergelijkbaar
+
+Uitvoering:
 Optie 1. Open het mapje "ControllerCPP" in Visual Studio solution en klik op RUN  
-Optie 2. Open het mapje "ControllerCPPTest-Vr30Okt2020" en dubbelklik op "ControllerCPP.exe" 
