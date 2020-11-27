@@ -206,7 +206,7 @@ namespace WpfApp1
 
             InitializeThread(() => { Loopify(DrawTick, 1000 / fps, true); });
 
-            //InitializeThread(()=> { Loopify(SocketClientConnect, 1); });
+            InitializeThread(()=> { Loopify(SocketClientConnect, 1); });
 
             InitializeThread(() => { Loopify(SocketClientSend); });
 
