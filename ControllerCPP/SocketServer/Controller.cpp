@@ -56,9 +56,9 @@ int main()
 	std::cout << std::endl;*/
 
 
-	std::cout << "\"Groenfasetijd is 5 seconden\"" << std::endl;
+	std::cout << "\"Groenfasetijd is " << time << " seconden\"" << std::endl;
 	std::cout << std::endl;
-	std::cout << "\"Ontruimingstijd is 5 seconden\"" << std::endl;
+	std::cout << "\"Ontruimingstijd is  " << time_ontruiming << " seconden\"" << std::endl;
 	std::cout << std::endl;
 
 	std::cout << "Starting socket server..." << std::endl;
