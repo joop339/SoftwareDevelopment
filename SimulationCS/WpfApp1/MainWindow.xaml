@@ -157,9 +157,10 @@
     <Ellipse x:Name="V_B6" Fill="lightblue" Height="8" Stroke="Black" Width="8" Canvas.Top="141" Canvas.Left="768"/>
     <Ellipse x:Name="V_B7" Fill="lightblue" Height="8" Stroke="Black" Width="8" Canvas.Top="184" Canvas.Left="762"/>
     <Ellipse x:Name="V_B8" Fill="lightblue" Height="8" Stroke="Black" Width="8" Canvas.Top="190" Canvas.Left="165"/>
+    <Ellipse x:Name="B11B" Fill="Aqua" Height="8" Canvas.Left="894" Stroke="Black" Canvas.Top="243" Width="8"/>
 
 
 
 
-  </Canvas>
+    </Canvas>
 </Window>
