@@ -30,6 +30,9 @@ namespace WpfApp1
 
         double left;
         double top;
+
+        double tlLeft;
+        double tlTop;
         public static double speed = 0.008;
 
         Route route; // to be followed route
@@ -107,14 +110,15 @@ namespace WpfApp1
         {
             if (this.hasCollided == false)
             {
+                tlLeft = target.GetLeft();
+                tlTop = target.GetTop();
                 directionCheck();
-
 
                 // if target is reached
 
                 if (target is TrafficLight)
                 { // and target is TL AND TL is green
-                    if (target.GetTop() - 0.05 - 25 * ((TrafficLight)target).waitingCars < top && target.GetTop() + 0.05 + 25 * ((TrafficLight)target).waitingCars > top && target.GetLeft() - 0.05 - 25 * ((TrafficLight)target).waitingCars < left && target.GetLeft() + 0.05 + 25 * ((TrafficLight)target).waitingCars > left)
+                    if (tlTop - 0.05 - (25 * ((TrafficLight)target).waitingCars) - (44 * ((TrafficLight)target).waitingBusses) < top && tlTop + 0.05 + (25 * ((TrafficLight)target).waitingCars) + (44 * ((TrafficLight)target).waitingBusses) > top && tlLeft - 0.05 - (25 * ((TrafficLight)target).waitingCars) - (44 * ((TrafficLight)target).waitingBusses) < left && tlLeft + 0.05 + (25 * ((TrafficLight)target).waitingCars) + (44 * ((TrafficLight)target).waitingBusses) > left)
                     {
                         if (CheckTrafficLight() == Color.Green)
                         {// get next target
@@ -207,24 +211,28 @@ namespace WpfApp1
 
 
 
-            if (thisX > targetX && targetY == thisY)
+            if (thisX > targetX && targetY == thisY) //W
             {
                 rotateTransform.Angle = 0;
+                tlLeft = target.GetLeft() + 20;
             }
 
-            else if (thisX < targetX && targetY == thisY)
+            else if (thisX < targetX && targetY == thisY) //E
             {
                 rotateTransform.Angle = 180;
+                tlLeft = target.GetLeft() - 20;
             }
 
-            else if (thisY > targetY && targetX == thisX)
+            else if (thisY > targetY && targetX == thisX) //S
             {
                 rotateTransform.Angle = 90;
+                tlTop = target.GetTop() + 20;
             }
 
-            else if (thisY < targetY && targetX == thisX)
+            else if (thisY < targetY && targetX == thisX) //N
             {
                 rotateTransform.Angle = 270;
+                tlTop = target.GetTop() - 20;
             }
 
             else if (thisX < targetX && thisY < targetY)

@@ -22,7 +22,8 @@ namespace WpfApp1
     {
         Red, // 0
         Green, // 1
-        None, // 2
+        Yellow, //2
+        None, // 3
     }
 
     /// <summary>
@@ -323,6 +324,7 @@ namespace WpfApp1
             A12 = new TrafficLight(A1_2, "A1-2");
             A13 = new TrafficLight(A1_3, "A1-3");
             B12 = new TrafficLight(B1_2, "B1-2");
+            B11 = new TrafficLight(B1_1, "B1-1");
 
             V11 = new TrafficLight(V1_1, "V1-1");
             V12 = new TrafficLight(V1_2, "V1-2");
@@ -516,7 +518,7 @@ namespace WpfApp1
             Route Route5_1P = new Route(new List<Node> { VEastS, VB5, V14, V12, VB6, VB7, VB8, VWestS }, RoadType.NonCarRoad);
 
             // Routes Bus
-            Route Route1B = new Route(new List<Node> { A14S, B12, B1_1B, A63, A63Bocht, A53E }, RoadType.BusRoad);
+            Route Route1B = new Route(new List<Node> { A14S, B11, B1_1B, A63, A63Bocht, A53E }, RoadType.BusRoad);
             Route Route1_1B = new Route(new List<Node> { A14S, B12, B11Bocht,  A34E }, RoadType.BusRoad);
 
             Route Route2B = new Route(new List<Node> { A21S, A21, A21Bocht, A21E }, RoadType.BusRoad);
@@ -739,6 +741,8 @@ namespace WpfApp1
 
             }
 
+
+
             // destroy rectangles 
             if (Pedestrian.destroyedPedestrians.Count > 0)
             {
@@ -940,6 +944,35 @@ namespace WpfApp1
             }
 
         }
+
+        private void RandomSpawnBikes()
+        {
+
+            int randomNonCarRouteIndex = random.Next(Route.nonCarRoutes.Count);
+
+            Route randomNonCarRoute = Route.nonCarRoutes[randomNonCarRouteIndex];
+
+            int randomAmountOfBikes = random.Next(2);
+
+            foreach (Node node in randomNonCarRoute.GetNodes())
+            {
+                if (node is TrafficLight)
+                {
+                    if (((TrafficLight)node).waitingPedestrians < 3)
+                    {
+                        for (int i = 0; i < randomAmountOfBikes; i++)
+                        {
+                            Bike.Bikes.Add(new Bike(randomNonCarRoute));
+#if DEBUG
+                            Console.WriteLine("Spawning: '" + randomAmountOfBikes + "' bikes, at: '" + randomNonCarRoute.GetNodes()[0].name + "'");
+#endif
+                        }
+                    }
+                }
+            }
+
+        }
+
         private void RandomSpawnCars()
         {
 
@@ -949,7 +982,7 @@ namespace WpfApp1
 
             int randomAmountOfCars = random.Next(2);
 
-            if (((TrafficLight)randomRoute.GetNodes()[1]).waitingCars < 4)
+            if (((TrafficLight)randomRoute.GetNodes()[1]).waitingCars < 3)
             {
                 for (int i = 0; i < randomAmountOfCars; i++)
                 {
@@ -962,29 +995,28 @@ namespace WpfApp1
         }
         private void RandomSpawnBusses()
         {
-
             int randomBussesIndex = random.Next(Route.busRoutes.Count);
 
             Route randomBusRoutes = Route.busRoutes[randomBussesIndex];
 
             int randomAmountOfBusses = random.Next(2);
 
-            foreach (Node node in randomBusRoutes.GetNodes())
+            //foreach (Node node in randomBusRoutes.GetNodes())
+            //{
+            //    if (node is TrafficLight)
+            //    {
+            if (((TrafficLight)randomBusRoutes.GetNodes()[1]).waitingBusses < 1)
             {
-                if (node is TrafficLight)
+                for (int i = 0; i < randomAmountOfBusses; i++)
                 {
-                    if (((TrafficLight)node).waitingBusses < 3)
-                    {
-                        for (int i = 0; i < randomAmountOfBusses; i++)
-                        {
-                            Bus.busses.Add(new Bus(randomBusRoutes));
+                    Bus.busses.Add(new Bus(randomBusRoutes));
 #if DEBUG
-                            Console.WriteLine("Spawning: '" + randomAmountOfBusses + "' busses, at: '" + randomBusRoutes.GetNodes()[0].name + "'");
+                    Console.WriteLine("Spawning: '" + randomAmountOfBusses + "' busses, at: '" + randomBusRoutes.GetNodes()[0].name + "'");
 #endif
-                        }
-                    }
                 }
             }
+            //}
+            //}
 
         }
 
@@ -1000,6 +1032,7 @@ namespace WpfApp1
                         {
                             if (property.Value.ToObject<int>() == 0 || property.Value.ToObject<int>() == 1)
                             {
+                                //CheckTrafficLightGreenToRed((TrafficLight)node, property.Value.ToObject<int>());
                                 ((TrafficLight)node).SetColor((Color)property.Value.ToObject<int>());
                             }
                             else
@@ -1014,6 +1047,15 @@ namespace WpfApp1
             }
 
             return true;
+        }
+
+        public void CheckTrafficLightGreenToRed(TrafficLight tf, int incoming)
+        {
+            if(tf.GetColor() == Color.Green && incoming == 0)
+            {
+                tf.SetOrange();
+                Task.Delay(3000);
+            }
         }
 
         private static JObject WriteJson()

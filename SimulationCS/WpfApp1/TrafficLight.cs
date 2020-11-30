@@ -117,7 +117,16 @@ namespace WpfApp1
                trafficLight.Fill = Brushes.Green;
                 waiting = false;
             }
+            else if (color == Color.Yellow)
+            {
+                trafficLight.Fill = Brushes.Orange;
+            }
 
+        }
+
+        public void SetOrange()
+        {
+            trafficLight.Fill = Brushes.Orange;
         }
 
         public int GetStatus()

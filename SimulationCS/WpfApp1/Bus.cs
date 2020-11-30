@@ -30,7 +30,10 @@ namespace WpfApp1
 
         double left;
         double top;
-        public static double speed = 0.010;
+        double tlLeft;
+        double tlTop;
+
+        public static double speed = Car.speed;
 
         Route route; // to be followed route
         //static int idCount = 0;
@@ -107,6 +110,8 @@ namespace WpfApp1
         {
             if (this.hasCollided == false)
             {
+                tlLeft = target.GetLeft();
+                tlTop = target.GetTop();
                 directionCheck();
 
 
@@ -114,7 +119,7 @@ namespace WpfApp1
 
                 if (target is TrafficLight)
                 { // and target is TL AND TL is green
-                    if (target.GetTop() - 0.05 - 25 * ((TrafficLight)target).waitingBusses < top && target.GetTop() + 0.05 + 25 * ((TrafficLight)target).waitingBusses > top && target.GetLeft() - 0.05 - 25 * ((TrafficLight)target).waitingBusses < left && target.GetLeft() + 0.05 + 25 * ((TrafficLight)target).waitingBusses > left)
+                    if (tlTop - 0.05 - (25 * ((TrafficLight)target).waitingCars) - (44 * ((TrafficLight)target).waitingBusses) < top && tlTop + 0.05 + (25 * ((TrafficLight)target).waitingCars) + (44 * ((TrafficLight)target).waitingBusses) > top && tlLeft - 0.05 - (25 * ((TrafficLight)target).waitingCars) - (44 * ((TrafficLight)target).waitingBusses) < left && tlLeft + 0.05 + (25 * ((TrafficLight)target).waitingCars) + (44 * ((TrafficLight)target).waitingBusses) > left)
                     {
                         if (CheckTrafficLight() == Color.Green)
                         {// get next target
@@ -207,24 +212,28 @@ namespace WpfApp1
 
 
 
-            if (thisX > targetX && targetY == thisY)
+            if (thisX > targetX && targetY == thisY) //W
             {
                 rotateTransform.Angle = 0;
+                tlLeft = target.GetLeft() + 20;
             }
 
-            else if (thisX < targetX && targetY == thisY)
+            else if (thisX < targetX && targetY == thisY) //E
             {
                 rotateTransform.Angle = 180;
+                tlLeft = target.GetLeft() - 40;
             }
 
-            else if (thisY > targetY && targetX == thisX)
+            else if (thisY > targetY && targetX == thisX) //S
             {
                 rotateTransform.Angle = 90;
+                tlTop = target.GetTop() + 20;
             }
 
-            else if (thisY < targetY && targetX == thisX)
+            else if (thisY < targetY && targetX == thisX) //N
             {
                 rotateTransform.Angle = 270;
+                tlTop = target.GetTop() - 20;
             }
 
             else if (thisX < targetX && thisY < targetY)
@@ -254,20 +263,5 @@ namespace WpfApp1
             //carHitbox.RenderTransform = rotateTransform2;
         }
     }
-    //bool isTargetAndCarLeft = roundedLeft > carLeft && roundedLeft > targetLeft;
-    //bool isTargetAndCarRight = roundedLeft < carLeft && roundedLeft < targetLeft;
-    //bool isTargetAndCarTop = roundedTop > carTop && roundedTop > targetTop;
-    //bool isTargetAndCarDown = roundedTop < carTop && roundedTop < targetTop;
-
-
-    //if (
-    //            (isTargetAndCarLeft) // doelwit en andere auto zijn links van this
-    //            || (isTargetAndCarRight) // doelwit en andere auto zijn rechts van this
-    //            || (isTargetAndCarTop) // doelwit en andere auto zijn boven this
-    //            || (isTargetAndCarDown) // doelwit en andere auto zijn onder this
-    //   )
-    //{
-    //    return true;
-    //}
 }
 
