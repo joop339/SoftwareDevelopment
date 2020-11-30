@@ -30,7 +30,7 @@ namespace WpfApp1
 
         double left;
         double top;
-        public static double speed = 0.010;
+        public static double speed = 0.005;
 
         Route route; // to be followed route
         //static int idCount = 0;
