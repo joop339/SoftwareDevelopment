@@ -10,25 +10,30 @@ namespace WpfApp1
     {
         Road, // 0
         NonCarRoad, // 1
+        BusRoad, // 0
     }
 
     public class Route
     {
         public static List<Route> routes = new List<Route>();
         public static List<Route> nonCarRoutes = new List<Route>();
+        public static List<Route> busRoutes = new List<Route>();
         private List<Node> nodes = new List<Node>();
 
         public Route(List<Node> nodes, RoadType roadType = RoadType.Road)
         {
+            this.nodes = nodes;
             if (roadType == RoadType.Road)
             {
-                this.nodes = nodes;
                 routes.Add(this);
             }
             else if (roadType == RoadType.NonCarRoad)
             {
-                this.nodes = nodes;
                 nonCarRoutes.Add(this);
+            }
+            else if (roadType == RoadType.BusRoad)
+            {              
+                busRoutes.Add(this);
             }
 
         }

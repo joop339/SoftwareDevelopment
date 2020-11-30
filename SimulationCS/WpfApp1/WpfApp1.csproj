@@ -96,6 +96,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Car.cs" />
+    <Compile Include="Bus.cs" />
+    <Compile Include="Bike.cs" />
     <Compile Include="Pedestrian.cs" />
     <Compile Include="RoadUser.cs" />
     <Compile Include="Route.cs" />

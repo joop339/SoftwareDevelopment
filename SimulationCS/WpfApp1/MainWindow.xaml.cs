@@ -185,6 +185,11 @@ namespace WpfApp1
         private Node VB6;
         private Node VB7;
         private Node VB8;
+
+        private Node B41Bocht;
+        private Node B41Bocht2;
+        private Node B1_1B;
+        private Node B11Bocht;
         #endregion
 
         /// <summary>
@@ -217,6 +222,8 @@ namespace WpfApp1
             InitializeThread(() => { Loopify(RandomSpawnCars, 150, true); });
 
             InitializeThread(() => { Loopify(RandomSpawnPedestrians, 2000, true); });
+
+            InitializeThread(() => { Loopify(RandomSpawnBusses, 5000, true); });
 
             //Keydown events
             KeyDown += new KeyEventHandler(MainWindow_KeyDown);
@@ -440,6 +447,10 @@ namespace WpfApp1
             VB7 = new Node(V_B7);
             VB8 = new Node(V_B8);
 
+            B41Bocht = new Node(B4_1Bocht);
+            B41Bocht2 = new Node(B4_1Bocht2);
+            B1_1B = new Node(B11B);
+            B11Bocht = new Node(B1_1Bocht);
 
         }
 
@@ -486,6 +497,7 @@ namespace WpfApp1
 
             Route Route15 = new Route(new List<Node> { A54S, A54, A54Bocht, A53E });
 
+            // Routes pedestrians/bikers
             Route Route1P = new Route(new List<Node> { VNorthS, VB5, V14, V12, VB6, VB7, VB8, VWestS}, RoadType.NonCarRoad);
             Route Route1_1P = new Route(new List<Node> { VNorthS, VB5, V21, V23, VB4, VEast2S}, RoadType.NonCarRoad);
 
@@ -502,6 +514,17 @@ namespace WpfApp1
 
             Route Route5P = new Route(new List<Node> { VEastS, VB5, VNorthS }, RoadType.NonCarRoad);
             Route Route5_1P = new Route(new List<Node> { VEastS, VB5, V14, V12, VB6, VB7, VB8, VWestS }, RoadType.NonCarRoad);
+
+            // Routes Bus
+            Route Route1B = new Route(new List<Node> { A14S, B12, B1_1B, A63, A63Bocht, A53E }, RoadType.BusRoad);
+            Route Route1_1B = new Route(new List<Node> { A14S, B12, B11Bocht,  A34E }, RoadType.BusRoad);
+
+            Route Route2B = new Route(new List<Node> { A21S, A21, A21Bocht, A21E }, RoadType.BusRoad);
+
+            Route Route3B = new Route(new List<Node> { B41S, B41, B41Bocht , B41Bocht2, A44Bocht, A32, A32Bocht, A21E }, RoadType.BusRoad);
+
+            Route Route4B = new Route(new List<Node> { A51S, A51, A51Bocht, A32, A32Bocht, A21E }, RoadType.BusRoad);
+
 
             //new List<Ellipse> { V_EastS, V_B5, V1_4, V1_2, V_B6, V_B7, V_B8, V_WestS }
         }
@@ -557,6 +580,7 @@ namespace WpfApp1
         {
             this.Dispatcher.Invoke(() => // used because thread does not own UI objects
             {
+                UpdateBusses();
                 UpdatePeds();
                 UpdateCars();
                 UpdateTrafficLights();
@@ -578,6 +602,7 @@ namespace WpfApp1
         {
             this.Dispatcher.Invoke(() => // used because thread does not own UI objects
             {
+                DrawBusses();
                 DrawCars();
                 DrawPeds();
             });
@@ -652,6 +677,16 @@ namespace WpfApp1
                     Pedestrian.pedestrians[i].Update();
                 }
             }
+        }
+        private void UpdateBusses()
+        {
+            if (Bus.busses.Count > 0)
+            {
+                for (int i = 0; i < Bus.busses.Count - 1; i++)
+                {
+                    Bus.busses[i].Drive();
+                }
+            }
 
         }
 
@@ -671,8 +706,6 @@ namespace WpfApp1
 
                     }
                 }
-
-
             }
 
             // destroy rectangles 
@@ -719,7 +752,36 @@ namespace WpfApp1
                 }
             }
         }
+        private void DrawBusses()
+        {
+            if (Bus.busses.Count > 0)
+            {
+                for (int i = 0; i < Bus.busses.Count - 1; i++)
+                {
+                    Bus.busses[i].Draw();
 
+                    if (!canvas.Children.Contains(Bus.busses[i].ToUIElement()))
+                    {
+                        canvas.Children.Add(Bus.busses[i].ToUIElement());
+
+                        //canvas.Children.Add(Car.cars[i].ToUIElement2());
+
+                    }
+                }
+            }
+
+            // destroy rectangles 
+            if (Bus.destroyedBusses.Count > 0)
+            {
+                for (int i = 0; i < Bus.destroyedBusses.Count - 1; i++)
+                {
+                    if (canvas.Children.Contains(Bus.destroyedBusses[i].ToUIElement()))
+                    {
+                        canvas.Children.Remove(Bus.destroyedBusses[i].ToUIElement());
+                    }
+                }
+            }
+        }
         private void UpdateTrafficLights()
         {
             if (SocketClient.jObjects.Count > 0)
@@ -897,8 +959,32 @@ namespace WpfApp1
 #endif
                 }
             }
+        }
+        private void RandomSpawnBusses()
+        {
 
+            int randomBussesIndex = random.Next(Route.busRoutes.Count);
 
+            Route randomBusRoutes = Route.busRoutes[randomBussesIndex];
+
+            int randomAmountOfBusses = random.Next(2);
+
+            foreach (Node node in randomBusRoutes.GetNodes())
+            {
+                if (node is TrafficLight)
+                {
+                    if (((TrafficLight)node).waitingBusses < 3)
+                    {
+                        for (int i = 0; i < randomAmountOfBusses; i++)
+                        {
+                            Bus.busses.Add(new Bus(randomBusRoutes));
+#if DEBUG
+                            Console.WriteLine("Spawning: '" + randomAmountOfBusses + "' busses, at: '" + randomBusRoutes.GetNodes()[0].name + "'");
+#endif
+                        }
+                    }
+                }
+            }
 
         }
 
