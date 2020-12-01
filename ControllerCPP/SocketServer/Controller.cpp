@@ -32,7 +32,7 @@ void receiveJson(char buf[4096], const SOCKET& socket);
 /// </summary>
 int main()
 {
-	int time = 15;
+	int time = 10;
 	int time_ontruiming = 5;
 
 	/*std::cout << "Welcome, before we start sending the good stuff," << std::endl;
