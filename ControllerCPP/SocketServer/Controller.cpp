@@ -140,13 +140,15 @@ int main()
 	
 	while (connected)
 	{
-		//char buf[4096];
+		char buf[4096];
 		for (auto phase : cycle)
 		{
-			
+
 			sendJson(socket, phase.c_str());
+			receiveJson(buf, socket);
 			std::this_thread::sleep_for(std::chrono::seconds(time));
 			sendJson(socket, PHASE_RED);
+			receiveJson(buf, socket);
 			std::this_thread::sleep_for(std::chrono::seconds(time_ontruiming));
 			
 			
@@ -244,6 +246,6 @@ void receiveJson(char buf[4096], const SOCKET& socket)
 		main();
 	}
 
-	std::cout << "RECEIVED>: \n " << std::string(buf, 0, bytesReceived) << std::endl;
+	std::cout << "RECEIVED>: \n" << std::string(buf, 0, bytesReceived) << std::endl;
 }
 

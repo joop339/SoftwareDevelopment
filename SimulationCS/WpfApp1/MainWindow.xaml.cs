@@ -1058,7 +1058,7 @@ namespace WpfApp1
             }
         }
 
-        private static JObject WriteJson()
+        private JObject WriteJson()
         {
             JObject j = new JObject();
 
@@ -1072,6 +1072,14 @@ namespace WpfApp1
                 }
 
             }
+            j.Add("F1-1", ((TrafficLight)V11).GetStatus());
+            j.Add("F1-2", ((TrafficLight)V12).GetStatus());
+            j.Add("F2-1", ((TrafficLight)V21).GetStatus());
+            j.Add("F2-2", ((TrafficLight)V22).GetStatus());
+            j.Add("F4-1", ((TrafficLight)V41).GetStatus());
+            j.Add("F4-2", ((TrafficLight)V42).GetStatus());
+            j.Add("F5-1", ((TrafficLight)V51).GetStatus());
+            j.Add("F5-2", ((TrafficLight)V52).GetStatus());
 
             //string json = JsonConvert.SerializeObject(j, Formatting.Indented);
 
