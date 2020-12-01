@@ -32,5 +32,8 @@
     <Media Include="phase_red.json">
       <Filter>Source Files</Filter>
     </Media>
+    <Media Include="phase_three_bus.json">
+      <Filter>Source Files</Filter>
+    </Media>
   </ItemGroup>
 </Project>
