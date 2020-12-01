@@ -222,7 +222,9 @@ namespace WpfApp1
         {
             string json = jObject.ToString(Formatting.None);
 
-            byte[] bytes = Encoding.UTF8.GetBytes(json);
+            string package = "451:" + json;
+
+            byte[] bytes = Encoding.UTF8.GetBytes(package);
 
             return bytes;
         }
