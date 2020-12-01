@@ -33,7 +33,7 @@ namespace WpfApp1
         double tlLeft;
         double tlTop;
 
-        public static double speed = Car.speed;
+        public static double speed = 0.008;
 
         Route route; // to be followed route
         //static int idCount = 0;
@@ -67,10 +67,10 @@ namespace WpfApp1
             //    //Opacity = 100,
             //};
 
-            rotateTransform.CenterX = busRect.Width / 2;
+            rotateTransform.CenterX = busRect.Width / 3;
             rotateTransform.CenterY = busRect.Height / 2;
 
-            rotateTransform2.CenterX = busRect.Width / 2;
+            rotateTransform2.CenterX = busRect.Width / 3;
             rotateTransform2.CenterY = busRect.Height / 2;
         }
 
@@ -221,7 +221,7 @@ namespace WpfApp1
             else if (thisX < targetX && targetY == thisY) //E
             {
                 rotateTransform.Angle = 180;
-                tlLeft = target.GetLeft() - 40;
+                tlLeft = target.GetLeft() - 30;
             }
 
             else if (thisY > targetY && targetX == thisX) //S

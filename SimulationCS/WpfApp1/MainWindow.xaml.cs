@@ -20,9 +20,9 @@ namespace WpfApp1
     // Traffic light colors
     public enum Color
     {
-        Red, // 0
+        Orange, // 0
         Green, // 1
-        Yellow, //2
+        Red, //2
         None, // 3
     }
 
@@ -127,6 +127,8 @@ namespace WpfApp1
         private Node A62;
         private Node A63;
         private Node A64;
+
+        private Node BusFake;
 
         //Bochten
         private Node A11Bocht;
@@ -372,6 +374,8 @@ namespace WpfApp1
             A63 = new TrafficLight(A6_3, "A6-3");
             A64 = new TrafficLight(A6_4, "A6-4");
 
+            BusFake = new TrafficLight(Bus_fake, "Bus-Fake");
+
             //Startpunten
             A11S = new Node(A1_1S);
             A12S = new Node(A1_2S);
@@ -518,8 +522,8 @@ namespace WpfApp1
             Route Route5_1P = new Route(new List<Node> { VEastS, VB5, V14, V12, VB6, VB7, VB8, VWestS }, RoadType.NonCarRoad);
 
             // Routes Bus
-            Route Route1B = new Route(new List<Node> { A14S, B11, B1_1B, A63, A63Bocht, A53E }, RoadType.BusRoad);
-            Route Route1_1B = new Route(new List<Node> { A14S, B12, B11Bocht,  A34E }, RoadType.BusRoad);
+            Route Route1B = new Route(new List<Node> { A14S, BusFake, B11, B1_1B, A63, A63Bocht, A53E }, RoadType.BusRoad);
+            Route Route1_1B = new Route(new List<Node> { A14S, BusFake, B12, B11Bocht,  A34E }, RoadType.BusRoad);
 
             Route Route2B = new Route(new List<Node> { A21S, A21, A21Bocht, A21E }, RoadType.BusRoad);
 
@@ -1034,6 +1038,17 @@ namespace WpfApp1
                             {
                                 //CheckTrafficLightGreenToRed((TrafficLight)node, property.Value.ToObject<int>());
                                 ((TrafficLight)node).SetColor((Color)property.Value.ToObject<int>());
+                                if (((TrafficLight)B11).GetColor() == Color.Green || ((TrafficLight)B12).GetColor() == Color.Green)
+                                {
+                                    ((TrafficLight)BusFake).SetColor(Color.Green);
+                                }
+                                if (((TrafficLight)node).GetColor() == Color.Orange)
+                                {
+                                    ((TrafficLight)node).SetColor(Color.Red);
+                                }
+                                //{
+                                //    ((TrafficLight)BusFake).SetColor(Color.Red);
+                                //}
                             }
                             else
                             {
