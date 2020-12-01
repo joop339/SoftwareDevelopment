@@ -117,7 +117,7 @@ namespace WpfApp1
                trafficLight.Fill = Brushes.Green;
                 waiting = false;
             }
-            else if (color == Color.Yellow)
+            else if (color == Color.Orange)
             {
                 trafficLight.Fill = Brushes.Orange;
             }
