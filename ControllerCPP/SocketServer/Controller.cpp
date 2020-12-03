@@ -13,15 +13,20 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
-#define PORT			54000
-#define IPADDRESS		"127.0.0.1"
-#define PHASE_ONE		"phase_one.json"
-#define PHASE_TWO		"phase_two.json"
-#define PHASE_THREE		"phase_three.json"
-#define PHASE_FOUR		"phase_four.json"
-#define PHASE_RED		"phase_red.json"
-#define PHASE_THREE_BUS	"phase_three_bus.json"
+#define TIME_GROENFASE			10
+#define TIME_ONTRUIMINGSTIJD	5
 
+#define PORT					54000
+#define IPADDRESS				"127.0.0.1"
+
+#define PHASE_ONE				"phase_one.json"
+#define PHASE_TWO				"phase_two.json"
+#define PHASE_THREE				"phase_three.json"
+#define PHASE_FOUR				"phase_four.json"
+#define PHASE_RED				"phase_red.json"
+#define PHASE_THREE_BUS			"phase_three_bus.json"
+
+#define RECEIVE_LOOP			true
 
 const std::vector<std::string> cycle{ PHASE_ONE, PHASE_TWO,  PHASE_THREE, PHASE_FOUR, PHASE_THREE_BUS, };
 bool connected = false;
@@ -34,33 +39,9 @@ void receiveJson(char buf[4096], const SOCKET& socket);
 /// </summary>
 int main()
 {
-	int time = 10;
-	int time_ontruiming = 5;
-
-	/*std::cout << "Welcome, before we start sending the good stuff," << std::endl;
-	std::cout << "I will ask you to enter the following in seconds: " << std::endl;
+	std::cout << "\"Groenfasetijd is " << TIME_GROENFASE << " seconden\"" << std::endl;
 	std::cout << std::endl;
-	std::cout << "\"Groenfasetijd\"" << std::endl;
-	std::cout << std::endl;
-	std::cout << "\"Ontruimingstijd\"" << std::endl;
-	std::cout << std::endl;
-	std::cout << "Press [Enter] to continue..." << std::endl;
-	std::cin.ignore();
-	system("cls");
-
-	std::cout << "Enter \"Groenfasetijd\" in seconds: " << std::endl;	
-	std::cin >> time;
-	std::cout << std::endl;
-	std::cout << "Enter \"Ontruimingstijd\" in seconds: " << std::endl;
-	std::cin >> time_ontruiming;
-	std::cout << std::endl;
-	std::cout << "Thank you!" << std::endl;
-	std::cout << std::endl;*/
-
-
-	std::cout << "\"Groenfasetijd is " << time << " seconden\"" << std::endl;
-	std::cout << std::endl;
-	std::cout << "\"Ontruimingstijd is  " << time_ontruiming << " seconden\"" << std::endl;
+	std::cout << "\"Ontruimingstijd is  " << TIME_ONTRUIMINGSTIJD << " seconden\"" << std::endl;
 	std::cout << std::endl;
 
 	std::cout << "Starting socket server..." << std::endl;
@@ -138,24 +119,27 @@ int main()
 	// Close listening socket
 	closesocket(listening);
 
+	// Start thread_receiving
+	char buf[4096];
+	std::thread thread_receiving(receiveJson, buf, socket);
+
 	// While loop: send json once in a while
-	
 	while (connected)
-	{
-		char buf[4096];
+	{	
 		for (auto phase : cycle)
 		{
-
 			sendJson(socket, phase.c_str());
-			receiveJson(buf, socket);
-			std::this_thread::sleep_for(std::chrono::seconds(time));
+			//receiveJson(buf, socket);
+			std::this_thread::sleep_for(std::chrono::seconds(TIME_GROENFASE));
 			sendJson(socket, PHASE_RED);
-			receiveJson(buf, socket);
-			std::this_thread::sleep_for(std::chrono::seconds(time_ontruiming));
-			
-			
+			//receiveJson(buf, socket);
+			std::this_thread::sleep_for(std::chrono::seconds(TIME_ONTRUIMINGSTIJD));					
 		}
 
+	}
+
+	if (thread_receiving.joinable()) {
+		thread_receiving.join();
 	}
 
 	// Close the socket
@@ -224,12 +208,34 @@ void sendJson(const SOCKET& socket, const char file[])
 }
 
 /// <summary>
-/// Receives data over socket and prints to Output
+/// While true: Receives data over socket and prints to Output
 /// </summary>
 /// <param name="buf">buffer to store data</param>
 /// <param name="socket">SOCKET</param>
 void receiveJson(char buf[4096], const SOCKET& socket)
 {
+	while (RECEIVE_LOOP) {
+		ZeroMemory(buf, 4096);
+
+		// Wait for client to send data
+		int bytesReceived = recv(socket, buf, 4096, 0);
+		if (bytesReceived == SOCKET_ERROR) // Handle error
+		{
+			std::cerr << "Error in recv(). Quitting!" << std::endl;
+			connected = false;
+			main();
+		}
+
+		if (bytesReceived == 0) // Handle error
+		{
+			std::cout << "Client disconnected " << std::endl;
+			connected = false;
+			main();
+		}
+
+		std::cout << "RECEIVED>: \n" << std::string(buf, 0, bytesReceived) << std::endl;
+	}
+
 	ZeroMemory(buf, 4096);
 
 	// Wait for client to send data
