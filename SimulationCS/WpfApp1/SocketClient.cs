@@ -3,13 +3,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net.Sockets;
-using System.Runtime.CompilerServices;
-using System.Runtime.Remoting.Messaging;
 using System.Text;
-using System.Windows.Documents;
 
 namespace WpfApp1
 {
@@ -100,7 +95,7 @@ namespace WpfApp1
         }
 
         /// <summary>
-        /// Receives data and HandleData()
+        /// Receives data in a buffer and enqueues to queue
         /// </summary>
         /// <returns>
         /// Boolean true or false based on successful connection
@@ -152,8 +147,10 @@ namespace WpfApp1
             // Dequeue header
             string header = DequeueHeader(queue, seperator);
 
+            // header length
             int length = 0;
 
+            // try to parse header to int
             if (int.TryParse(header, out length))
             {
 #if DEBUG
@@ -197,42 +194,58 @@ namespace WpfApp1
         private static string DequeueHeader(Queue<byte> queue, char seperator)
         {
             string sprtr = seperator.ToString();
-            byte[] colon = Encoding.UTF8.GetBytes(sprtr);
+            byte[] sprtrBytes = Encoding.UTF8.GetBytes(sprtr);
 
             List<byte> hdr = new List<byte>();
             if (queue.Count > 0)
             {
-                while (queue.Peek() != colon[0])
+                // while first element of queue is not sprtr
+                while (queue.Peek() != sprtrBytes[0])
                 {
+                    // add first element of queue to hdr 
+                    // remove first element from queue
                     hdr.Add(queue.Dequeue());
                 }
 
                 queue.Dequeue(); // remove seperator
             }
-                    
+               
+            // Convert hdr to bytes for Encoding
             byte[] headerBytes = hdr.ToArray();
 
+            // Decode headerBytes to string
             string header = Encoding.UTF8.GetString(headerBytes);
 
             return header;
         }
 
-
-        private static byte[] ConvertToByteArray(JObject jObject)
+        /// <summary>
+        /// Adds a header to a jObject as string and encodes the whole package to bytes array
+        /// </summary>
+        /// <param name="jObject">jObject</param>
+        /// <returns>bytes array from header:json string</returns>
+        private static byte[] ConvertToByteArrayWithHeader(JObject jObject)
         {
+            // Convert jObject to string with no formatting for space savings
             string json = jObject.ToString(Formatting.None);
 
+            // Add json.Length + ':' as header to jObject as string
             string package = json.Length + ":" + json;
 
+            // Encode package to bytes
             byte[] bytes = Encoding.UTF8.GetBytes(package);
 
             return bytes;
         }
 
+        /// <summary>
+        /// Sends bytes over socket
+        /// </summary>
+        /// <param name="jObject">jObject</param>
         public static void Send(JObject jObject)
         {
             // Encode the data string into a byte array.
-            byte[] msg = ConvertToByteArray(jObject);
+            byte[] msg = ConvertToByteArrayWithHeader(jObject);
 
             // Send the data through the socket
             int bytesSend = client.Send(msg);

@@ -20,39 +20,39 @@
         Eindpunten  A1_1E Refrence Dichtbijzijndste Stoplicht-->
 
         <!--Startpunten-->
-        <Ellipse Name="A1_1S" Fill="green" Height="8" Canvas.Left="818" Stroke="Black" Width="8" Canvas.Top="1"/>
-        <Ellipse Name="A1_2S" Fill="green" Height="8" Canvas.Left="844" Stroke="Black" Width="8" Canvas.Top="1"/>
-        <Ellipse Name="A1_3S" Fill="green" Height="8" Canvas.Left="868" Stroke="Black" Width="8" Canvas.Top="1"/>
-        <Ellipse Name="A1_4S" Fill="green" Height="8" Canvas.Left="894" Stroke="Black" Width="8" Canvas.Top="1"/>
+        <Ellipse Name="A1_1S" Fill="green" Height="8" Canvas.Left="818" Stroke="Black" Width="8" Canvas.Top="-50"/>
+        <Ellipse Name="A1_2S" Fill="green" Height="8" Canvas.Left="844" Stroke="Black" Width="8" Canvas.Top="-50"/>
+        <Ellipse Name="A1_3S" Fill="green" Height="8" Canvas.Left="868" Stroke="Black" Width="8" Canvas.Top="-50"/>
+        <Ellipse Name="A1_4S" Fill="green" Height="8" Canvas.Left="894" Stroke="Black" Width="8" Canvas.Top="-50"/>
 
-        <Ellipse Name="A2_1S" Fill="green" Height="8" Canvas.Left="1192" Stroke="Black" Width="8" Canvas.Top="190"/>
-        <Ellipse Name="A2_2S" Fill="green" Height="8" Canvas.Left="1192" Stroke="Black" Width="8" Canvas.Top="214"/>
-        <Ellipse Name="A2_3S" Fill="green" Height="8" Canvas.Left="1192" Stroke="Black" Width="8" Canvas.Top="243"/>
-        <Ellipse Name="A2_4S" Fill="green" Height="8" Canvas.Left="1192" Stroke="Black" Width="8" Canvas.Top="268"/>
+        <Ellipse Name="A2_1S" Fill="green" Height="8" Canvas.Left="1232" Stroke="Black" Width="8" Canvas.Top="190"/>
+        <Ellipse Name="A2_2S" Fill="green" Height="8" Canvas.Left="1232" Stroke="Black" Width="8" Canvas.Top="214"/>
+        <Ellipse Name="A2_3S" Fill="green" Height="8" Canvas.Left="1232" Stroke="Black" Width="8" Canvas.Top="243"/>
+        <Ellipse Name="A2_4S" Fill="green" Height="8" Canvas.Left="1232" Stroke="Black" Width="8" Canvas.Top="268"/>
 
-        <Ellipse Name="A4_1S" Fill="green" Height="8" Canvas.Left="299" Stroke="Black" Width="8" Canvas.Top="692"/>
-        <Ellipse Name="A4_2S" Fill="green" Height="8" Canvas.Left="326" Stroke="Black" Width="8" Canvas.Top="692"/>
-        <Ellipse Name="A4_3S" Fill="green" Height="8" Canvas.Left="352" Stroke="Black" Width="8" Canvas.Top="692"/>
-        <Ellipse Name="A4_4S" Fill="green" Height="8" Canvas.Left="376" Stroke="Black" Width="8" Canvas.Top="692"/>
-        <Ellipse Name="B4_1S" Fill="green" Height="8" Canvas.Left="403" Stroke="Black" Width="8" Canvas.Top="692"/>
+        <Ellipse Name="A4_1S" Fill="green" Height="8" Canvas.Left="299" Stroke="Black" Width="8" Canvas.Top="732"/>
+        <Ellipse Name="A4_2S" Fill="green" Height="8" Canvas.Left="326" Stroke="Black" Width="8" Canvas.Top="732"/>
+        <Ellipse Name="A4_3S" Fill="green" Height="8" Canvas.Left="352" Stroke="Black" Width="8" Canvas.Top="732"/>
+        <Ellipse Name="A4_4S" Fill="green" Height="8" Canvas.Left="376" Stroke="Black" Width="8" Canvas.Top="732"/>
+        <Ellipse Name="B4_1S" Fill="green" Height="8" Canvas.Left="403" Stroke="Black" Width="8" Canvas.Top="732"/>
 
-        <Ellipse Name="A5_1S" Fill="green" Height="8" Stroke="Black" Width="8" Canvas.Top="425" Canvas.Left="1"/>
-        <Ellipse Name="A5_2S" Fill="green" Height="8" Stroke="Black" Width="8" Canvas.Top="450" Canvas.Left="1"/>
-        <Ellipse Name="A5_3S" Fill="green" Height="8" Stroke="Black" Width="8" Canvas.Top="476" Canvas.Left="1"/>
-        <Ellipse Name="A5_4S" Fill="green" Height="8" Stroke="Black" Width="8" Canvas.Top="502" Canvas.Left="1"/>
+        <Ellipse Name="A5_1S" Fill="green" Height="8" Stroke="Black" Width="8" Canvas.Top="425" Canvas.Left="-50"/>
+        <Ellipse Name="A5_2S" Fill="green" Height="8" Stroke="Black" Width="8" Canvas.Top="450" Canvas.Left="-50"/>
+        <Ellipse Name="A5_3S" Fill="green" Height="8" Stroke="Black" Width="8" Canvas.Top="476" Canvas.Left="-50"/>
+        <Ellipse Name="A5_4S" Fill="green" Height="8" Stroke="Black" Width="8" Canvas.Top="502" Canvas.Left="-50"/>
 
         <!--Eindpunten-->
-        <Ellipse Name="A2_1E" Fill="red" Height="8" Canvas.Left="973" Stroke="Black" Width="8" Canvas.Top="1"/>
-        <Ellipse Name="A2_2E" Fill="red" Height="8" Canvas.Left="948" Stroke="Black" Width="8" Canvas.Top="1"/>
+        <Ellipse Name="A2_1E" Fill="red" Height="8" Canvas.Left="973" Stroke="Black" Width="8" Canvas.Top="-50"/>
+        <Ellipse Name="A2_2E" Fill="red" Height="8" Canvas.Left="948" Stroke="Black" Width="8" Canvas.Top="-50"/>
 
-        <Ellipse Name="A3_3E" Fill="red" Height="8" Canvas.Left="1192" Stroke="Black" Width="8" Canvas.Top="425"/>
-        <Ellipse Name="A3_4E" Fill="red" Height="8" Canvas.Left="1192" Stroke="Black" Width="8" Canvas.Top="450"/>
+        <Ellipse Name="A3_3E" Fill="red" Height="8" Canvas.Left="1232" Stroke="Black" Width="8" Canvas.Top="425"/>
+        <Ellipse Name="A3_4E" Fill="red" Height="8" Canvas.Left="1232" Stroke="Black" Width="8" Canvas.Top="450"/>
 
-        <Ellipse Name="A5_3E" Fill="red" Height="8" Canvas.Left="221" Stroke="Black" Width="8" Canvas.Top="692"/>
-        <Ellipse Name="A5_4E" Fill="red" Height="8" Canvas.Left="247" Stroke="Black" Width="8" Canvas.Top="692"/>
+        <Ellipse Name="A5_3E" Fill="red" Height="8" Canvas.Left="221" Stroke="Black" Width="8" Canvas.Top="732"/>
+        <Ellipse Name="A5_4E" Fill="red" Height="8" Canvas.Left="247" Stroke="Black" Width="8" Canvas.Top="732"/>
 
-        <Ellipse Name="A6_1E" Fill="red" Height="8" Stroke="Black" Width="8" Canvas.Top="243" Canvas.Left="1"/>
-        <Ellipse Name="A6_2E" Fill="red" Height="8" Stroke="Black" Width="8" Canvas.Top="268" Canvas.Left="1"/>
+        <Ellipse Name="A6_1E" Fill="red" Height="8" Stroke="Black" Width="8" Canvas.Top="243" Canvas.Left="-50"/>
+        <Ellipse Name="A6_2E" Fill="red" Height="8" Stroke="Black" Width="8" Canvas.Top="268" Canvas.Left="-50"/>
 
         <!--Stoplichten-->
         <Ellipse Name="A1_1" Fill="red" Height="21" Canvas.Left="809" Stroke="Black" Canvas.Top="98" Width="23"/>
@@ -88,35 +88,36 @@
         <Ellipse Name="A6_4" Fill="red" Height="20" Canvas.Left="361" Stroke="Black" Canvas.Top="314" Width="23"/>
 
         <!--Bocht nodes-->
-        <Ellipse Name="A1_1Bocht" Fill="Aqua" Height="8" Canvas.Left="809" Stroke="Black" Canvas.Top="230" Width="8"/>
-        <Ellipse Name="A1_2Bocht" Fill="Aqua" Height="8" Canvas.Left="844" Stroke="Black" Canvas.Top="214" Width="8"/>
-        <Ellipse Name="A1_3Bocht" Fill="Aqua" Height="8" Canvas.Left="868" Stroke="Black" Canvas.Top="398" Width="8"/>
-        <Ellipse Name="B1_1Bocht" Fill="Aqua" Height="8" Canvas.Left="902" Stroke="Black" Canvas.Top="443" Width="8"/>
+        <Ellipse Name="A1_1Bocht" Fill="Aqua" Height="8" Canvas.Left="809" Stroke="Black" Canvas.Top="230" Width="8" Opacity="0"/>
+        <Ellipse Name="A1_2Bocht" Fill="Aqua" Height="8" Canvas.Left="844" Stroke="Black" Canvas.Top="214" Width="8" Opacity="0"/>
+        <Ellipse Name="A1_3Bocht" Fill="Aqua" Height="8" Canvas.Left="868" Stroke="Black" Canvas.Top="398" Width="8" Opacity="0"/>
+        <Ellipse Name="B1_1Bocht" Fill="Aqua" Height="8" Canvas.Left="902" Stroke="Black" Canvas.Top="407" Width="8" Opacity="0"/>
 
-        <Ellipse Name="A2_1Bocht" Fill="Aqua" Height="8" Canvas.Left="980" Stroke="Black" Canvas.Top="184" Width="8"/>
-        <Ellipse Name="A2_2Bocht" Fill="Aqua" Height="8" Canvas.Left="961" Stroke="Black" Canvas.Top="210" Width="8"/>
-        <Ellipse Name="A2_3Bocht" Fill="Aqua" Height="8" Canvas.Left="921" Stroke="Black" Canvas.Top="243" Width="8"/>
-        <Ellipse Name="A2_4Bocht" Fill="Aqua" Height="8" Canvas.Left="921" Stroke="Black" Canvas.Top="268" Width="8"/>
+        <Ellipse Name="A2_1Bocht" Fill="Aqua" Height="8" Canvas.Left="980" Stroke="Black" Canvas.Top="184" Width="8" Opacity="0"/>
+        <Ellipse Name="A2_2Bocht" Fill="Aqua" Height="8" Canvas.Left="961" Stroke="Black" Canvas.Top="210" Width="8" Opacity="0"/>
+        <Ellipse Name="A2_3Bocht" Fill="Aqua" Height="8" Canvas.Left="921" Stroke="Black" Canvas.Top="243" Width="8" Opacity="0"/>
+        <Ellipse Name="A2_4Bocht" Fill="Aqua" Height="8" Canvas.Left="921" Stroke="Black" Canvas.Top="268" Width="8" Opacity="0"/>
 
-        <Ellipse Name="A3_1Bocht" Fill="Aqua" Height="8" Canvas.Left="939" Stroke="Black" Canvas.Top="365" Width="8"/>
-        <Ellipse Name="A3_2Bocht" Fill="Aqua" Height="8" Canvas.Left="956" Stroke="Black" Canvas.Top="384" Width="8"/>
+        <Ellipse Name="A3_1Bocht" Fill="Aqua" Height="8" Canvas.Left="939" Stroke="Black" Canvas.Top="365" Width="8" Opacity="0"/>
+        <Ellipse Name="A3_2Bocht" Fill="Aqua" Height="8" Canvas.Left="956" Stroke="Black" Canvas.Top="384" Width="8" Opacity="0"/>
 
-        <Ellipse Name="A4_1Bocht" Fill="Aqua" Height="8" Canvas.Left="299" Stroke="Black" Canvas.Top="288" Width="8"/>
-        <Ellipse Name="A4_2Bocht" Fill="Aqua" Height="8" Canvas.Left="317" Stroke="Black" Canvas.Top="262" Width="8"/>
-        <Ellipse Name="A4_3Bocht" Fill="Aqua" Height="8" Canvas.Left="352" Stroke="Black" Canvas.Top="391" Width="8"/>
-        <Ellipse Name="A4_4Bocht" Fill="Aqua" Height="8" Canvas.Left="384" Stroke="Black" Canvas.Top="443" Width="8"/>
-        <Ellipse Name="B4_1Bocht" Fill="Aqua" Height="8" Canvas.Left="403" Stroke="Black" Canvas.Top="536" Width="8"/>
-        <Ellipse Name="B4_1Bocht2" Fill="Aqua" Height="8" Canvas.Left="376" Stroke="Black" Canvas.Top="508" Width="8"/>
+        <Ellipse Name="A4_1Bocht" Fill="Aqua" Height="8" Canvas.Left="299" Stroke="Black" Canvas.Top="288" Width="8" Opacity="0"/>
+        <Ellipse Name="A4_2Bocht" Fill="Aqua" Height="8" Canvas.Left="317" Stroke="Black" Canvas.Top="262" Width="8" Opacity="0"/>
+        <Ellipse Name="A4_3Bocht" Fill="Aqua" Height="8" Canvas.Left="352" Stroke="Black" Canvas.Top="391" Width="8" Opacity="0"/>
+        <Ellipse Name="A4_4Bocht" Fill="Aqua" Height="8" Canvas.Left="384" Stroke="Black" Canvas.Top="443" Width="8" Opacity="0"/>
+        <Ellipse Name="B4_1Bocht" Fill="Aqua" Height="8" Canvas.Left="403" Stroke="Black" Canvas.Top="536" Width="8" Opacity="0"/>
+        <Ellipse Name="B4_1Bocht2" Fill="Aqua" Height="8" Canvas.Left="376" Stroke="Black" Canvas.Top="508" Width="8" Opacity="0"/>
         <!--Buss moet 2 nodes nemen en dan rii node A4_4Bocht-->
 
-        <Ellipse Name="A5_1Bocht" Fill="Aqua" Height="8" Canvas.Left="286" Stroke="Black" Canvas.Top="417" Width="8"/>
-        <Ellipse Name="A5_2Bocht" Fill="Aqua" Height="8" Canvas.Left="286" Stroke="Black" Canvas.Top="450" Width="8"/>
-        <Ellipse Name="A5_3Bocht" Fill="Aqua" Height="8" Canvas.Left="221" Stroke="Black" Canvas.Top="482" Width="8"/>
-        <Ellipse Name="A5_4Bocht" Fill="Aqua" Height="8" Canvas.Left="215" Stroke="Black" Canvas.Top="508" Width="8"/>
+        <Ellipse Name="A5_1Bocht" Fill="Aqua" Height="8" Canvas.Left="286" Stroke="Black" Canvas.Top="417" Width="8" Opacity="0"/>
+        <Ellipse Name="A5_2Bocht" Fill="Aqua" Height="8" Canvas.Left="286" Stroke="Black" Canvas.Top="450" Width="8" Opacity="0"/>
+        <Ellipse Name="A5_3Bocht" Fill="Aqua" Height="8" Canvas.Left="221" Stroke="Black" Canvas.Top="482" Width="8" Opacity="0"/>
+        <Ellipse Name="A5_4Bocht" Fill="Aqua" Height="8" Canvas.Left="215" Stroke="Black" Canvas.Top="508" Width="8" Opacity="0"/>
 
-        <Ellipse Name="A6_3Bocht" Fill="Aqua" Height="8" Canvas.Left="247" Stroke="Black" Canvas.Top="301" Width="8"/>
-        <Ellipse Name="A6_4Bocht" Fill="Aqua" Height="8" Canvas.Left="251" Stroke="Black" Canvas.Top="326" Width="8"/>
+        <Ellipse Name="A6_3Bocht" Fill="Aqua" Height="8" Canvas.Left="247" Stroke="Black" Canvas.Top="301" Width="8" Opacity="0"/>
+        <Ellipse Name="A6_4Bocht" Fill="Aqua" Height="8" Canvas.Left="251" Stroke="Black" Canvas.Top="326" Width="8" Opacity="0"/>
 
+        <Ellipse x:Name="B11B" Fill="Aqua" Height="8" Canvas.Left="894" Stroke="Black" Canvas.Top="243" Width="8" Opacity="0"/>
         <!--Voetganger/fietser start en eindpunten-->
         <Ellipse x:Name="V_NorthS" Fill="Blue" Height="8" Canvas.Left="1029" Stroke="Black" Width="8" Canvas.Top="1"/>
         <Ellipse x:Name="V_EastS" Fill="Blue" Height="8" Canvas.Left="1192" Stroke="Black" Width="8" Canvas.Top="141"/>
@@ -158,8 +159,7 @@
         <Ellipse x:Name="V_B6" Fill="lightblue" Height="8" Stroke="Black" Width="8" Canvas.Top="141" Canvas.Left="768"/>
         <Ellipse x:Name="V_B7" Fill="lightblue" Height="8" Stroke="Black" Width="8" Canvas.Top="184" Canvas.Left="762"/>
         <Ellipse x:Name="V_B8" Fill="lightblue" Height="8" Stroke="Black" Width="8" Canvas.Top="190" Canvas.Left="165"/>
-        <Ellipse x:Name="B11B" Fill="Aqua" Height="8" Canvas.Left="894" Stroke="Black" Canvas.Top="243" Width="8"/>
-        <Ellipse x:Name="Bus_fake" Fill="red" Height="21" Canvas.Left="886" Stroke="Black" Canvas.Top="98" Width="24" Opacity="0"/>
+        <Ellipse Name="Bus_fake" Fill="red" Height="21" Canvas.Left="886" Stroke="Black" Canvas.Top="98" Width="24" Opacity="0"/>
 
 
 

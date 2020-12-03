@@ -99,7 +99,6 @@
     <Compile Include="Bus.cs" />
     <Compile Include="Bike.cs" />
     <Compile Include="Pedestrian.cs" />
-    <Compile Include="RoadUser.cs" />
     <Compile Include="Route.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="SocketClient.cs" />

@@ -14,64 +14,44 @@ namespace WpfApp1
 {
     public class Car
     {
-        //MainWindow main = (MainWindow)Application.Current.MainWindow;
-        RotateTransform rotateTransform = new RotateTransform();
-        RotateTransform rotateTransform2 = new RotateTransform();
+        private RotateTransform rotateTransform = new RotateTransform();
 
         public static List<Car> cars = new List<Car>();
         public static List<Car> destroyedCars = new List<Car>();
 
-        public Rectangle carRect; //car icon
-        //public Rectangle carHitbox;
+        private Rectangle carRect; //car icon
 
-        public bool waitingSend = false;
-        public bool hasCollided = false;
+        private bool waitingSend = false;
         public Node target; // next target
 
-        double left;
-        double top;
+        private double left;
+        private double top;
 
-        double tlLeft;
-        double tlTop;
+        private double tlLeft;
+        private double tlTop;
         public static double speed = 0.008;
 
-        Route route; // to be followed route
-        //static int idCount = 0;
-        //int id;
+        private Route route; // to be followed route
 
-        public Car(Route route) //aanmaken van een nieuwe auto met de juiste coordinaten.
+        public Car(Route route) // initialise bus with route and coordinates.
         {
             cars.Add(this);
             this.left = route.GetNodes()[0].GetLeft();
             this.top = route.GetNodes()[0].GetTop();
-            //this.id = idCount;
-            //idCount++;
+
             this.route = route;
             this.target = route.GetNodes()[0];
 
             carRect = new Rectangle()
             {
-                //Source = new BitmapImage(new Uri("/resources/car.png")),
                 Width = 19,
                 Height = 13,
                 Fill = Brushes.Maroon,
                 Stroke = Brushes.Black
             };
 
-            //carHitbox = new Rectangle() // rectangle infront of carRect, This is for collision detection
-            //{
-            //    Width = 7,
-            //    Height = 13,
-            //    Fill = Brushes.Red,
-            //    Stroke = Brushes.Red,
-            //    //Opacity = 100,
-            //};
-
             rotateTransform.CenterX = carRect.Width / 2;
             rotateTransform.CenterY = carRect.Height / 2;
-
-            rotateTransform2.CenterX = carRect.Width / 2;
-            rotateTransform2.CenterY = carRect.Height / 2;
         }
 
 
@@ -80,17 +60,12 @@ namespace WpfApp1
             return carRect;
         }
 
-        //public UIElement ToUIElement2()
-        //{
-        //    return carHitbox;
-        //}
-
-        public Color CheckTrafficLight()
+        private Color CheckTrafficLight()
         {
             return ((TrafficLight)target).GetColor();
         }
 
-        void Destroy()
+        private void Destroy() // Remove car.
         {
             cars.Remove(this);
             destroyedCars.Add(this);
@@ -99,84 +74,86 @@ namespace WpfApp1
         {
             Canvas.SetLeft(carRect, left);
             Canvas.SetTop(carRect, top);
+        }
 
-            //Canvas.SetLeft(carHitbox, left);
-            //Canvas.SetTop(carHitbox, top);
+        private bool trafficlightDistanceCheck()  // check distance between car and target trafficlight. depending on amount of cars and busses already waiting
+        {
+            if (tlTop - 0.05 - (25 * ((TrafficLight)target).waitingCars) - (44 * ((TrafficLight)target).waitingBusses) < top
+                    && tlTop + 0.05 + (25 * ((TrafficLight)target).waitingCars) + (44 * ((TrafficLight)target).waitingBusses) > top
+                    && tlLeft - 0.05 - (25 * ((TrafficLight)target).waitingCars) - (44 * ((TrafficLight)target).waitingBusses) < left
+                    && tlLeft + 0.05 + (25 * ((TrafficLight)target).waitingCars) + (44 * ((TrafficLight)target).waitingBusses) > left)
+            {
+                return true;
+            }
+            return false;
         }
 
 
-
-        public void Drive() //Positie auto updaten wanneer stoplicht groen is. of de auto nog niet bij het stoplicht is aangekomen.
+        public void Drive() //Update position bus accoring to trafficlight being green or target not being a trafficlight
         {
-            if (this.hasCollided == false)
-            {
-                tlLeft = target.GetLeft();
-                tlTop = target.GetTop();
-                directionCheck();
+            tlLeft = target.GetLeft();
+            tlTop = target.GetTop();
+            Rotate();
 
-                // if target is reached
-
-                if (target is TrafficLight)
-                { // and target is TL AND TL is green
-                    if (tlTop - 0.05 - (25 * ((TrafficLight)target).waitingCars) - (44 * ((TrafficLight)target).waitingBusses) < top && tlTop + 0.05 + (25 * ((TrafficLight)target).waitingCars) + (44 * ((TrafficLight)target).waitingBusses) > top && tlLeft - 0.05 - (25 * ((TrafficLight)target).waitingCars) - (44 * ((TrafficLight)target).waitingBusses) < left && tlLeft + 0.05 + (25 * ((TrafficLight)target).waitingCars) + (44 * ((TrafficLight)target).waitingBusses) > left)
-                    {
-                        if (CheckTrafficLight() == Color.Green)
-                        {// get next target
-                            int index = route.GetNodes().IndexOf(target);
-                            ((TrafficLight)target).SetWaiting(false);
-                            ((TrafficLight)target).waitingCars = 0;
-                            this.waitingSend = false;
-                            if (index < route.GetNodes().Count - 1)
-                            {
-                                this.target = route.GetNodes()[index + 1];
-                                //Console.WriteLine(target.name);
-                            }
-                            else
-                            {
-                                this.Destroy();
-                            }
-                        }
-                        else if (CheckTrafficLight() == Color.Red)
-                        {
-                            if (this.waitingSend == false)
-                            {
-                                ((TrafficLight)target).SetWaiting(true);
-                                ((TrafficLight)target).waitingCars++;
-                                this.waitingSend = true;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        this.waitingSend = false;
-                        moveCar(target);
-                    }
-                }
-                else if (!(target is TrafficLight))
+            if (target is TrafficLight) // if this cars target is Trafficlight
+            { // If car is x distance away from trafficlight. This gets higher with more waiting cars or busses.
+                if (trafficlightDistanceCheck())
                 {
-                    if (target.GetTop() - 0.05 < top && target.GetTop() + 0.05 > top && target.GetLeft() - 0.05 < left && target.GetLeft() + 0.05 > left)
-                    {
+                    if (CheckTrafficLight() == Color.Green)
+                    {// get next target
                         int index = route.GetNodes().IndexOf(target);
+                        ((TrafficLight)target).SetWaiting(false);
+                        ((TrafficLight)target).waitingCars = 0;
+                        this.waitingSend = false;
                         if (index < route.GetNodes().Count - 1)
                         {
                             this.target = route.GetNodes()[index + 1];
-                            //Console.WriteLine(target.name);
                         }
                         else
                         {
                             this.Destroy();
                         }
                     }
-                    else
+                    else if (CheckTrafficLight() == Color.Red || CheckTrafficLight() == Color.Orange)
                     {
-                        moveCar(target);
+                        if (this.waitingSend == false)
+                        {
+                            ((TrafficLight)target).SetWaiting(true);
+                            ((TrafficLight)target).waitingCars++;
+                            this.waitingSend = true;
+                        }
                     }
                 }
-
+                else
+                {
+                    this.waitingSend = false;
+                    moveCar(target);
+                }
             }
+            else if (!(target is TrafficLight))
+            { // if target is not Trafficlight use normal distance to reach node.
+                if (target.GetTop() - 0.05 < top && target.GetTop() + 0.05 > top && target.GetLeft() - 0.05 < left && target.GetLeft() + 0.05 > left)
+                {
+                    int index = route.GetNodes().IndexOf(target);
+                    if (index < route.GetNodes().Count - 1)
+                    {
+                        this.target = route.GetNodes()[index + 1];
+                    }
+                    else
+                    {
+                        this.Destroy();
+                    }
+                }
+                else
+                {
+                    moveCar(target);
+                }
+            }
+
+
         }
 
-        void moveCar(Node target)
+        private void moveCar(Node target)
         {
             if (target.GetLeft() > left)
             {
@@ -202,7 +179,7 @@ namespace WpfApp1
 
 
 
-        void directionCheck() // check of de auto in de zelfde richting is als het huidige doelwit
+        private void Rotate() // Rotates cars to face the way they're moving
         {
             double targetX = Math.Round(target.GetLeft());
             double targetY = Math.Round(target.GetTop());
@@ -210,7 +187,7 @@ namespace WpfApp1
             double thisY = Math.Round(top);
 
 
-
+            // rotate car according to direction of the target node.
             if (thisX > targetX && targetY == thisY) //W
             {
                 rotateTransform.Angle = 0;
@@ -257,25 +234,8 @@ namespace WpfApp1
 
             }
 
-            rotateTransform2.Angle = rotateTransform.Angle;
             carRect.RenderTransform = rotateTransform;
-            //carHitbox.RenderTransform = rotateTransform2;
         }
     }
-    //bool isTargetAndCarLeft = roundedLeft > carLeft && roundedLeft > targetLeft;
-    //bool isTargetAndCarRight = roundedLeft < carLeft && roundedLeft < targetLeft;
-    //bool isTargetAndCarTop = roundedTop > carTop && roundedTop > targetTop;
-    //bool isTargetAndCarDown = roundedTop < carTop && roundedTop < targetTop;
-
-
-    //if (
-    //            (isTargetAndCarLeft) // doelwit en andere auto zijn links van this
-    //            || (isTargetAndCarRight) // doelwit en andere auto zijn rechts van this
-    //            || (isTargetAndCarTop) // doelwit en andere auto zijn boven this
-    //            || (isTargetAndCarDown) // doelwit en andere auto zijn onder this
-    //   )
-    //{
-    //    return true;
-    //}
 }
 

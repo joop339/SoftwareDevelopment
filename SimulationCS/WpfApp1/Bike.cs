@@ -1,30 +1,34 @@
-﻿using System.Collections.Generic;
-using System.Windows.Shapes;
-using System.Windows.Media;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace WpfApp1
 {
     public class Bike
     {
-        public static List<Bike> Bikes = new List<Bike>(); // List of Bikes
+        RotateTransform rotateTransform = new RotateTransform();
+
+        public static List<Bike> bikes = new List<Bike>(); // List of Bikes
         public static List<Bike> destroyedBikes = new List<Bike>(); // List of Bikes
 
-        double left;
-        double top;
 
-        double speed = Car.speed / 2;
-        bool waitingSend = true;
+        private double left;
+        private double top;
 
-        Route route; // To be followed route
-        Node target;
+        public static double speed = Car.speed / 1.5;
+        private bool waitingSend = true;
 
-        Shape body; // shape representation
+        private Route route; // To be followed route
+        private Node target;
+
+        private Shape body; // shape representation
 
         public Bike(Route route)
         {
-            Bikes.Add(this); // add to list
+            bikes.Add(this); // add to list
             this.left = route.GetNodes()[0].GetLeft();
             this.top = route.GetNodes()[0].GetTop();
 
@@ -33,11 +37,15 @@ namespace WpfApp1
 
             body = new Ellipse() // set body
             {
-                Width = 8,
-                Height = 20,
+                Width = 20,
+                Height = 8,
                 Fill = Brushes.Green,
                 Stroke = Brushes.Black
             };
+
+            rotateTransform.CenterX = body.Width / 2;
+            rotateTransform.CenterY = body.Height / 2;
+
         }
 
         public UIElement ToUIElement()
@@ -45,7 +53,7 @@ namespace WpfApp1
             return body;
         }
 
-        public Color CheckTrafficLight()
+        private Color CheckTrafficLight()
         {
             return ((TrafficLight)target).GetColor();
         }
@@ -61,7 +69,7 @@ namespace WpfApp1
             SwitchTarget();
         }
 
-        public void Walk()
+    private void Walk()
         {
             if (target.GetLeft() > left)
             {
@@ -85,8 +93,9 @@ namespace WpfApp1
             }
         }
 
-        public void SwitchTarget()
+        private void SwitchTarget()
         {
+            Rotate();
             if (target is TrafficLight)
             { // if target is reached
 
@@ -107,7 +116,7 @@ namespace WpfApp1
                             this.Destroy();
                         }
                     }
-                    else if (CheckTrafficLight() == Color.Red)
+                    else if (CheckTrafficLight() == Color.Red || CheckTrafficLight() == Color.Orange)
                     {
                         if (waitingSend == true)
                         {
@@ -148,11 +157,64 @@ namespace WpfApp1
             }
         }
 
-        void Destroy()
+        private void Destroy()
         {
-            Bikes.Remove(this);
+            bikes.Remove(this);
             destroyedBikes.Add(this);
         }
-    }
 
+        private void Rotate() // Rotates cars to face the way they're moving
+        {
+            double targetX = Math.Round(target.GetLeft());
+            double targetY = Math.Round(target.GetTop());
+            double thisX = Math.Round(left);
+            double thisY = Math.Round(top);
+
+
+            // rotate car according to direction of the target node.
+            if (thisX > targetX && targetY == thisY) //W
+            {
+                rotateTransform.Angle = 0;
+            }
+
+            else if (thisX < targetX && targetY == thisY) //E
+            {
+                rotateTransform.Angle = 180;
+            }
+
+            else if (thisY > targetY && targetX == thisX) //S
+            {
+                rotateTransform.Angle = 90;
+            }
+
+            else if (thisY < targetY && targetX == thisX) //N
+            {
+                rotateTransform.Angle = 270;
+            }
+
+            else if (thisX < targetX && thisY < targetY)
+            {
+                rotateTransform.Angle = 225;
+            }
+
+            else if (thisX > targetX && thisY > targetY)
+            {
+                rotateTransform.Angle = 45;
+            }
+
+            else if (thisX < targetX && thisY > targetY)
+            {
+                rotateTransform.Angle = 135;
+
+            }
+
+            else if (thisX > targetX && thisY < targetY)
+            {
+                rotateTransform.Angle = 315;
+
+            }
+
+            body.RenderTransform = rotateTransform;
+        }
+    }
 }

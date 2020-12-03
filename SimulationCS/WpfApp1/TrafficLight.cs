@@ -18,7 +18,7 @@ namespace WpfApp1
     public class TrafficLight : Node
     {
         private Ellipse trafficLight;
-        Color color = Color.Red;
+        private Color color = Color.Red;
         public string id;
         private bool waiting = false;
         public double waitingCars;
@@ -27,7 +27,7 @@ namespace WpfApp1
 
 
         public TrafficLight(int left, int top, string id) : base(left, top)
-        {
+        { //init Trafficlight with coordinates.
             this.left = left;
             this.top = top;
             this.id = id;
@@ -57,8 +57,8 @@ namespace WpfApp1
             trafficLight.MouseDown += TrafficLight_MouseDown;
         }
 
-        public void TrafficLight_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
+        private void TrafficLight_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        { //used to cycle trafficlight color onClick
             if (trafficLight.Fill == Brushes.Green)
             {
                 trafficLight.Fill = Brushes.Red;
@@ -77,13 +77,6 @@ namespace WpfApp1
             }
         }
 
-
-
-        //public static implicit operator UIElement(TrafficLight trafficLight)
-        //{
-        //    return trafficLight;
-        //}
-
         public UIElement ToUIElement()
         {
             return trafficLight;
@@ -92,7 +85,7 @@ namespace WpfApp1
         public void Update()
         {
             if (waiting)
-                Console.WriteLine("TL: " + id +" I got cars: " + waiting);
+                Console.WriteLine("TL: " + id + " I got cars: " + waiting);
         }
 
         public Color GetColor()
@@ -114,7 +107,7 @@ namespace WpfApp1
             }
             else if (color == Color.Green)
             {
-               trafficLight.Fill = Brushes.Green;
+                trafficLight.Fill = Brushes.Green;
                 waiting = false;
             }
             else if (color == Color.Orange)

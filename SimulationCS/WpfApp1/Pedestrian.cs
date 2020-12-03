@@ -45,7 +45,7 @@ namespace WpfApp1
             return body;
         }
 
-        public Color CheckTrafficLight()
+        public Color CheckTrafficLight() //check trafficlight color
         {
             return ((TrafficLight)target).GetColor();
         }
@@ -89,7 +89,7 @@ namespace WpfApp1
         {
             if (target is TrafficLight)
             { // if target is reached
-
+                // if Pedestrian is x distance away from target depending on how many peds are already waiting.
                 if (target.GetTop() - 0.05 - 15 * ((TrafficLight)target).waitingPedestrians < top && target.GetTop() + 0.05 + 15 * ((TrafficLight)target).waitingPedestrians > top && target.GetLeft() - 0.05 - 15 * ((TrafficLight)target).waitingPedestrians < left && target.GetLeft() + 0.05 + 15 * ((TrafficLight)target).waitingPedestrians > left)
                 { // and target is TL AND TL is green
                     if (CheckTrafficLight() == Color.Green)
@@ -107,7 +107,7 @@ namespace WpfApp1
                             this.Destroy();
                         }
                     }
-                    else if (CheckTrafficLight() == Color.Red)
+                    else if (CheckTrafficLight() == Color.Red || CheckTrafficLight() == Color.Orange)
                     {
                         if (waitingSend == true)
                         {

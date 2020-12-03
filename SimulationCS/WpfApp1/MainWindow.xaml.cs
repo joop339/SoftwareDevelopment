@@ -1,14 +1,9 @@
-#define DEBUG
-using Newtonsoft.Json;
+#undef DEBUG
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Shapes;
 
@@ -20,33 +15,30 @@ namespace WpfApp1
     // Traffic light colors
     public enum Color
     {
-        Orange, // 0
+        Red, // 0
         Green, // 1
-        Red, //2
+        Orange, //2
         None, // 3
     }
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
-    /// 
-    /// Stoplichten zijn klikbaar!
-    /// Zie private void MainWindow_KeyDown(object sender, KeyEventArgs e) functie voor keyDowns
     /// </summary>
     public partial class MainWindow : Window
     {
         private const int fps = 60; // Simulation Draw speed
 
-        private bool looping = true;
+        private bool looping = true; // used by Loopify()
 
-        private bool connected = false;
+        private bool connected = false; // used for checking socket connection
 
-        private bool handled = true;
+        private bool handled = true; // traffic lights set
 
-        Random random = new Random();
+        Random random = new Random(); // for randomness
 
 
         #region Nodes
-        //Startpunten
+        //Startnodes
         private Node A11S;
         private Node A12S;
         private Node A13S;
@@ -68,15 +60,13 @@ namespace WpfApp1
         private Node A53S;
         private Node A54S;
 
-        // Stoplichten
+        // Trafficlight nodes
         private Node A11;
         private Node A12;
         private Node A13;
         private Node B11;
         private Node B12;
 
-        private Node F11;
-        private Node F12;
         private Node V11;
         private Node V12;
         private Node V13;
@@ -87,8 +77,6 @@ namespace WpfApp1
         private Node A23;
         private Node A24;
 
-        private Node F21;
-        private Node F22;
         private Node V21;
         private Node V22;
         private Node V23;
@@ -104,8 +92,6 @@ namespace WpfApp1
         private Node A44;
         private Node B41;
 
-        private Node F41;
-        private Node F42;
         private Node V41;
         private Node V42;
         private Node V43;
@@ -116,8 +102,6 @@ namespace WpfApp1
         private Node A53;
         private Node A54;
 
-        private Node F51;
-        private Node F52;
         private Node V51;
         private Node V52;
         private Node V53;
@@ -128,9 +112,9 @@ namespace WpfApp1
         private Node A63;
         private Node A64;
 
-        private Node BusFake;
+        private Node BusFake; // Fake trafficlight used infront of Bus B1-1 and B1-2
 
-        //Bochten
+        //Turns
         private Node A11Bocht;
         private Node A12Bocht;
         private Node A13Bocht;
@@ -148,7 +132,6 @@ namespace WpfApp1
         private Node A31Bocht;
         private Node A32Bocht;
 
-
         private Node A51Bocht;
         private Node A52Bocht;
         private Node A53Bocht;
@@ -158,22 +141,20 @@ namespace WpfApp1
         private Node A63Bocht;
         private Node A64Bocht;
 
-        //Eindpunten
+        //Ending nodes
         private Node A21E;
         private Node A22E;
-
 
         private Node A33E;
         private Node A34E;
 
-
         private Node A53E;
         private Node A54E;
 
-
         private Node A61E;
         private Node A62E;
-        // pednodes
+
+        // pedestrian / biker nodes
         private Node VNorthS;
         private Node VEastS;
         private Node VEast2S;
@@ -207,26 +188,25 @@ namespace WpfApp1
             InitializeRoutes();
 
             InitializeObjects();
-
+            // initialize multiple threads. running different parts off the simulation on different timings
             InitializeThread(() => { Loopify(SimulationTick); });
 
             InitializeThread(() => { Loopify(DrawTick, 1000 / fps, true); });
 
-            InitializeThread(()=> { Loopify(SocketClientConnect, 1); });
+            InitializeThread(() => { Loopify(SocketClientConnect, 1); });
 
             InitializeThread(() => { Loopify(SocketClientSend); });
 
             InitializeThread(() => { Loopify(SocketClientReceive); });
 
-            //InitializeThread(() => { Loopify(() => { lblTime.Content = DateTime.Now.ToString("HH:mm:ss"); }, 1000 / fps, true); } );
-
-            //InitializeThread(()=> { Loopify(SpawnCars, 2000, true); });
-
             InitializeThread(() => { Loopify(RandomSpawnCars, 150, true); });
 
-            InitializeThread(() => { Loopify(RandomSpawnPedestrians, 2000, true); });
+            InitializeThread(() => { Loopify(RandomSpawnPedestrians, 6000, true); });
 
-            InitializeThread(() => { Loopify(RandomSpawnBusses, 5000, true); });
+            InitializeThread(() => { Loopify(RandomSpawnBusses, 10000, true); });
+
+            InitializeThread(() => { Loopify(RandomSpawnBikes, 13000, true); });
+
 
             //Keydown events
             KeyDown += new KeyEventHandler(MainWindow_KeyDown);
@@ -267,7 +247,7 @@ namespace WpfApp1
             else if (e.Key == Key.T)
             {
                 CycleTrafficLights(); //alle verkeerslichten op groen of rood
-            
+
             }
             else if (e.Key == Key.X)
             {
@@ -299,7 +279,7 @@ namespace WpfApp1
                 if (isUI)
                 {
                     this.Dispatcher.Invoke(() =>
-                    { // dit hoort soms te breken, komt doordat Thread.Sleep() wordt onderbroken
+                    { // Can break because of thread.sleep being interupted
 
                         function();
                     });
@@ -321,7 +301,7 @@ namespace WpfApp1
         /// </summary>
         private void InitializeNodes()
         {
-            //Stoplichten
+            //Trafficlights
             A11 = new TrafficLight(A1_1, "A1-1");
             A12 = new TrafficLight(A1_2, "A1-2");
             A13 = new TrafficLight(A1_3, "A1-3");
@@ -376,7 +356,7 @@ namespace WpfApp1
 
             BusFake = new TrafficLight(Bus_fake, "Bus-Fake");
 
-            //Startpunten
+            //Start nodes
             A11S = new Node(A1_1S);
             A12S = new Node(A1_2S);
             A13S = new Node(A1_3S);
@@ -398,7 +378,7 @@ namespace WpfApp1
             A53S = new Node(A5_3S);
             A54S = new Node(A5_4S);
 
-            // Bochten
+            // Turns
             A11Bocht = new Node(A1_1Bocht);
             A12Bocht = new Node(A1_2Bocht);
             A13Bocht = new Node(A1_3Bocht);
@@ -424,7 +404,7 @@ namespace WpfApp1
             A63Bocht = new Node(A6_3Bocht);
             A64Bocht = new Node(A6_4Bocht);
 
-            //Eindpunten
+            // End nodes
             A21E = new Node(A2_1E);
             A22E = new Node(A2_2E);
 
@@ -437,7 +417,7 @@ namespace WpfApp1
             A61E = new Node(A6_1E);
             A62E = new Node(A6_2E);
 
-            //Alles voor pedestrians
+            //Pedestrian and biker nodes
             VNorthS = new Node(V_NorthS);
             VEastS = new Node(V_EastS);
             VEast2S = new Node(V_East2S);
@@ -465,6 +445,7 @@ namespace WpfApp1
         /// </summary>
         private void InitializeRoutes()
         {
+            // All routes followed by cars.
             Route Route1 = new Route(new List<Node> { A11S, A11, A11Bocht, A61, A61E });
             Route Route1_1 = new Route(new List<Node> { A11S, A11, A11Bocht, A62, A62E });
 
@@ -504,13 +485,13 @@ namespace WpfApp1
             Route Route15 = new Route(new List<Node> { A54S, A54, A54Bocht, A53E });
 
             // Routes pedestrians/bikers
-            Route Route1P = new Route(new List<Node> { VNorthS, VB5, V14, V12, VB6, VB7, VB8, VWestS}, RoadType.NonCarRoad);
-            Route Route1_1P = new Route(new List<Node> { VNorthS, VB5, V21, V23, VB4, VEast2S}, RoadType.NonCarRoad);
+            Route Route1P = new Route(new List<Node> { VNorthS, VB5, V14, V12, VB6, VB7, VB8, VWestS }, RoadType.NonCarRoad);
+            Route Route1_1P = new Route(new List<Node> { VNorthS, VB5, V21, V23, VB4, VEast2S }, RoadType.NonCarRoad);
 
-            Route Route2P = new Route(new List<Node> { VWestS, VB8, V51, V53, VB1, V41, V43, VB2, VB3, VB4, VEast2S}, RoadType.NonCarRoad);
+            Route Route2P = new Route(new List<Node> { VWestS, VB8, V51, V53, VB1, V41, V43, VB2, VB3, VB4, VEast2S }, RoadType.NonCarRoad);
             Route Route2_1P = new Route(new List<Node> { VWestS, VB8, V51, V53, VB1, V41, V43, VB2, VB3, VB4, V24, V22, VB5, VNorthS }, RoadType.NonCarRoad);
 
-            Route Route3P = new Route(new List<Node> { VWest2S, VB1, V54, V52, VB8, VWestS}, RoadType.NonCarRoad);
+            Route Route3P = new Route(new List<Node> { VWest2S, VB1, V54, V52, VB8, VWestS }, RoadType.NonCarRoad);
             Route Route3_1P = new Route(new List<Node> { VWest2S, VB1, V41, V43, VB2, VB3, VB4, VEast2S }, RoadType.NonCarRoad);
             Route Route3_2P = new Route(new List<Node> { VWest2S, VB1, V41, V43, VB2, VB3, VB4, V24, V22, VB5, VNorthS }, RoadType.NonCarRoad);
 
@@ -523,29 +504,14 @@ namespace WpfApp1
 
             // Routes Bus
             Route Route1B = new Route(new List<Node> { A14S, BusFake, B11, B1_1B, A63, A63Bocht, A53E }, RoadType.BusRoad);
-            Route Route1_1B = new Route(new List<Node> { A14S, BusFake, B12, B11Bocht,  A34E }, RoadType.BusRoad);
+            Route Route1_1B = new Route(new List<Node> { A14S, BusFake, B12, B11Bocht, A33E }, RoadType.BusRoad);
 
             Route Route2B = new Route(new List<Node> { A21S, A21, A21Bocht, A21E }, RoadType.BusRoad);
 
-            Route Route3B = new Route(new List<Node> { B41S, B41, B41Bocht , B41Bocht2, A44Bocht, A32, A32Bocht, A21E }, RoadType.BusRoad);
+            Route Route3B = new Route(new List<Node> { B41S, B41, B41Bocht, B41Bocht2, A44Bocht, A32, A32Bocht, A21E }, RoadType.BusRoad);
 
             Route Route4B = new Route(new List<Node> { A51S, A51, A51Bocht, A32, A32Bocht, A21E }, RoadType.BusRoad);
-
-
-            //new List<Ellipse> { V_EastS, V_B5, V1_4, V1_2, V_B6, V_B7, V_B8, V_WestS }
         }
-
-        //private List<Node> GetNodeList(List<Ellipse> ellipses)
-        //{
-        //    List<Node> nodes = new List<Node>();
-
-        //    foreach(Ellipse e in ellipses)
-        //    {
-        //        nodes.Add(new Node(e));
-        //    }
-
-        //    return nodes;
-        //}
 
         /// <summary>
         ///Initialize all pre-existing cars and traffic lights from list
@@ -589,21 +555,14 @@ namespace WpfApp1
                 UpdateBusses();
                 UpdatePeds();
                 UpdateCars();
+                UpdateBikes();
                 UpdateTrafficLights();
             });
-
-            // TODO: Delay moet netter
-            //var durationTicks = Math.Round((0.00001) * Stopwatch.Frequency);
-            //var sw = Stopwatch.StartNew();
-
-            //while (sw.ElapsedTicks < durationTicks)
-            //{
-            //    // do nothing
-            //}
-
-            //Thread.Sleep(0);
         }
 
+        /// <summary>
+        /// update moving objects on screen
+        /// </summary>
         private void DrawTick()
         {
             this.Dispatcher.Invoke(() => // used because thread does not own UI objects
@@ -611,6 +570,8 @@ namespace WpfApp1
                 DrawBusses();
                 DrawCars();
                 DrawPeds();
+                DrawBikes();
+
             });
         }
 
@@ -632,15 +593,15 @@ namespace WpfApp1
         private void SocketClientSend()
         {
             if (handled == true)
-            { 
-                    if (connected)
-                    {
-                        JObject j = WriteJson();
-                        SocketClient.Send(j);
-                        handled = false;
-                    }
+            {
+                if (connected)
+                {
+                    JObject j = WriteJson();
+                    SocketClient.Send(j);
+                    handled = false;
+                }
             }
-            
+
         }
 
         /// <summary>
@@ -661,7 +622,9 @@ namespace WpfApp1
         /// UpdateCars: update each car, 
         /// add each car sprite to canvas if not already added, 
         /// remove car sprites from canvas on destroyedCars list
+        /// same for pedestrians, bikes, busses
         /// </summary>
+        #region Update
         private void UpdateCars()
         {
             //Car.UpdateRects();//nice
@@ -684,6 +647,16 @@ namespace WpfApp1
                 }
             }
         }
+        private void UpdateBikes()
+        {
+            if (Bike.bikes.Count > 0)
+            {
+                for (int i = 0; i < Bike.bikes.Count - 1; i++)
+                {
+                    Bike.bikes[i].Update();
+                }
+            }
+        }
         private void UpdateBusses()
         {
             if (Bus.busses.Count > 0)
@@ -695,7 +668,9 @@ namespace WpfApp1
             }
 
         }
+        #endregion
 
+        #region Draw
         private void DrawCars()
         {
             if (Car.cars.Count > 0)
@@ -745,8 +720,6 @@ namespace WpfApp1
 
             }
 
-
-
             // destroy rectangles 
             if (Pedestrian.destroyedPedestrians.Count > 0)
             {
@@ -760,6 +733,39 @@ namespace WpfApp1
                 }
             }
         }
+
+        private void DrawBikes()
+        {
+            if (Bike.bikes.Count > 0)
+            {
+                for (int i = 0; i < Bike.bikes.Count - 1; i++)
+                {
+                    Bike.bikes[i].Draw();
+
+                    if (!canvas.Children.Contains(Bike.bikes[i].ToUIElement()))
+                    {
+                        canvas.Children.Add(Bike.bikes[i].ToUIElement());
+
+                    }
+                }
+
+
+            }
+
+            // destroy rectangles 
+            if (Bike.destroyedBikes.Count > 0)
+            {
+                for (int i = 0; i < Bike.destroyedBikes.Count - 1; i++)
+                {
+                    if (canvas.Children.Contains(Bike.destroyedBikes[i].ToUIElement()))
+                    {
+                        canvas.Children.Remove(Bike.destroyedBikes[i].ToUIElement());
+                    }
+
+                }
+            }
+        }
+
         private void DrawBusses()
         {
             if (Bus.busses.Count > 0)
@@ -790,6 +796,8 @@ namespace WpfApp1
                 }
             }
         }
+        #endregion
+
         private void UpdateTrafficLights()
         {
             if (SocketClient.jObjects.Count > 0)
@@ -801,7 +809,7 @@ namespace WpfApp1
 
         private void CycleTrafficLight(TrafficLight trafficLight)//traffic light color cycle
         {
-            if (trafficLight.GetColor() == Color.Red)
+            if (trafficLight.GetColor() == Color.Red || trafficLight.GetColor() == Color.Orange)
             {
                 trafficLight.SetColor(Color.Green);
             }
@@ -821,6 +829,8 @@ namespace WpfApp1
 
             }
         }
+
+        #region spawners
         private void SpawnCar()
         {
             new Car(Route.routes[0]);
@@ -834,7 +844,7 @@ namespace WpfApp1
             new Car(route);
         }
         /// <summary>
-        /// Spawn cars on every route, maximum 100 cars spawnable
+        /// Spawn cars on every route, maximum x cars spawnable
         /// </summary>
         private void SpawnCars()
         {
@@ -854,11 +864,6 @@ namespace WpfApp1
                 {
                     new Car(r);
                 }
-
-                //foreach (Route r in Route.altRoutes)
-                //{
-                //    new Car(r);
-                //}
 #if DEBUG
                 //Console.WriteLine("Spawning: '" + 1 + "' car, at: '" + Route.routes[counter].GetNodes()[0].name + "'");
                 Console.WriteLine("Spawning on every route");
@@ -873,54 +878,6 @@ namespace WpfApp1
             }
         }
 
-
-
-        //public void DetectCollision(List<Car> cars)
-        //{
-        //    foreach (Car car in cars) // check elke autos
-        //    {
-        //        car.hasCollided = false; // reset
-
-        //        foreach(UIElement e in canvas.Children)
-        //        {
-        //            if(e == car.ToUIElement2())
-        //            {
-        //                Console.WriteLine("Stuf WORKS?!"); // probly not working tho
-        //            }
-        //        }
-
-        //        //int index = canvas.Children.IndexOf(car.ToUIElement2()); // get index of car hitbox in canvas
-        //       // Console.WriteLine(index);
-
-        //        //var hitboxBounds = GetBounds((Rectangle)canvas.Children[index], canvas); // pak de hitbox
-
-        //        foreach (Car oCar in cars) // met alle autos
-        //        {
-        //            if (oCar != car) // behalve zichzelf
-        //            {
-        //                index = canvas.Children.IndexOf(car.ToUIElement2()); // get index of car hitbox in canvas
-        //                //Console.WriteLine(index);
-
-        //                //var oCarBounds = GetBounds((Rectangle)canvas.Children[index], canvas); // pak de hitbox van alle andere autos
-
-        //                //if (hitboxBounds.IntersectsWith(oCarBounds)) // colliden de hitbox van de huidige auto en een andere
-        //                //{
-        //                //    car.hasCollided = true; // zet hasColllided op true
-        //                //    break;
-        //                //}
-
-        //            }
-
-        //        }
-        //    }
-
-        //}
-
-
-        public Canvas GetCanvas()
-        {
-            return canvas;
-        }
         private void RandomSpawnPedestrians()
         {
 
@@ -966,7 +923,7 @@ namespace WpfApp1
                     {
                         for (int i = 0; i < randomAmountOfBikes; i++)
                         {
-                            Bike.Bikes.Add(new Bike(randomNonCarRoute));
+                            Bike.bikes.Add(new Bike(randomNonCarRoute));
 #if DEBUG
                             Console.WriteLine("Spawning: '" + randomAmountOfBikes + "' bikes, at: '" + randomNonCarRoute.GetNodes()[0].name + "'");
 #endif
@@ -1005,10 +962,6 @@ namespace WpfApp1
 
             int randomAmountOfBusses = random.Next(2);
 
-            //foreach (Node node in randomBusRoutes.GetNodes())
-            //{
-            //    if (node is TrafficLight)
-            //    {
             if (((TrafficLight)randomBusRoutes.GetNodes()[1]).waitingBusses < 1)
             {
                 for (int i = 0; i < randomAmountOfBusses; i++)
@@ -1019,40 +972,58 @@ namespace WpfApp1
 #endif
                 }
             }
-            //}
-            //}
-
         }
+        #endregion
 
         public bool SetTrafficLightsFromJson(JObject jObject)
         {
+            // check each line in jObject
             foreach (JProperty property in jObject.Properties())
             {
+                // check each node in nodeList
                 foreach (Node node in Node.nodeList)
                 {
+                    // if node is a TL
                     if (node is TrafficLight)
                     {
                         if (property.Name == ((TrafficLight)node).id)
                         {
                             if (property.Value.ToObject<int>() == 0 || property.Value.ToObject<int>() == 1)
                             {
-                                //CheckTrafficLightGreenToRed((TrafficLight)node, property.Value.ToObject<int>());
-                                ((TrafficLight)node).SetColor((Color)property.Value.ToObject<int>());
+
+                                if (((TrafficLight)node).GetColor() == Color.Green && property.Value.ToObject<int>() == 0)
+                                {
+                                    // start thread for orange(3s) -> red switching
+                                    InitializeThread(() =>
+                                    {
+                                        this.Dispatcher.Invoke(() =>
+                                       {
+                                           SetOrange((TrafficLight)node);
+                                       });
+                                        Thread.Sleep(3000);
+                                        this.Dispatcher.Invoke(() =>
+                                        {
+                                            SetRed((TrafficLight)node);
+                                            ((TrafficLight)node).SetColor((Color)property.Value.ToObject<int>());
+                                        });
+                                    });
+                                }
+
+                                // set bus traffic lights
                                 if (((TrafficLight)B11).GetColor() == Color.Green || ((TrafficLight)B12).GetColor() == Color.Green)
                                 {
                                     ((TrafficLight)BusFake).SetColor(Color.Green);
                                 }
-                                if (((TrafficLight)node).GetColor() == Color.Orange)
+                                else
                                 {
-                                    ((TrafficLight)node).SetColor(Color.Red);
+                                    ((TrafficLight)BusFake).SetColor(Color.Red);
                                 }
-                                //{
-                                //    ((TrafficLight)BusFake).SetColor(Color.Red);
-                                //}
+                                 ((TrafficLight)node).SetColor((Color)property.Value.ToObject<int>()); // set color op rood of groen
+
                             }
                             else
                             {
-                                Console.WriteLine("Invalid value of \"" + property.Name + "\":"+ property.Value.ToObject<int>());
+                                Console.WriteLine("Invalid value of \"" + property.Name + "\":" + property.Value.ToObject<int>());
                             }
 
                         }
@@ -1060,17 +1031,21 @@ namespace WpfApp1
 
                 }
             }
-
             return true;
         }
 
-        public void CheckTrafficLightGreenToRed(TrafficLight tf, int incoming)
+        public void SetOrange(TrafficLight node)
         {
-            if(tf.GetColor() == Color.Green && incoming == 0)
-            {
-                tf.SetOrange();
-                Task.Delay(3000);
-            }
+
+            node.SetColor(Color.Orange);
+
+        }
+
+        public void SetRed(TrafficLight node)
+        {
+
+            node.SetColor(Color.Red);
+
         }
 
         private JObject WriteJson()
@@ -1081,9 +1056,13 @@ namespace WpfApp1
             {
                 if (node is TrafficLight)
                 {
-                    TrafficLight trafficLight = (TrafficLight)node;
+                    if (((TrafficLight)node) != BusFake)
+                    {
+                        TrafficLight trafficLight = (TrafficLight)node;
 
-                    j.Add(trafficLight.id, trafficLight.GetStatus());
+                        j.Add(trafficLight.id, trafficLight.GetStatus());
+                    }
+
                 }
 
             }
@@ -1096,46 +1075,8 @@ namespace WpfApp1
             j.Add("F5-1", ((TrafficLight)V51).GetStatus());
             j.Add("F5-2", ((TrafficLight)V52).GetStatus());
 
-            //string json = JsonConvert.SerializeObject(j, Formatting.Indented);
-
-            ////write string to file
-            //try
-            //{
-            //    System.IO.File.WriteAllText(@"json.json", json);
-            //    Console.WriteLine("File Written");
-            //}
-            //catch (Exception)
-            //{
-            //    throw;
-            //}
-
             return j;
         }
-
-        //public void SetTrafficLightsFromJson()
-        //{
-        //    // read JSON directly from a file https://www.newtonsoft.com/json/help/html/ReadJson.htm
-        //    var path = (@"Resources\IncomingJson\jason_controller.json");
-        //    using (StreamReader file = File.OpenText(path))// link aanpassen
-        //    using (JsonTextReader reader = new JsonTextReader(file))
-        //    {
-        //        JObject o = (JObject)JToken.ReadFrom(reader);
-        //        foreach (JProperty property in o.Properties())
-        //        {
-        //            foreach (Node node in Node.nodeList)
-        //            {
-        //                if (node is TrafficLight)
-        //                {
-        //                    if (property.Name == ((TrafficLight)node).id)
-        //                    {
-        //                        ((TrafficLight)node).SetColor((Color)property.Value.ToObject<int>());
-        //                    }
-        //                }
-
-        //            }                 
-        //        }
-        //    }
-        //}
     }
 }
 
