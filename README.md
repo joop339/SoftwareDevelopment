@@ -2,7 +2,7 @@
 
 Om controller te testen:  
 
-Benodigdheden:
+Benodigdheden(Optioneel):
 Visual Studio 2019 met C++ of vergelijkbaar
 
 Uitvoering:  
