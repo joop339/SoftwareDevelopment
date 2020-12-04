@@ -1056,13 +1056,21 @@ namespace WpfApp1
             {
                 if (node is TrafficLight)
                 {
-                    if (((TrafficLight)node) != BusFake)
+                    if (((TrafficLight)node) != BusFake && ((TrafficLight)node) != B11 && ((TrafficLight)node) != B12)
                     {
                         TrafficLight trafficLight = (TrafficLight)node;
 
                         j.Add(trafficLight.id, trafficLight.GetStatus());
                     }
+                    else if( ((TrafficLight)node) == B11)
+                    {
+                        j.Add("B1-1", ((TrafficLight)BusFake).GetStatus());
 
+                    }
+                    else if (((TrafficLight)node) == B12)
+                    {
+                        j.Add("B1-2", ((TrafficLight)BusFake).GetStatus());
+                    }
                 }
 
             }
